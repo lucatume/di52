@@ -88,7 +88,7 @@ and *might* take advantage of the container like this
 but the same instance of `One` will be shared between all instances of `SomeClass`.
 
 ### Referring registered variables and constructors
-The possibility to refer previously registered variables and constructors exists using some specia markers for the constructor arguments; given the same class above the code is rewritten to
+The possibility to refer previously registered variables and constructors exists using some special markers for the constructor arguments; given the same class above the code is rewritten to
 
     $c = new tad_DI52_Container();
 
@@ -110,8 +110,8 @@ The possibility to refer previously registered variables and constructors exists
     // not same instance of One
     $someClass1->one !== $someClass2->one;
 
-### Specifyin static constructor methods 
-If a class instance should be created using a static constructor like in the case below
+### Specifying static constructor methods 
+If a class instance should be created using a static constructor as in the case below
 
     class AnotherClass {
 
