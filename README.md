@@ -140,5 +140,19 @@ then the registration of the class constructor in the container is possible appe
 
     $anotherClass = $c->make('another class');
 
+### Singleton
+Singleton is a notorious and nefarious anti-pattern (and a testing sworn enemy) and the container allows for *sharing* of the same object instance across any call to the `make` method like this
+
+    $c = new tad_DI52_Container();
+
+    $c->set_shared('singleton', 'NotASingleton');
+
+    $i1 = $c->make('singleton');
+    $i2 = $c->make('singleton');
+
+    $i1 === $i2;
+
+Shared instances can be referred in other registered constructors using the `@` as well.
+
 ## Does not support
 The container will not guess dependencies, will not handle circular references and will not, in general, make anything smart. Yet.
