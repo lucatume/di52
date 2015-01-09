@@ -284,6 +284,28 @@
 			$this->assertEquals( 'foo', $i->string );
 			$this->assertEquals( 23, $i->int );
 		}
+
+		/**
+		 * @test
+		 * it should allow calling a static constructor with dependencies and call set methods after
+		 */
+		public function it_should_allow_calling_a_static_constructor_with_dependencies_and_call_set_methods_after() {
+			$class = 'tad_DI_MyFifthObject';
+
+			$this->sut->set_ctor( 'dependency', 'tad_DI_Dependency' );
+			$this->sut->set_var( 'string', 'foo' );
+			$this->sut->set_var( 'int', 23 );
+
+			$this->sut->set_ctor( 'object', $class. '::makeOne', ['@dependency'] )
+				->setString( '#string' )
+				->setInt( '#int' );
+
+			$i = $this->sut->make( 'object' );
+
+			$this->assertInstanceOf( $class, $i );
+			$this->assertInstanceOf( 'tad_DI_Dependency', $i->dependency );
+			$this->assertEquals( 'foo', $i->string );
+			$this->assertEquals( 23, $i->int );		}
 	}
 
 
@@ -347,6 +369,13 @@
 		public $dependency;
 		public $string;
 		public $int;
+
+		public static function makeOne( tad_DI_Dependency $dependency ) {
+			$instance = new self();
+			$instance->dependency = $dependency;
+
+			return $instance;
+		}
 
 		public function setDependency( tad_DI_Dependency $dependency ) {
 			$this->dependency = $dependency;
