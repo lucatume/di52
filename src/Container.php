@@ -29,10 +29,8 @@
 
 		public function set_ctor( $alias, $class_and_method, array $args = array() ) {
 			if ( ! isset( $this->ctors[ $alias ] ) ) {
-				$this->ctors[ $alias ] = tad_DI52_Ctor::create( $class_and_method, $args, $this );
+				return $this->ctors[ $alias ] = tad_DI52_Ctor::create( $class_and_method, $args, $this );
 			}
-
-			return $this;
 		}
 
 		public function make( $alias ) {

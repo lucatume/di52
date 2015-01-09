@@ -17,7 +17,7 @@
 
 		private function parse_value( $arg ) {
 			$matches = array();
-			if ( preg_match( '/^(@|#)(.+)/', $arg, $matches ) ) {
+			if ( is_string($arg) && preg_match( '/^(@|#)(.+)/', $arg, $matches ) ) {
 				$type = $matches[1];
 				$alias = $matches[2];
 

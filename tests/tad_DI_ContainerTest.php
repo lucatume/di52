@@ -113,7 +113,10 @@
 		public function it_should_allow_specifying_constructor_arguments() {
 			$class = 'tad_DI52_MySecondObject';
 
-			$this->sut->set_ctor( 'object', $class, array( 'foo', 23 ) );
+			$this->sut->set_ctor( 'object', $class, array(
+				'foo',
+				23
+			) );
 
 			$object = $this->sut->make( 'object' );
 
@@ -129,7 +132,10 @@
 		public function it_should_allow_specifying_static_constructor_arguments() {
 			$class = 'tad_DI52_MyThirdObject';
 
-			$this->sut->set_ctor( 'object', $class . '::one', array( 'foo', 23 ) );
+			$this->sut->set_ctor( 'object', $class . '::one', array(
+				'foo',
+				23
+			) );
 
 			$object = $this->sut->make( 'object' );
 
@@ -147,7 +153,10 @@
 			$this->sut->set_var( 'string', 'foo' );
 			$this->sut->set_var( 'int', 23 );
 
-			$args = array( '#string', '#int' );
+			$args = array(
+				'#string',
+				'#int'
+			);
 			$this->sut->set_ctor( 'object', $class . '::one', $args );
 
 			$object = $this->sut->make( 'object' );
@@ -167,7 +176,10 @@
 			$this->sut->set_ctor( 'myObject', 'tad_DI52_MyObject' );
 			$this->sut->set_var( 'string', 'foo' );
 
-			$args = array( '@myObject', '#string' );
+			$args = array(
+				'@myObject',
+				'#string'
+			);
 			$this->sut->set_ctor( 'dependingObject', 'tad_DI52_MyFourthObject::create', $args );
 
 			$object = $this->sut->make( 'dependingObject' );
@@ -202,7 +214,10 @@
 			$this->sut->set_var( 'string', 'foo' );
 			$this->sut->set_var( 'int', 23 );
 
-			$args = array( '#string', '#int' );
+			$args = array(
+				'#string',
+				'#int'
+			);
 			$this->sut->set_shared( 'singleton', $class, $args );
 
 			$i1 = $this->sut->make( 'singleton' );
@@ -220,13 +235,54 @@
 
 			$this->sut->set_ctor( 'myObject', 'tad_DI52_MyObject::create' );
 
-			$args = array( '@myObject', 'foo' );
+			$args = array(
+				'@myObject',
+				'foo'
+			);
 			$this->sut->set_shared( 'singleton', $class . '::create', $args );
 
 			$i1 = $this->sut->make( 'singleton' );
 			$i2 = $this->sut->make( 'singleton' );
 
 			$this->assertSame( $i1, $i2 );
+		}
+
+		/**
+		 * @test
+		 * it should allow to set methods to be called after the contstructor method
+		 */
+		public function it_should_allow_to_set_methods_to_be_called_after_the_contstructor_method() {
+			$class = 'tad_DI_MyFifthObject';
+
+			$this->sut->set_ctor( 'object', $class )->setDependency( new tad_DI_Dependency() )->setString( 'foo' )
+			          ->setInt( 23 );
+			$i = $this->sut->make( 'object' );
+
+			$this->assertInstanceOf( $class, $i );
+			$this->assertInstanceOf( 'tad_DI_Dependency', $i->dependency );
+			$this->assertEquals( 'foo', $i->string );
+			$this->assertEquals( 23, $i->int );
+		}
+
+		/**
+		 * @test
+		 * it should allow specifying methods to call after constructors and refer previuosly registered arguments
+		 */
+		public function it_should_allow_specifying_methods_to_call_after_constructors_and_refer_previuosly_registered_arguments() {
+			$class = 'tad_DI_MyFifthObject';
+
+			$this->sut->set_ctor( 'dependency', 'tad_DI_Dependency' );
+			$this->sut->set_var( 'string', 'foo' );
+			$this->sut->set_var( 'int', 23 );
+			$this->sut->set_ctor( 'object', $class )->setDependency( '@dependency' )->setString( '#string' )
+			          ->setInt( '#int' );
+
+			$i = $this->sut->make( 'object' );
+
+			$this->assertInstanceOf( $class, $i );
+			$this->assertInstanceOf( 'tad_DI_Dependency', $i->dependency );
+			$this->assertEquals( 'foo', $i->string );
+			$this->assertEquals( 23, $i->int );
 		}
 	}
 
@@ -277,5 +333,30 @@
 			$i->string = $string;
 
 			return $i;
+		}
+	}
+
+
+	class tad_DI_Dependency {
+
+	}
+
+
+	class tad_DI_MyFifthObject {
+
+		public $dependency;
+		public $string;
+		public $int;
+
+		public function setDependency( tad_DI_Dependency $dependency ) {
+			$this->dependency = $dependency;
+		}
+
+		public function setString( $string ) {
+			$this->string = $string;
+		}
+
+		public function setInt( $int ) {
+			$this->int = $int;
 		}
 	}
