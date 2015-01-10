@@ -296,16 +296,39 @@
 			$this->sut->set_var( 'string', 'foo' );
 			$this->sut->set_var( 'int', 23 );
 
-			$this->sut->set_ctor( 'object', $class. '::makeOne', ['@dependency'] )
-				->setString( '#string' )
-				->setInt( '#int' );
+			$this->sut->set_ctor( 'object', $class . '::makeOne', [ '@dependency' ] )->setString( '#string' )
+			          ->setInt( '#int' );
 
 			$i = $this->sut->make( 'object' );
 
 			$this->assertInstanceOf( $class, $i );
 			$this->assertInstanceOf( 'tad_DI_Dependency', $i->dependency );
 			$this->assertEquals( 'foo', $i->string );
-			$this->assertEquals( 23, $i->int );		}
+			$this->assertEquals( 23, $i->int );
+		}
+
+		/**
+		 * @test
+		 * it should allow not specifying the class of simple objects
+		 */
+		public function it_should_allow_not_specifying_the_class_of_simple_objects() {
+
+			// not specifying a ctor method for tad_Dependency
+			// $this->sut->set_ctor( 'dependency', 'tad_DI_Dependency' );
+			$this->sut->set_var( 'string', 'foo' );
+			$this->sut->set_var( 'int', 23 );
+
+			$class = 'tad_DI_DataObjectDependencyClass';
+			$dependencyClass = 'tad_DI_DataObject';
+			$this->sut->set_ctor( 'object', $class, [ '~' . $dependencyClass ] );
+
+			$i = $this->sut->make( 'object' );
+
+			$this->assertInstanceOf( $class, $i );
+			$this->assertInstanceOf( $dependencyClass, $i->dataObject );
+		}
+
+
 	}
 
 
@@ -387,5 +410,20 @@
 
 		public function setInt( $int ) {
 			$this->int = $int;
+		}
+	}
+
+
+	class tad_DI_DataObject {
+
+	}
+
+
+	class tad_DI_DataObjectDependencyClass {
+
+		public $dataObject;
+
+		public function __construct( tad_DI_DataObject $dataObjejct ) {
+			$this->dataObject = $dataObjejct;
 		}
 	}

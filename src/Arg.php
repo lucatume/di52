@@ -1,5 +1,6 @@
 <?php
 
+
 	class tad_DI52_Arg {
 
 		protected $arg;
@@ -15,19 +16,51 @@
 			return $instance;
 		}
 
-		private function parse_value( $arg ) {
+		/**
+		 * @return bool
+		 */
+		protected function is_referred_value() {
 			$matches = array();
-			if ( is_string($arg) && preg_match( '/^(@|#)(.+)/', $arg, $matches ) ) {
-				$type = $matches[1];
-				$alias = $matches[2];
+			$is_referred_value = is_string( $this->arg ) && preg_match( '/^(@|#|~)(.+)/', $this->arg, $matches );
 
-				return $type === '@' ? $this->container->make( $alias ) : $this->container->get_var( $alias );
+			return array(
+				$is_referred_value,
+				$matches
+			);
+		}
+
+		/**
+		 * @param $matches
+		 *
+		 * @return mixed|object
+		 */
+		protected function get_referred_value( $matches ) {
+			$type = $matches[1];
+			$alias_or_class_name = $matches[2];
+
+			switch ( $type ) {
+				case '@':
+					$value = $this->container->make( $alias_or_class_name );
+					break;
+				case '#':
+					$value = $this->container->get_var( $alias_or_class_name );
+					break;
+				case '~':
+					$value = new $alias_or_class_name();
+					break;
 			}
 
-			return $arg;
+			return $value;
 		}
 
 		public function get_value() {
-			return $this->parse_value( $this->arg );
+			list( $is_referred_value, $matches ) = $this->is_referred_value();
+			if ( $is_referred_value ) {
+				$value = $this->get_referred_value( $matches );
+			} else {
+				$value = $this->arg;
+			}
+
+			return $value;
 		}
 	}
