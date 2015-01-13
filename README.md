@@ -140,8 +140,8 @@ then the registration of the class constructor in the container is possible appe
 
     $anotherClass = $c->make('another class');
 
-### Setter methods
-There might be the need to call some `set` methods on the instance after it has been created, the container allows for that
+### Calling further methods
+There might be the need to call some further methods on the instance after it has been created, the container allows for that
 
     $c = new tad_DI52_Container();
 
@@ -162,6 +162,13 @@ There might be the need to call some `set` methods on the instance after it has 
     $i = new StillAnotherClass();
     $i->setOne($one);
     $i->setString($string);
+
+If the method to call is *covered* by the container methods or there is the desire for a more explicit interface then the `call_method` method can be used; in the example above
+
+    $args('@one', '#string')
+    $c->set_ctor('still another class', 'StillAnotherClass')
+        ->call_method('setOne', '@one')
+        ->call_method('setString', '#string');
 
 ### Singleton
 Singleton is a notorious and nefarious anti-pattern (and a testing sworn enemy) and the container allows for *sharing* of the same object instance across any call to the `make` method like this

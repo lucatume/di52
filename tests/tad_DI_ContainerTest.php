@@ -254,8 +254,10 @@
 		public function it_should_allow_to_set_methods_to_be_called_after_the_contstructor_method() {
 			$class = 'tad_DI_MyFifthObject';
 
-			$this->sut->set_ctor( 'object', $class )->setDependency( new tad_DI_Dependency() )->setString( 'foo' )
-			          ->setInt( 23 );
+			$this->sut->set_ctor( 'object', $class )
+				->setDependency( new tad_DI_Dependency() )
+				->setString( 'foo' )
+				->setInt( 23 );
 			$i = $this->sut->make( 'object' );
 
 			$this->assertInstanceOf( $class, $i );
@@ -296,8 +298,32 @@
 			$this->sut->set_var( 'string', 'foo' );
 			$this->sut->set_var( 'int', 23 );
 
-			$this->sut->set_ctor( 'object', $class . '::makeOne', [ '@dependency' ] )->setString( '#string' )
-			          ->setInt( '#int' );
+			$this->sut->set_ctor( 'object', $class . '::makeOne', [ '@dependency' ] )
+				->setString( '#string' )
+				->setInt( '#int' );
+
+			$i = $this->sut->make( 'object' );
+
+			$this->assertInstanceOf( $class, $i );
+			$this->assertInstanceOf( 'tad_DI_Dependency', $i->dependency );
+			$this->assertEquals( 'foo', $i->string );
+			$this->assertEquals( 23, $i->int );
+		}
+
+		/**
+		 * @test
+		 * it should allow calling methods on the made object using call_method
+		 */
+		public function it_should_allow_calling_methods_on_the_made_object_using_call_method() {
+			$class = 'tad_DI_MyFifthObject';
+
+			$this->sut->set_ctor( 'dependency', 'tad_DI_Dependency' );
+			$this->sut->set_var( 'string', 'foo' );
+			$this->sut->set_var( 'int', 23 );
+
+			$this->sut->set_ctor( 'object', $class . '::makeOne', [ '@dependency' ] )
+				->call_method( 'setString', '#string' )
+				->call_method( 'setInt', '#int' );
 
 			$i = $this->sut->make( 'object' );
 
@@ -327,7 +353,6 @@
 			$this->assertInstanceOf( $class, $i );
 			$this->assertInstanceOf( $dependencyClass, $i->dataObject );
 		}
-
 
 	}
 

@@ -9,58 +9,39 @@
 		protected $container;
 
 		public static function create( $arg, tad_DI52_Container $container ) {
-			$instance = new static;
-			$instance->arg = $arg;
-			$instance->container = $container;
+
+			list($type,$value) = self::get_arg_details($arg);
+
+			switch ( $type ) {
+				case '@':
+					$instance = tad_DI52_ReferredInstanceArgValue::create($value, $container);
+					break;
+				case '#':
+					$instance = tad_DI52_ReferredVarArgValue::create($value, $container);
+					break;
+				case '~':
+					$instance = tad_DI52_NewInstanceArgValue::create($value, $container);
+					break;
+				default:
+					$instance = tad_DI52_RealArgValue::create($value);
+					break;
+			}
 
 			return $instance;
 		}
 
-		/**
-		 * @return bool
-		 */
-		protected function is_referred_value() {
+		private static function get_arg_details( $arg ) {
 			$matches = array();
-			$is_referred_value = is_string( $this->arg ) && preg_match( '/^(@|#|~)(.+)/', $this->arg, $matches );
-
-			return array(
-				$is_referred_value,
-				$matches
-			);
-		}
-
-		/**
-		 * @param $matches
-		 *
-		 * @return mixed|object
-		 */
-		protected function get_referred_value( $matches ) {
-			$type = $matches[1];
-			$alias_or_class_name = $matches[2];
-
-			switch ( $type ) {
-				case '@':
-					$value = $this->container->make( $alias_or_class_name );
-					break;
-				case '#':
-					$value = $this->container->get_var( $alias_or_class_name );
-					break;
-				case '~':
-					$value = new $alias_or_class_name();
-					break;
-			}
-
-			return $value;
-		}
-
-		public function get_value() {
-			list( $is_referred_value, $matches ) = $this->is_referred_value();
-			if ( $is_referred_value ) {
-				$value = $this->get_referred_value( $matches );
+			$is_referred_value = is_string( $arg ) && preg_match( '/^(@|#|~)(.+)/', $arg, $matches );
+			if ($is_referred_value) {
+				$type = $matches[1];
+				$value = $matches[2];
 			} else {
-				$value = $this->arg;
+				$type = 'real_value';
+				$value = $arg;
 			}
 
-			return $value;
+			return array($type, $value);
+
 		}
 	}
