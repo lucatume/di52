@@ -18,7 +18,7 @@
 		protected $calls;
 
 		public static function create( $class_and_method, array $args = array(), tad_DI52_Container $container ) {
-			$instance = new static();
+			$instance = new self();
 			list( $class, $method ) = $instance->get_class_and_method( $class_and_method );
 			$instance->class = $class;
 			$instance->method = $method;

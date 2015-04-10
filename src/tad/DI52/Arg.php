@@ -14,10 +14,10 @@
 
 			switch ( $type ) {
 				case '@':
-					$instance = tad_DI52_ReferredInstanceArgValue::create($value, $container);
+					$instance = new tad_DI52_ReferredInstanceArgValue($value, $container);
 					break;
 				case '#':
-					$instance = tad_DI52_ReferredVarArgValue::create($value, $container);
+					$instance = new tad_DI52_ReferredVarArgValue($value, $container);
 					break;
 				case '~':
 					$instance = tad_DI52_NewInstanceArgValue::create($value, $container);

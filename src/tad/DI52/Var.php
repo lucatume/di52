@@ -9,7 +9,7 @@
 		}
 
 		public static function create( $value = null ) {
-			$instance = new static;
+			$instance = new self;
 			$instance->set_value( $value );
 
 			return $instance;
