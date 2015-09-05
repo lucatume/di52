@@ -77,7 +77,7 @@ and *might* take advantage of the container like this
     $someClass2 = $c->make('some class');
     
     // prints 'foo';
-    print($someClass->two);
+    print($someClass1->two);
 
     // not same instance of SomeClass
     $someClass1 !== $someClass2;
