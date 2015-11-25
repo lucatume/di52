@@ -70,8 +70,7 @@ and *might* take advantage of the container like this
 
     $c = new tad_DI52_Container();
     
-    $args = array(new One(), 'foo');
-    $c->set_ctor('some class', 'SomeClass', $args);
+    $c->set_ctor('some class', 'SomeClass', new One(), 'foo');
 
     $someClass1 = $c->make('some class');
     $someClass2 = $c->make('some class');
@@ -95,8 +94,7 @@ The possibility to refer previously registered variables and constructors exists
     $c->set_ctor('one', 'One');
     $c->set_var('string', 'foo');
 
-    $args = array('@one', '#string');
-    $c->set_ctor('some class', 'SomeClass', $args);
+    $c->set_ctor('some class', 'SomeClass', '@one', '#string');
 
     $someClass1 = $c->make('some class');
     $someClass2 = $c->make('some class');
@@ -135,8 +133,7 @@ then the registration of the class constructor in the container is possible appe
     $c->set_ctor('one', 'One');
     $c->set_var('string', 'foo');
 
-    $args('@one', '#string')
-    $c->set_ctor('another class', 'AnotherClass::one', $args);
+    $c->set_ctor('another class', 'AnotherClass::one', '@one', '#string');
 
     $anotherClass = $c->make('another class');
 
@@ -148,7 +145,6 @@ There might be the need to call some further methods on the instance after it ha
     $c->set_ctor('one', 'One');
     $c->set_var('string', 'foo');
 
-    $args('@one', '#string')
     $c->set_ctor('still another class', 'StillAnotherClass')
         ->setOne('@one')
         ->setString('#string');
@@ -165,7 +161,6 @@ There might be the need to call some further methods on the instance after it ha
 
 If the method to call is *covered* by the container methods or there is the desire for a more explicit interface then the `call_method` method can be used; in the example above
 
-    $args('@one', '#string')
     $c->set_ctor('still another class', 'StillAnotherClass')
         ->call_method('setOne', '@one')
         ->call_method('setString', '#string');
