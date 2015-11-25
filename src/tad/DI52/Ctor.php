@@ -20,7 +20,19 @@ class tad_DI52_Ctor
 
     public static function create($class_and_method, array $args = array(), tad_DI52_Container $container)
     {
-        $instance = new self();
+        $instance = new self;
+        return self::instance_set_up($class_and_method, $args, $container, $instance);
+    }
+
+    /**
+     * @param $class_and_method
+     * @param array $args
+     * @param tad_DI52_Container $container
+     * @param $instance
+     * @return mixed
+     */
+    protected static function instance_set_up($class_and_method, array $args, tad_DI52_Container $container, $instance)
+    {
         list($class, $method) = $instance->get_class_and_method($class_and_method);
         $instance->class = $class;
         $instance->method = $method;
