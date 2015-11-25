@@ -33,6 +33,7 @@ class tad_DI52_Ctor
      */
     protected static function instance_set_up($class_and_method, array $args, tad_DI52_Container $container, $instance)
     {
+        /** @var tad_DI52_Ctor $instance */
         list($class, $method) = $instance->get_class_and_method($class_and_method);
         $instance->class = $class;
         $instance->method = $method;
@@ -92,6 +93,7 @@ class tad_DI52_Ctor
     private function get_arg_values()
     {
         $values = array();
+        /** @var tad_DI52_Var $arg */
         foreach ($this->args as $arg) {
             $values[] = $arg->get_value();
         }
@@ -128,6 +130,7 @@ class tad_DI52_Ctor
         }
         foreach ($this->calls as $call) {
             $arg_values = array();
+            /** @var tad_DI52_Var $arg */
             foreach ($call[1] as $arg) {
                 $arg_values[] = $arg->get_value();
             }
@@ -142,7 +145,7 @@ class tad_DI52_Ctor
     {
         $_args = array();
         if (empty($args)) {
-            return;
+            return $this;
         }
 
         foreach ($args as $value) {

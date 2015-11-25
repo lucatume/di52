@@ -1,47 +1,50 @@
 <?php
 
 
-	class tad_DI52_Arg {
+class tad_DI52_Arg
+{
 
-		protected $arg;
+    protected $arg;
 
-		/** @var  tad_DI52_Container */
-		protected $container;
+    /** @var  tad_DI52_Container */
+    protected $container;
 
-		public static function create( $arg, tad_DI52_Container $container ) {
+    public static function create($arg, tad_DI52_Container $container)
+    {
 
-			list($type,$value) = self::get_arg_details($arg);
+        list($type, $value) = self::get_arg_details($arg);
 
-			switch ( $type ) {
-				case '@':
-					$instance = new tad_DI52_ReferredInstanceArgValue($value, $container);
-					break;
-				case '#':
-					$instance = new tad_DI52_ReferredVarArgValue($value, $container);
-					break;
-				case '~':
-					$instance = tad_DI52_NewInstanceArgValue::create($value, $container);
-					break;
-				default:
-					$instance = tad_DI52_RealArgValue::create($value);
-					break;
-			}
+        switch ($type) {
+            case '@':
+                $instance = new tad_DI52_ReferredInstanceArgValue($value, $container);
+                break;
+            case '#':
+                $instance = new tad_DI52_ReferredVarArgValue($value, $container);
+                break;
+            case '~':
+                $instance = tad_DI52_NewInstanceArgValue::create($value);
+                break;
+            default:
+                $instance = tad_DI52_RealArgValue::create($value);
+                break;
+        }
 
-			return $instance;
-		}
+        return $instance;
+    }
 
-		private static function get_arg_details( $arg ) {
-			$matches = array();
-			$is_referred_value = is_string( $arg ) && preg_match( '/^(@|#|~)(.+)/', $arg, $matches );
-			if ($is_referred_value) {
-				$type = $matches[1];
-				$value = $matches[2];
-			} else {
-				$type = 'real_value';
-				$value = $arg;
-			}
+    private static function get_arg_details($arg)
+    {
+        $matches = array();
+        $is_referred_value = is_string($arg) && preg_match('/^(@|#|~)(.+)/', $arg, $matches);
+        if ($is_referred_value) {
+            $type = $matches[1];
+            $value = $matches[2];
+        } else {
+            $type = 'real_value';
+            $value = $arg;
+        }
 
-			return array($type, $value);
+        return array($type, $value);
 
-		}
-	}
+    }
+}

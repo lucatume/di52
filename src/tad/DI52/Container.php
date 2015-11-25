@@ -47,6 +47,8 @@ class tad_DI52_Container implements ArrayAccess
 
             return $this->ctors[$alias] = tad_DI52_Ctor::create($class_and_method, $args, $this);
         }
+
+        return false;
     }
 
     /**
@@ -90,8 +92,8 @@ class tad_DI52_Container implements ArrayAccess
     /**
      * Sets a singleton (shared) object instance to be returned each time requested.
      *
-     * @param $alias The pretty name the shared instance will go by.
-     * @param $class_and_method The fully qualified name of the class to instance and an optional double colon
+     * @param string $alias The pretty name the shared instance will go by.
+     * @param string $class_and_method The fully qualified name of the class to instance and an optional double colon
      *                          separated static constructor method.
      *
      * @param null $arg_one One or more optional parameters to use in the object construction.
