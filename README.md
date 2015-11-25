@@ -3,7 +3,7 @@ A PHP 5.2 compatible dependency injection container.
 ## Installation
 Download the library to your project and either require its files or add it to autoloading including the provided `autoload.php` file.
 
-## Usage
+## Usage - object API
 
 ### Setting and retrieving variables
 In the instance that the need for a shared variable arises the container allows for easy storing and retrieving of variables of any type:
@@ -184,5 +184,44 @@ Singleton is a notorious and nefarious anti-pattern (and a testing sworn enemy) 
 
 Shared instances can be referred in other registered constructors using the `@` as well.
 
+## Usage - array API
+The array access API leaves some of the flexibility of the object API behind to make some operations quicker.  
+Any instance set using the array access API will be a shared one, the code below is equivalent
+
+    $c = new tad_DI52_Container();
+
+    $c['some-class'] = 'SomeClass';
+
+    // is the same as
+
+    $c->set_shared('some-class','SomeClass');
+
+The same syntax is available for variables too
+
+    $c['some-var'] = 'some string';
+
+    // is the same as
+
+    $c->set_var('some-var','some string');
+
+on the same page more complex constructors can be set
+
+    $c->set_shared('some-class', 'SomeClas::instance', 'one', 23);
+
+    // is the same as
+
+    $c['some-class'] = array('SomeClas::instance', 'one', 23);
+
+Getting hold of a shared object instance or a var follows the expected path
+
+    $someClass = $c['some-class'];
+    $someVar = $c['some-var'];
+
+Finally registered constructors and variables can be referenced later in other registered constructors
+
+    $c['some-dependency'] = 'DependencyClass';
+    $c['some-var'] = 'foo';
+    $c['some-class'] = array('SomeClass', '@some-dependency', '#some-var');
+    
 ## Does not support
 The container will not guess dependencies, will not handle circular references and will not, in general, make anything smart. Yet.
