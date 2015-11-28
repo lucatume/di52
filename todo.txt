@@ -1,0 +1,2 @@
+- factory for new instances (a la Pimple)
+- service provider interface
