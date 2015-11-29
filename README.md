@@ -1,7 +1,11 @@
 A PHP 5.2 compatible dependency injection container.
 
 ## Installation
-Download the library to your project and either require its files or add it to autoloading including the provided `autoload.php` file.
+Use [Composer](https://getcomposer.org/) to require the library:
+
+```bash
+composer require lucatume/di52
+```
 
 ## Usage - object API
 
