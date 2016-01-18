@@ -221,6 +221,27 @@ Finally registered constructors and variables can be referenced later in other r
     $c['some-dependency'] = 'DependencyClass';
     $c['some-var'] = 'foo';
     $c['some-class'] = array('SomeClass', '@some-dependency', '#some-var');
-    
+
+## Array resolution    
+Should a list of container instantiated objects or values be needed the container will allow for that and will properly resolve; using the Array Access API
+
+        $container = new DI();
+        $container['ctor-one'] = 'ClassOne';
+        $container['ctor-two'] = 'ClassTwo';
+        $container['var-one'] = 'foo';
+        $container['var-two'] = 'baz';
+
+        $container['a-list-of-stuff'] = array('@ctor-one', '@ctor-two', '#var-one', '#var-two', 'just a string', 23);
+
+        $this->assertInternalType('array', $container['a-list-of-stuff']);
+        $this->assertInstanceOf('ClassOne', $container['a-list-of-stuff'][0]);
+        $this->assertInstanceOf('ClassTwo', $container['a-list-of-stuff'][1]);
+        $this->assertEquals('foo', $container['a-list-of-stuff'][2]);
+        $this->assertEquals('baz', $container['a-list-of-stuff'][3]);
+        $this->assertEquals('just a string', $container['a-list-of-stuff'][4]);
+        $this->assertEquals(23, $container['a-list-of-stuff'][5]);
+
+This can only be done using the array access API.
+
 ## Does not support
 The container will not guess dependencies, will not handle circular references and will not, in general, make anything smart. Yet.
