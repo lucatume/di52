@@ -2,7 +2,7 @@
 
 use tad_DI52_Container as DI;
 
-class tad_DI52_arrayAccessTest extends PHPUnit_Framework_TestCase
+class ArrayAccessTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @test

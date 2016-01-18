@@ -1,7 +1,7 @@
 <?php
 
 
-class tad_DI52_ContainerTest extends PHPUnit_Framework_TestCase
+class ContainerTest extends PHPUnit_Framework_TestCase
 {
 
     /**

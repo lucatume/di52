@@ -1,2 +1,4 @@
+- %var% notation support
+- array resolution
 - factory for new instances (a la Pimple)
 - service provider interface
