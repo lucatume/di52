@@ -17,7 +17,7 @@ class tad_DI52_Container implements ArrayAccess
     public function set_var($alias, $value = null)
     {
         if (!isset($this->vars[$alias])) {
-            $this->vars[$alias] = tad_DI52_Var::create($value);
+            $this->vars[$alias] = tad_DI52_Var::create($value, $this);
         }
 
         return $this;
@@ -186,5 +186,16 @@ class tad_DI52_Container implements ArrayAccess
         } else {
             unset($this->vars[$offset]);
         }
+    }
+
+    public function resolve($alias)
+    {
+        $prefix = str_split($alias);
+        if ($prefix[0] === '@') {
+            return $this->make(substr($alias, 1));
+        } elseif ($prefix[0] === '#') {
+            return $this->get_var(substr($alias, 1));
+        }
+        return $alias;
     }
 }
