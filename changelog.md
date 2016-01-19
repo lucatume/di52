@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.2] - 2016-01-19
+### Fixed
+- resolution for objects in arrays
+
 ## [1.1.1] - 2016-01-19
 ### Added
 - support for the `%varName%` variable notation.
