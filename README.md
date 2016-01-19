@@ -222,6 +222,13 @@ Finally registered constructors and variables can be referenced later in other r
     $c['some-var'] = 'foo';
     $c['some-class'] = array('SomeClass', '@some-dependency', '#some-var');
 
+#### Alternative notation for variables
+Variables can be indicated using the `%varName%` notation as an alternative to the `#varName` one; the example above could be rewritten like this
+
+    $c['some-dependency'] = 'DependencyClass';
+    $c['some-var'] = 'foo';
+    $c['some-class'] = array('SomeClass', '@some-dependency', '%some-var%');
+
 ## Array resolution    
 Should a list of container instantiated objects or values be needed the container will allow for that and will properly resolve; using the Array Access API
 

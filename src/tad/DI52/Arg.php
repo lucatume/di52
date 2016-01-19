@@ -18,6 +18,9 @@ class tad_DI52_Arg
             case '@':
                 $instance = new tad_DI52_ReferredInstanceArgValue($value, $container);
                 break;
+            case '%':
+                $instance = new tad_DI52_ReferredVarArgValue(substr($value, 0, -1), $container);
+                break;
             case '#':
                 $instance = new tad_DI52_ReferredVarArgValue($value, $container);
                 break;
@@ -35,7 +38,7 @@ class tad_DI52_Arg
     private static function get_arg_details($arg)
     {
         $matches = array();
-        $is_referred_value = is_string($arg) && preg_match('/^(@|#|~)(.+)/', $arg, $matches);
+        $is_referred_value = is_string($arg) && preg_match("/^(#|@|~|%)(.*)(%)*$/", $arg, $matches);
         if ($is_referred_value) {
             $type = $matches[1];
             $value = $matches[2];
@@ -45,6 +48,5 @@ class tad_DI52_Arg
         }
 
         return array($type, $value);
-
     }
 }

@@ -190,11 +190,13 @@ class tad_DI52_Container implements ArrayAccess
 
     public function resolve($alias)
     {
-        $prefix = str_split($alias);
-        if ($prefix[0] === '@') {
-            return $this->make(substr($alias, 1));
-        } elseif ($prefix[0] === '#') {
-            return $this->get_var(substr($alias, 1));
+        $matches = array();
+        if (preg_match('/^@(.*)$/', $alias, $matches)) {
+            return $this->make($matches[1]);
+        } elseif (preg_match('/^#(.*)$/', $alias, $matches)) {
+            return $this->get_var($matches[1]);
+        } elseif (preg_match('/^%(.*)%$/', $alias, $matches)) {
+            return $this->get_var($matches[1]);
         }
         return $alias;
     }
