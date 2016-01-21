@@ -70,9 +70,10 @@ class tad_DI52_Container implements ArrayAccess
      */
     public function make($alias)
     {
-        if (interface_exists($alias)) {
+        if (interface_exists($alias) || class_exists($alias)) {
             return $this->bindingsResolver->resolve($alias);
         }
+
         $this->assert_ctor_alias($alias);
 
         $ctor = $this->ctors[$alias];

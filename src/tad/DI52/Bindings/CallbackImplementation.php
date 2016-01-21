@@ -37,10 +37,6 @@ class tad_DI52_Bindings_CallbackImplementation implements tad_DI52_Bindings_Impl
      */
     public function instance()
     {
-        if (is_callable($this->implementation)) {
-            return $this->implementation = call_user_func($this->implementation, $this->container);
-        }
-
-        return $this->implementation;
+        return call_user_func($this->implementation, $this->resolver, $this->container);
     }
 }

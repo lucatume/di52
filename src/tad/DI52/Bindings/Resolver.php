@@ -8,6 +8,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $bindings = array();
 
     /**
+     * @var array
+     */
+    protected $singletons = array();
+
+    /**
+     * @var array
+     */
+    protected $resolvedSingletons = array();
+
+    /**
      * @var tad_DI52_Container
      */
     private $container;
@@ -60,6 +70,20 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     }
 
     /**
+     * Binds an interface or class to an implementation and will always return the same instance.
+     *
+     * @param string $interfaceOrClass
+     * @param string $implementation
+     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * extension of the class.
+     */
+    public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    {
+        $this->bind($interfaceOrClass, $implementation, $skipImplementationCheck);
+        $this->singletons[] = $interfaceOrClass;
+    }
+
+    /**
      * Returns an instance of the class or object bound to an interface.
      *
      * @param string $classOrInterface A fully qualified class or interface name.
@@ -69,14 +93,30 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     {
         $isClass = class_exists($classOrInterface);
         $isInterface = interface_exists($classOrInterface);
+        $isSingleton = in_array($classOrInterface, $this->singletons);
         if (!($isInterface || $isClass)) {
             throw new InvalidArgumentException("[{$classOrInterface}] does not exist");
         }
         $isBound = array_key_exists($classOrInterface, $this->bindings);
         if (!$isBound) {
-            return $this->resolveUnbound($classOrInterface);
+            $resolved = $this->resolveUnbound($classOrInterface);
+            if ($isSingleton) {
+                if (array_key_exists($classOrInterface, $this->resolvedSingletons)) {
+                    return $this->resolvedSingletons[$classOrInterface];
+                }
+                $this->resolvedSingletons[$classOrInterface] = $resolved;
+            }
+            return $resolved;
         }
-        return $this->resolveBound($classOrInterface);
+
+        $resolved = $this->resolveBound($classOrInterface);
+        if ($isSingleton) {
+            if (array_key_exists($classOrInterface, $this->resolvedSingletons)) {
+                return $this->resolvedSingletons[$classOrInterface];
+            }
+            $this->resolvedSingletons[$classOrInterface] = $resolved;
+        }
+        return $resolved;
     }
 
     private function getDependencies($parameters)

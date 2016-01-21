@@ -107,15 +107,39 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $resolver = $this->makeInstance();
 
-        $callback = function (tad_DI52_Container $container) {
-            return 'foo';
+        $object = (object)['foo' => 'bar'];
+        $callback = function () use ($object) {
+            return $object;
         };
 
         $resolver->bind('TestInterfaceOne', $callback);
 
         $out = $resolver->resolve('TestInterfaceOne');
+        $this->assertEquals('bar', $out->foo);
 
-        $this->assertEquals('foo', $out);
+        $object->foo = 'baz';
+
+        $out = $resolver->resolve('TestInterfaceOne');
+        $this->assertEquals('baz', $out->foo);
+    }
+
+    /**
+     * @test
+     * it should rerun the callback on each resolution
+     */
+    public function it_should_rerun_the_callback_on_each_resolution()
+    {
+        $resolver = $this->makeInstance();
+
+        $callback = function () {
+            return microtime();
+        };
+
+        $resolver->bind('TestInterfaceOne', $callback);
+        $one = $resolver->resolve('TestInterfaceOne');
+        $two = $resolver->resolve('TestInterfaceOne');
+
+        $this->assertNotEquals($one, $two);
     }
 
     /**
@@ -255,7 +279,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $out = $sut->resolve('PrimitiveDependingClassOne');
 
-        $this->assertEquals(23,$out->number);
+        $this->assertEquals(23, $out->number);
     }
 
     /**
@@ -269,6 +293,92 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('InvalidArgumentException');
 
         $out = $sut->resolve('PrimitiveDependingClassTwo');
+    }
+
+    /**
+     * @test
+     * it should allow binding a class not implementing an interface to the interface
+     */
+    public function it_should_allow_binding_a_class_not_implementing_an_interface_to_the_interface()
+    {
+        $sut = $this->makeInstance();
+        $sut->bind('TestInterfaceOne', 'ObjectOne', true);
+        $out = $sut->resolve('TestInterfaceOne');
+
+        $this->assertInstanceOf('ObjectOne', $out);
+    }
+
+    /**
+     * @test
+     * it should allow binding a class not extending a class to the class
+     */
+    public function it_should_allow_binding_a_class_not_extending_a_class_to_the_class()
+    {
+        $sut = $this->makeInstance();
+        $sut->bind('ConcreteClassOne', 'ObjectOne', true);
+        $out = $sut->resolve('ConcreteClassOne');
+
+        $this->assertInstanceOf('ObjectOne', $out);
+    }
+
+    /**
+     * @test
+     * it should allow binding a singleton to an interface
+     */
+    public function it_should_allow_binding_a_singleton_to_an_interface()
+    {
+        $sut = $this->makeInstance();
+        $sut->singleton('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne');
+        $outOne = $sut->resolve('TestInterfaceOne');
+        $outTwo = $sut->resolve('TestInterfaceOne');
+
+        $this->assertSame($outOne, $outTwo);
+    }
+
+    /**
+     * @test
+     * it should allow binding a singleton to a class
+     */
+    public function it_should_allow_binding_a_singleton_to_a_class()
+    {
+        $sut = $this->makeInstance();
+        $sut->singleton('ConcreteClassImplementingTestInterfaceOne', 'ExtendingClassOne');
+        $outOne = $sut->resolve('ConcreteClassImplementingTestInterfaceOne');
+        $outTwo = $sut->resolve('ConcreteClassImplementingTestInterfaceOne');
+
+        $this->assertSame($outOne, $outTwo);
+    }
+
+    /**
+     * @test
+     * it should allow binding a singleton callback to an interface
+     */
+    public function it_should_allow_binding_a_singleton_callback_to_an_interface()
+    {
+        $sut = $this->makeInstance();
+        $sut->singleton('TestInterfaceOne', function () {
+            return microtime();
+        });
+        $outOne = $sut->resolve('TestInterfaceOne');
+        $outTwo = $sut->resolve('TestInterfaceOne');
+
+        $this->assertSame($outOne, $outTwo);
+    }
+
+    /**
+     * @test
+     * it should allow binding a singleton callback to a class
+     */
+    public function it_should_allow_binding_a_singleton_callback_to_a_class()
+    {
+        $sut = $this->makeInstance();
+        $sut->singleton('ConcreteClassImplementingTestInterfaceOne', function () {
+            return microtime();
+        });
+        $outOne = $sut->resolve('ConcreteClassImplementingTestInterfaceOne');
+        $outTwo = $sut->resolve('ConcreteClassImplementingTestInterfaceOne');
+
+        $this->assertSame($outOne, $outTwo);
     }
 
     private function makeInstance()
