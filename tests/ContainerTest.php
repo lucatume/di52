@@ -80,11 +80,11 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_registering_a_constructor()
     {
-        $this->sut->set_ctor('object', 'tad_DI52_MyObject');
+        $this->sut->set_ctor('object', 'ObjectOne');
 
         $object = $this->sut->make('object');
 
-        $this->assertInstanceOf('tad_DI52_MyObject', $object);
+        $this->assertInstanceOf('ObjectOne', $object);
     }
 
     /**
@@ -93,7 +93,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_a_new_instance_of_an_object_on_each_make_call()
     {
-        $this->sut->set_ctor('object', 'tad_DI52_MyObject');
+        $this->sut->set_ctor('object', 'ObjectOne');
 
         $object1 = $this->sut->make('object');
         $object2 = $this->sut->make('object');
@@ -107,13 +107,13 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_specifying_a_constructor_method()
     {
-        $class = 'tad_DI52_MyObject';
+        $class = 'ObjectOne';
 
         $this->sut->set_ctor('object', $class . '::create');
 
         $object = $this->sut->make('object');
 
-        $this->assertInstanceOf('tad_DI52_MyObject', $object);
+        $this->assertInstanceOf('ObjectOne', $object);
     }
 
     /**
@@ -122,7 +122,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_specifying_constructor_arguments()
     {
-        $class = 'tad_DI52_MySecondObject';
+        $class = 'ObjectTwo';
 
         $this->sut->set_ctor('object', $class, 'foo', 23);
 
@@ -139,7 +139,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_specifying_static_constructor_arguments()
     {
-        $class = 'tad_DI52_MyThirdObject';
+        $class = 'ObjectThree';
 
         $this->sut->set_ctor('object', $class . '::one', 'foo', 23);
 
@@ -156,7 +156,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_specifying_previously_registered_vars_as_args()
     {
-        $class = 'tad_DI52_MyThirdObject';
+        $class = 'ObjectThree';
         $this->sut->set_var('string', 'foo');
         $this->sut->set_var('int', 23);
 
@@ -175,17 +175,17 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_specifying_previously_registered_objects_as_args()
     {
-        $class = 'tad_DI52_MyFourthObject';
+        $class = 'ObjectFour';
 
-        $this->sut->set_ctor('myObject', 'tad_DI52_MyObject');
+        $this->sut->set_ctor('myObject', 'ObjectOne');
         $this->sut->set_var('string', 'foo');
 
-        $this->sut->set_ctor('dependingObject', 'tad_DI52_MyFourthObject::create', '@myObject', '#string');
+        $this->sut->set_ctor('dependingObject', 'ObjectFour::create', '@myObject', '#string');
 
         $object = $this->sut->make('dependingObject');
 
         $this->assertInstanceOf($class, $object);
-        $this->assertInstanceOf('tad_DI52_MyObject', $object->myObject);
+        $this->assertInstanceOf('ObjectOne', $object->myObject);
         $this->assertEquals('foo', $object->string);
     }
 
@@ -195,7 +195,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_singleton_instance()
     {
-        $class = 'tad_DI52_MyObject';
+        $class = 'ObjectOne';
 
         $this->sut->set_shared('singleton', $class);
 
@@ -211,7 +211,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_singleton_instance_using_set_vars()
     {
-        $class = 'tad_DI52_MySecondObject';
+        $class = 'ObjectTwo';
 
         $this->sut->set_var('string', 'foo');
         $this->sut->set_var('int', 23);
@@ -230,9 +230,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_singleton_using_set_instances()
     {
-        $class = 'tad_DI52_MyFourthObject';
+        $class = 'ObjectFour';
 
-        $this->sut->set_ctor('myObject', 'tad_DI52_MyObject::create');
+        $this->sut->set_ctor('myObject', 'ObjectOne::create');
 
         $this->sut->set_shared('singleton', $class . '::create', '@myObject', 'foo');
 
@@ -248,16 +248,16 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_to_set_methods_to_be_called_after_the_contstructor_method()
     {
-        $class = 'tad_DI_MyFifthObject';
+        $class = 'ObjectFive';
 
         $this->sut->set_ctor('object', $class)
-            ->setDependency(new tad_DI_Dependency())
+            ->setDependency(new DependencyObjectOne())
             ->setString('foo')
             ->setInt(23);
         $i = $this->sut->make('object');
 
         $this->assertInstanceOf($class, $i);
-        $this->assertInstanceOf('tad_DI_Dependency', $i->dependency);
+        $this->assertInstanceOf('DependencyObjectOne', $i->dependency);
         $this->assertEquals('foo', $i->string);
         $this->assertEquals(23, $i->int);
     }
@@ -268,9 +268,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_specifying_methods_to_call_after_constructors_and_refer_previuosly_registered_arguments()
     {
-        $class = 'tad_DI_MyFifthObject';
+        $class = 'ObjectFive';
 
-        $this->sut->set_ctor('dependency', 'tad_DI_Dependency');
+        $this->sut->set_ctor('dependency', 'DependencyObjectOne');
         $this->sut->set_var('string', 'foo');
         $this->sut->set_var('int', 23);
         $this->sut->set_ctor('object', $class)->setDependency('@dependency')->setString('#string')
@@ -279,7 +279,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
         $i = $this->sut->make('object');
 
         $this->assertInstanceOf($class, $i);
-        $this->assertInstanceOf('tad_DI_Dependency', $i->dependency);
+        $this->assertInstanceOf('DependencyObjectOne', $i->dependency);
         $this->assertEquals('foo', $i->string);
         $this->assertEquals(23, $i->int);
     }
@@ -290,9 +290,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_calling_a_static_constructor_with_dependencies_and_call_set_methods_after()
     {
-        $class = 'tad_DI_MyFifthObject';
+        $class = 'ObjectFive';
 
-        $this->sut->set_ctor('dependency', 'tad_DI_Dependency');
+        $this->sut->set_ctor('dependency', 'DependencyObjectOne');
         $this->sut->set_var('string', 'foo');
         $this->sut->set_var('int', 23);
 
@@ -303,7 +303,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
         $i = $this->sut->make('object');
 
         $this->assertInstanceOf($class, $i);
-        $this->assertInstanceOf('tad_DI_Dependency', $i->dependency);
+        $this->assertInstanceOf('DependencyObjectOne', $i->dependency);
         $this->assertEquals('foo', $i->string);
         $this->assertEquals(23, $i->int);
     }
@@ -314,9 +314,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_calling_methods_on_the_made_object_using_call_method()
     {
-        $class = 'tad_DI_MyFifthObject';
+        $class = 'ObjectFive';
 
-        $this->sut->set_ctor('dependency', 'tad_DI_Dependency');
+        $this->sut->set_ctor('dependency', 'DependencyObjectOne');
         $this->sut->set_var('string', 'foo');
         $this->sut->set_var('int', 23);
 
@@ -327,7 +327,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
         $i = $this->sut->make('object');
 
         $this->assertInstanceOf($class, $i);
-        $this->assertInstanceOf('tad_DI_Dependency', $i->dependency);
+        $this->assertInstanceOf('DependencyObjectOne', $i->dependency);
         $this->assertEquals('foo', $i->string);
         $this->assertEquals(23, $i->int);
     }
@@ -340,132 +340,17 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
 
         // not specifying a ctor method for tad_Dependency
-        // $this->sut->set_ctor( 'dependency', 'tad_DI_Dependency' );
+        // $this->sut->set_ctor( 'dependency', 'DependencyObjectOne' );
         $this->sut->set_var('string', 'foo');
         $this->sut->set_var('int', 23);
 
-        $class = 'tad_DI_DataObjectDependencyClass';
-        $dependencyClass = 'tad_DI_DataObject';
+        $class = 'DependingClassThree';
+        $dependencyClass = 'ConcreteClassOne';
         $this->sut->set_ctor('object', $class, '~' . $dependencyClass);
 
         $i = $this->sut->make('object');
 
         $this->assertInstanceOf($class, $i);
-        $this->assertInstanceOf($dependencyClass, $i->dataObject);
-    }
-
-}
-
-
-class tad_DI52_MyObject
-{
-
-    public static function create()
-    {
-        return new self;
-    }
-}
-
-
-class tad_DI52_MySecondObject
-{
-
-    public $string;
-    public $int;
-
-    public function __construct($string, $int)
-    {
-        $this->string = $string;
-        $this->int = $int;
-    }
-}
-
-
-class tad_DI52_MyThirdObject
-{
-
-    public $string;
-    public $int;
-
-    public static function one($string, $int)
-    {
-        $i = new self;
-        $i->string = $string;
-        $i->int = $int;
-
-        return $i;
-    }
-}
-
-
-class tad_DI52_MyFourthObject
-{
-
-    public $myObject;
-    public $string;
-
-    public static function create(tad_DI52_MyObject $myObject, $string)
-    {
-        $i = new self;
-        $i->myObject = $myObject;
-        $i->string = $string;
-
-        return $i;
-    }
-}
-
-
-class tad_DI_Dependency
-{
-
-}
-
-
-class tad_DI_MyFifthObject
-{
-
-    public $dependency;
-    public $string;
-    public $int;
-
-    public static function makeOne(tad_DI_Dependency $dependency)
-    {
-        $instance = new self();
-        $instance->dependency = $dependency;
-
-        return $instance;
-    }
-
-    public function setDependency(tad_DI_Dependency $dependency)
-    {
-        $this->dependency = $dependency;
-    }
-
-    public function setString($string)
-    {
-        $this->string = $string;
-    }
-
-    public function setInt($int)
-    {
-        $this->int = $int;
-    }
-}
-
-
-class tad_DI_DataObject
-{
-
-}
-
-
-class tad_DI_DataObjectDependencyClass
-{
-
-    public $dataObject;
-
-    public function __construct(tad_DI_DataObject $dataObjejct)
-    {
-        $this->dataObject = $dataObjejct;
+        $this->assertInstanceOf($dependencyClass, $i->classOne);
     }
 }

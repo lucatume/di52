@@ -14,6 +14,16 @@ class tad_DI52_Container implements ArrayAccess
      */
     protected $ctors = array();
 
+    /**
+     * @var tad_DI52_Bindings_ResolverInterface
+     */
+    protected $bindingsResolver;
+
+    public function __construct()
+    {
+        $this->_setBindingsResolver(new tad_DI52_Bindings_Resolver($this));
+    }
+
     public function set_var($alias, $value = null)
     {
         if (!isset($this->vars[$alias])) {
@@ -60,6 +70,9 @@ class tad_DI52_Container implements ArrayAccess
      */
     public function make($alias)
     {
+        if (interface_exists($alias)) {
+            return $this->bindingsResolver->resolve($alias);
+        }
         $this->assert_ctor_alias($alias);
 
         $ctor = $this->ctors[$alias];
@@ -190,7 +203,7 @@ class tad_DI52_Container implements ArrayAccess
 
     public function resolve($alias)
     {
-        if (is_string($alias)){
+        if (is_string($alias)) {
             $matches = array();
             if (preg_match('/^@(.*)$/', $alias, $matches)) {
                 return $this->make($matches[1]);
@@ -200,7 +213,25 @@ class tad_DI52_Container implements ArrayAccess
                 return $this->get_var($matches[1]);
             }
         }
-        
+
         return $alias;
+    }
+
+    /**
+     * Binds an interface or class to an implementation.
+     *
+     * @param string $interfaceOrClass
+     * @param string $implementation
+     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * extension of the class.
+     */
+    public function bind($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    {
+        return $this->bindingsResolver->bind($interfaceOrClass, $implementation, $skipImplementationCheck);
+    }
+
+    public function _setBindingsResolver(tad_DI52_Bindings_ResolverInterface $bindingsResolver)
+    {
+        $this->bindingsResolver = $bindingsResolver;
     }
 }
