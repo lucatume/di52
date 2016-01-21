@@ -89,4 +89,38 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
         $container->bind('ConcreteClassOne', 'ObjectOne', true);
         $out = $container->make('ConcreteClassOne');
     }
+
+    /**
+     * @test
+     * it should allow binding a singleton to an interface
+     */
+    public function it_should_allow_binding_a_singleton_to_an_interface()
+    {
+        $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
+        $bindingsResolver->singleton('TestInterfaceOne', 'ObjectOne', true)->shouldBeCalled();
+        $bindingsResolver->resolve('TestInterfaceOne')->shouldBeCalled();
+
+        $container = new DI();
+        $container->_setBindingsResolver($bindingsResolver->reveal());
+
+        $container->singleton('TestInterfaceOne', 'ObjectOne', true);
+        $out = $container->make('TestInterfaceOne');
+    }
+
+    /**
+     * @test
+     * it should allow binding a singleton to a concrete class
+     */
+    public function it_should_allow_binding_a_singleton_to_a_concrete_class()
+    {
+        $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
+        $bindingsResolver->singleton('ConcreteClassOne', 'ObjectOne', true)->shouldBeCalled();
+        $bindingsResolver->resolve('ConcreteClassOne')->shouldBeCalled();
+
+        $container = new DI();
+        $container->_setBindingsResolver($bindingsResolver->reveal());
+
+        $container->singleton('ConcreteClassOne', 'ObjectOne', true);
+        $out = $container->make('ConcreteClassOne');
+    }
 }

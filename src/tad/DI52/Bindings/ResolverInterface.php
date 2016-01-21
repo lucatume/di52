@@ -19,4 +19,14 @@ interface tad_DI52_Bindings_ResolverInterface
      * @return mixed
      */
     public function resolve($classOrInterface);
+
+    /**
+     * Binds an interface or class to an implementation and will always return the same instance.
+     *
+     * @param string $interfaceOrClass
+     * @param string $implementation
+     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * extension of the class.
+     */
+    public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false);
 }

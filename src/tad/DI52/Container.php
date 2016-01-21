@@ -235,4 +235,17 @@ class tad_DI52_Container implements ArrayAccess
     {
         $this->bindingsResolver = $bindingsResolver;
     }
+
+    /**
+     * Binds an interface or class to an implementation.
+     *
+     * @param string $interfaceOrClass
+     * @param string $implementation
+     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * extension of the class.
+     */
+    public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    {
+        return $this->bindingsResolver->singleton($interfaceOrClass, $implementation, $skipImplementationCheck);
+    }
 }
