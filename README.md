@@ -7,6 +7,35 @@ Use [Composer](https://getcomposer.org/) to require the library:
 composer require lucatume/di52
 ```
 
+## Code example
+    // ClassOne.php
+    class ClassOne implements InterfaceOne {}
+    
+     // ClassTwo.php
+    class ClassTwo implements InterfaceTwo {}
+    
+     // ClassThree.php
+    class ClassThree {
+        public function __construct(InterfaceOne $one, InterfaceTwo $two, $arg1 = 'foo', $arg2 = 23){}
+    }
+    
+    // in the pluigin or theme bootstrap file
+    
+    $container = new tad_DI52_Container();
+    
+    $container['InterfaceOne'] = 'ClassOne';
+    $container['InterfaceTwo'] = 'ClassTwo';
+    
+    $three = $container['ClassThree'];
+
+
+    // Using the previous notation
+    
+    $container['one']  = 'ClassOne';
+    $container['two'] = 'ClassTwo';
+
+    $three = $container['three'] = array('ClassThree', '@one', '@two', 'foo', 23);
+    
 ## Usage - object API
 
 ### Setting and retrieving variables
