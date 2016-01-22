@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.2.0] - 2016-01-22
 ### Added
-- the binding and automatic resolution API
+- the binding and automatic resolution API ([code inspiration](https://www.ltconsulting.co.uk/automatic-dependency-injection-with-phps-reflection-api/))
 
 ## [1.1.2] - 2016-01-19
 ### Fixed
