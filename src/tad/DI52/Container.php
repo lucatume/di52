@@ -153,6 +153,9 @@ class tad_DI52_Container implements ArrayAccess
      */
     public function offsetGet($offset)
     {
+        if (interface_exists($offset) || class_exists($offset)) {
+            return $this->bindingsResolver->resolve($offset);
+        }
         if (isset($this->ctors[$offset])) {
             return $this->make($offset);
         } else {
@@ -174,6 +177,10 @@ class tad_DI52_Container implements ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
+        if (interface_exists($offset) || class_exists($offset)) {
+            $this->bindingsResolver->singleton($offset, $value, false);
+            return;
+        }
         $_value = is_array($value) ? $value : array($value);
         $class_and_method = $_value[0];
         if (strpos($class_and_method, '::') || class_exists($class_and_method)) {
