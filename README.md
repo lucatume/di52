@@ -16,27 +16,116 @@ composer require lucatume/di52
     
      // ClassThree.php
     class ClassThree {
-        public function __construct(InterfaceOne $one, InterfaceTwo $two, $arg1 = 'foo', $arg2 = 23){}
+        public function __construct(InterfaceOne $one, InterfaceTwo $two, wpdb $wpdb, $arg1 = 'foo', $arg2 = 23){}
     }
     
-    // in the pluigin or theme bootstrap file
-    
+    // in the application bootstrap file
     $container = new tad_DI52_Container();
     
     $container['InterfaceOne'] = 'ClassOne';
     $container['InterfaceTwo'] = 'ClassTwo';
+    global $wpdb;
+    $container['wpdb'] = $wpdb;
     
     $three = $container['ClassThree'];
-
-
-    // Using the previous notation
     
-    $container['one']  = 'ClassOne';
-    $container['two'] = 'ClassTwo';
+## Binding and resolving implementations
 
-    $three = $container['three'] = array('ClassThree', '@one', '@two', 'foo', 23);
+### Concrete class binding
+The container can be set to resolve a request for an interface or a concrete class to a specific class.  
+
+    $container->bind('InterfaceOne', 'ClassOne');
+
+    $one = $container->make('InterfaceOne');
+    $two = $container->make('InterfaceOne');
+    // $one !== $two
+
+    $container->singleton('InterfaceOne', 'ClassOne');
+
+    $three = $container->make('InterfaceOne');
+    $four = $container->make('InterfaceOne');
+    // $three === $four;
     
-## Usage - object API
+The singleton case can be replicated using the ArrayAccess API
+
+    $container->['InterfaceOne'] = 'ClassOne';
+
+    $three = $container->make('InterfaceOne');
+    $four = $container->make('InterfaceOne');
+    // $three === $four;
+    
+### Callback binding
+The container can be told to resolv a request for an interface or concrete class to a callback function
+
+    $container->bind('InterfaceOne', function(){
+        return new ClassOne();
+    });
+
+    $one = $container->make('InterfaceOne');
+    $two = $container->make('InterfaceOne');
+    // $one !== $two
+
+    $container->singleton('InterfaceOne', function(){
+        return new ClassOne();
+    });
+
+    $three = $container->make('InterfaceOne');
+    $four = $container->make('InterfaceOne');
+    // $three === $four;
+    
+The singleton case can be replicated using the ArrayAccess API
+
+    $container['InterfaceOne'] = function(){
+        return new ClassOne();
+    };
+    
+    $three = $container->make('InterfaceOne');
+    $four = $container->make('InterfaceOne');
+    // $three === $four;
+   
+### Instance binding
+Finally the container can resolve the request for an interface or class implementation to an object instance
+    
+     $classOne = new ClassOne();
+    $container->bind('InterfaceOne', $classOne);
+
+    $one = $container->make('InterfaceOne');
+    $two = $container->make('InterfaceOne');
+    // $one === $two
+
+    $container->singleton('InterfaceOne', $classOne);
+
+    $three = $container->make('InterfaceOne');
+    $four = $container->make('InterfaceOne');
+    // $three === $four;
+
+The singleton case can be replicated using the ArrayAccess API
+
+    $container['InterfaceOne'] = $classOne;
+
+    $three = $container->make('InterfaceOne');
+    $four = $container->make('InterfaceOne');
+    // $three === $four;
+
+### Resolving unbound implementations
+The container will do its best to return an instance even when no bindigs about it have been set: if all the dependencies of a class are concrete classes or defaulted primitives than the container will take care of that.
+    
+    // file ClassFour.php
+    class ClassFour {
+        public function __construct(ClassOne $one, ClassTwo $two, $arg1 = 'foo', $arg2 = 23){
+            // ...
+        }
+    }
+    
+    // in the application bootstrap file
+    $instance = $container->make('ClassFour');
+    
+or using the array access API (being unbound it will **not** work as a singleton)
+
+    $instance = $container['ClassFour'];
+
+## Verbose resolution
+Beside the binding and automatic resolution the container implements another API using its owb symbol language. 
 
 ### Setting and retrieving variables
 In the instance that the need for a shared variable arises the container allows for easy storing and retrieving of variables of any type:
@@ -212,7 +301,7 @@ Singleton is a notorious and nefarious anti-pattern (and a testing sworn enemy) 
 
 Shared instances can be referred in other registered constructors using the `@` as well.
 
-## Usage - array API
+## Verbose resolution - ArrayAccess API
 The array access API leaves some of the flexibility of the object API behind to make some operations quicker.  
 Any instance set using the array access API will be a shared one, the code below is equivalent
 
@@ -251,14 +340,14 @@ Finally registered constructors and variables can be referenced later in other r
     $c['some-var'] = 'foo';
     $c['some-class'] = array('SomeClass', '@some-dependency', '#some-var');
 
-#### Alternative notation for variables
+### Alternative notation for variables
 Variables can be indicated using the `%varName%` notation as an alternative to the `#varName` one; the example above could be rewritten like this
 
     $c['some-dependency'] = 'DependencyClass';
     $c['some-var'] = 'foo';
     $c['some-class'] = array('SomeClass', '@some-dependency', '%some-var%');
 
-## Array resolution    
+### Array resolution    
 Should a list of container instantiated objects or values be needed the container will allow for that and will properly resolve; using the Array Access API
 
         $container = new DI();
@@ -278,6 +367,3 @@ Should a list of container instantiated objects or values be needed the containe
         $this->assertEquals(23, $container['a-list-of-stuff'][5]);
 
 This can only be done using the array access API.
-
-## Does not support
-The container will not guess dependencies, will not handle circular references and will not, in general, make anything smart. Yet.
