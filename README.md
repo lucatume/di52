@@ -11,19 +11,21 @@ composer require lucatume/di52
     // ClassOne.php
     class ClassOne implements InterfaceOne {}
     
-     // ClassTwo.php
-    class ClassTwo implements InterfaceTwo {}
+     // MysqlConnection.php
+    class MysqlConnection implements DbConnectionInterface {}
     
      // ClassThree.php
     class ClassThree {
-        public function __construct(InterfaceOne $one, InterfaceTwo $two, wpdb $wpdb, $arg1 = 'foo', $arg2 = 23){}
+        public function __construct(InterfaceOne $one, DbConnectionInterface $two, wpdb $wpdb, $arg1 = 'foo'){
+           // ... 
+        }
     }
     
     // in the application bootstrap file
     $container = new tad_DI52_Container();
     
-    $container['InterfaceOne'] = 'ClassOne';
-    $container['InterfaceTwo'] = 'ClassTwo';
+    $container->bind('InterfaceOne', 'ClassOne');
+    $container->singleton('DbConnectionInterface', 'MysqlConnection');
     global $wpdb;
     $container['wpdb'] = $wpdb;
     
@@ -32,7 +34,7 @@ composer require lucatume/di52
 ## Binding and resolving implementations
 
 ### Concrete class binding
-The container can be set to resolve a request for an interface or a concrete class to a specific class.  
+The container can be set to resolve a request for an interface or a concrete class to a specific class:
 
     $container->bind('InterfaceOne', 'ClassOne');
 
@@ -46,7 +48,7 @@ The container can be set to resolve a request for an interface or a concrete cla
     $four = $container->make('InterfaceOne');
     // $three === $four;
     
-The singleton case can be replicated using the ArrayAccess API
+The singleton case can be replicated using the ArrayAccess API:
 
     $container->['InterfaceOne'] = 'ClassOne';
 
@@ -55,7 +57,7 @@ The singleton case can be replicated using the ArrayAccess API
     // $three === $four;
     
 ### Callback binding
-The container can be told to resolv a request for an interface or concrete class to a callback function
+The container can be told to resolve a request for an interface or concrete class to a callback function:
 
     $container->bind('InterfaceOne', function(){
         return new ClassOne();
@@ -73,7 +75,7 @@ The container can be told to resolv a request for an interface or concrete class
     $four = $container->make('InterfaceOne');
     // $three === $four;
     
-The singleton case can be replicated using the ArrayAccess API
+The singleton case can be replicated using the ArrayAccess API:
 
     $container['InterfaceOne'] = function(){
         return new ClassOne();
@@ -84,7 +86,7 @@ The singleton case can be replicated using the ArrayAccess API
     // $three === $four;
    
 ### Instance binding
-Finally the container can resolve the request for an interface or class implementation to an object instance
+Finally the container can resolve the request for an interface or class implementation to an object instance:
     
      $classOne = new ClassOne();
     $container->bind('InterfaceOne', $classOne);
@@ -99,7 +101,7 @@ Finally the container can resolve the request for an interface or class implemen
     $four = $container->make('InterfaceOne');
     // $three === $four;
 
-The singleton case can be replicated using the ArrayAccess API
+The singleton case can be replicated using the ArrayAccess API:
 
     $container['InterfaceOne'] = $classOne;
 
@@ -108,7 +110,7 @@ The singleton case can be replicated using the ArrayAccess API
     // $three === $four;
 
 ### Resolving unbound implementations
-The container will do its best to return an instance even when no bindigs about it have been set: if all the dependencies of a class are concrete classes or defaulted primitives than the container will take care of that.
+The container will do its best to return an instance even when no bindigs about it have been set: if all the dependencies of a class are concrete classes or primitives with a default value than the container will take care of that:
     
     // file ClassFour.php
     class ClassFour {
@@ -123,9 +125,13 @@ The container will do its best to return an instance even when no bindigs about 
 or using the array access API (being unbound it will **not** work as a singleton)
 
     $instance = $container['ClassFour'];
+    $instanceTwo = $container['ClassFour'];
+    
+    // $instance == $instanceTwo;
+    // $instance !== $instanceTwo;
 
 ## Verbose resolution
-Beside the binding and automatic resolution the container implements another API using its owb symbol language. 
+Beside the binding and automatic resolution the container implements another API using its own symbol language; the two APIs can be used together and independently.
 
 ### Setting and retrieving variables
 In the instance that the need for a shared variable arises the container allows for easy storing and retrieving of variables of any type:
