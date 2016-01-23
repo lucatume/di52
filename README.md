@@ -130,6 +130,83 @@ or using the array access API (being unbound it will **not** work as a singleton
     // $instance == $instanceTwo;
     // $instance !== $instanceTwo;
 
+### Tagging
+A class constructor might need to be injected an array of implementations extending a concrete class or implementing an interface, take the class below
+
+    class Dispatcher implements DispatcherInterface {
+        /**
+         * A list of dispatch destinations.
+         * @var ListenerInterface[]
+         */
+        protected $destinations = array();
+        public function __construct(array $destinations){
+            $this->destinations = $destinations;
+        }
+    }
+
+And have the class bound in the container like this
+    
+    $container->bind('SystemLogListener', new SystemLogListener);
+    $container->bind('MailListener', new MailListener);
+    $container->bind('NoticeListener', new NoticeListener);
+
+    $container->tag(array('SystemLogListener', 'MailListener', 'NoticeListener'), 'listeners');
+    
+    $dispatcher = new Dispatcher($container->tagged('listeners'));
+
+    $container->bind('DispatcherInterface', $dispatcher);
+
+## Service Providers
+To allow for a modular set up of the application the container allows for service providers.  
+A service provider is a concrete class implementing the `tad_DI52_ServiceProviderInterface` interface or extending the `tad_DI52_ServiceProvider` class.  
+
+    class MessageServiceProvider extends tad_DI52_ServiceProvider {
+
+        public function register() {
+            $container->bind('SystemLogListener', new SystemLogListener);
+            $container->bind('MailListener', new MailListener);
+            $container->bind('NoticeListener', new NoticeListener);
+
+            $container->tag(array('SystemLogListener', 'MailListener', 'NoticeListener'), 'listeners');
+            
+            $dispatcher = new Dispatcher($container->tagged('listeners'));
+
+            $container->bind('DispatcherInterface', $dispatcher);
+        }
+
+    }
+
+    // bootstrap.php  
+    $container = new tad_DI52_Container();
+
+    $container->register('MessageServiceProvider');
+
+    $dispatcher = $container->make('DispatcherInterface');
+
+### Boot
+The service provider `register` method will be called immediatly when registering the service provider but bindings and operations that might require to run when all of the container bindings are set can be defined in the `boot` method.  
+    
+    class RenderEngineProvider extends tad_DI52_ServiceProvider {
+
+        public function boot() {
+            $renderEngine = new RenderEngineOne();
+            $views = $this->container->tagged('views');
+
+            foreach($views as $view) {
+                $view->setRenderEngine($renderEngine);
+            }
+        }
+
+    }
+    
+
+    // bootstrap.php    
+    $container->register('RenderEngineProvider');
+
+    // more container registration..
+
+    $container->boot();
+
 ## Verbose resolution
 Beside the binding and automatic resolution the container implements another API using its own symbol language; the two APIs can be used together and independently.
 

@@ -385,4 +385,58 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         return new Resolver($this->container->reveal());
     }
+
+    /**
+     * @test
+     * it should allow tagging an array of implementations
+     */
+    public function it_should_allow_tagging_an_array_of_implementations()
+    {
+        $container = $this->makeInstance();
+
+        $container->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne');
+        $container->bind('TestInterfaceTwo', 'ConcreteClassImplementingTestInterfaceTwo');
+
+        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 'tag1');
+
+        $out = $container->tagged('tag1');
+
+        $this->assertInternalType('array', $out);
+        $this->assertCount(2, $out);
+        $this->assertInstanceOf('TestInterfaceOne', $out[0]);
+        $this->assertInstanceOf('ConcreteClassImplementingTestInterfaceOne', $out[0]);
+        $this->assertInstanceOf('TestInterfaceTwo', $out[1]);
+        $this->assertInstanceOf('ConcreteClassImplementingTestInterfaceTwo', $out[1]);
+    }
+
+    /**
+     * @test
+     * it should throw if tag is not a string while tagging
+     */
+    public function it_should_throw_if_tag_is_not_a_string_while_tagging()
+    {
+        $container = $this->makeInstance();
+
+        $this->setExpectedException('InvalidArgumentException');
+
+        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 23);
+    }
+
+    /**
+     * @test
+     * it should throw if tag is not a string while retrieving tagged
+     */
+    public function it_should_throw_if_tag_is_not_a_string_while_retrieving_tagged()
+    {
+        $container = $this->makeInstance();
+
+        $container->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne');
+        $container->bind('TestInterfaceTwo', 'ConcreteClassImplementingTestInterfaceTwo');
+
+        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 'tag1');
+
+        $this->setExpectedException('InvalidArgumentException');
+
+        $out = $container->tagged(23);
+    }
 }

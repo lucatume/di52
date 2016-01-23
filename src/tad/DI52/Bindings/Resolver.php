@@ -18,6 +18,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $resolvedSingletons = array();
 
     /**
+     * @var array
+     */
+    protected $tagged = array();
+
+    /**
+     * @var tad_DI52_ServiceProviderInterface[]
+     */
+    protected $serviceProviders = array();
+
+    /**
      * @var tad_DI52_Container
      */
     private $container;
@@ -81,6 +91,76 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     {
         $this->bind($interfaceOrClass, $implementation, $skipImplementationCheck);
         $this->singletons[] = $interfaceOrClass;
+    }
+
+    /**
+     * Tags an array of implementation bindings.
+     *
+     * @param array $implementationsArray
+     * @param string $tag
+     */
+    public function tag(array $implementationsArray, $tag)
+    {
+        if (!is_string($tag)) {
+            throw new InvalidArgumentException('Tag must be a string.');
+        }
+        $this->tagged[$tag] = $implementationsArray;
+    }
+
+    /**
+     * Retrieves an array of bound implementations resolving them.
+     *
+     * @param string $tag
+     * @return array An array of resolved bound implementations.
+     */
+    public function tagged($tag)
+    {
+        if (!is_string($tag)) {
+            throw new InvalidArgumentException('Tag must be a string.');
+        }
+        if (!array_key_exists($tag, $this->tagged)) {
+            throw new InvalidArgumentException("No implementations array was tagged [$tag]");
+        }
+
+        return array_map(array($this, 'resolve'), $this->tagged[$tag]);
+    }
+
+    /**
+     * Registers a service provider implementation.
+     *
+     * @param string $serviceProviderClass
+     */
+    public function register($serviceProviderClass)
+    {
+        if (!class_exists($serviceProviderClass)) {
+            throw new InvalidArgumentException("Service provider class [{$serviceProviderClass}] does not exist.");
+        }
+        if (!in_array('tad_DI52_ServiceProviderInterface', class_implements($serviceProviderClass))) {
+            throw new InvalidArgumentException("Service provider class [{$serviceProviderClass}] is not an implementation of the [tad_DI52_ServiceProviderInterface] interface.");
+        }
+
+        /** @var tad_DI52_ServiceProviderInterface $serviceProvider */
+        $serviceProvider = new $serviceProviderClass($this->container);
+        $this->serviceProviders[] = $serviceProvider;
+        $serviceProvider->register();
+
+        return $serviceProvider;
+    }
+
+    /**
+     * Boots up the application calling the `boot` method of each registered service provider.
+     */
+    public function boot()
+    {
+        if (empty($this->serviceProviders)) {
+            return;
+        }
+        return array_map(array($this, 'bootServiceProvider'), $this->serviceProviders);
+    }
+
+    protected function bootServiceProvider(tad_DI52_ServiceProviderInterface $serviceProvider)
+    {
+        return $serviceProvider->boot();
     }
 
     /**

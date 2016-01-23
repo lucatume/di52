@@ -6,6 +6,7 @@ require_once dirname(dirname(__FILE__)) . '/vendor/autoload.php';
 $files = [
     'TestInterfaceOne.php',
     'TestInterfaceTwo.php',
+    'TestInterfaceThree.php',
     'ConcreteClassImplementingTestInterfaceOne.php',
     'ConcreteClassImplementingTestInterfaceTwo.php',
     'ConcreteClassOne.php',
@@ -21,6 +22,11 @@ $files = [
     'ObjectTwo.php',
     'PrimitiveDependingClassOne.php',
     'PrimitiveDependingClassTwo.php',
+    'ClassOne.php',
+    'ClassTwo.php',
+    'ClassThree.php',
+    'ServiceProviderOne.php',
+    'ServiceProviderTwo.php'
 ];
 foreach ($files as $file) {
     include_once dirname(__FILE__) . '/data/' . $file;

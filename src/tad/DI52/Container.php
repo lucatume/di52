@@ -1,7 +1,7 @@
 <?php
 
 
-class tad_DI52_Container implements ArrayAccess
+class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInterface
 {
 
     /**
@@ -254,5 +254,45 @@ class tad_DI52_Container implements ArrayAccess
     public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false)
     {
         return $this->bindingsResolver->singleton($interfaceOrClass, $implementation, $skipImplementationCheck);
+    }
+
+    /**
+     * Registers a service provider implementation.
+     *
+     * @param string $serviceProviderClass
+     */
+    public function register($serviceProviderClass)
+    {
+        return $this->bindingsResolver->register($serviceProviderClass);
+    }
+
+    /**
+     * Tags an array of implementation bindings.
+     *
+     * @param array $implementationsArray
+     * @param string $tag
+     */
+    public function tag(array $implementationsArray, $tag)
+    {
+        return $this->bindingsResolver->tag($implementationsArray, $tag);
+    }
+
+    /**
+     * Retrieves an array of bound implementations resolving them.
+     *
+     * @param string $tag
+     * @return array An array of resolved bound implementations.
+     */
+    public function tagged($tag)
+    {
+        return $this->bindingsResolver->tagged($tag);
+    }
+
+    /**
+     * Boots up the application calling the `boot` method of each registered service provider.
+     */
+    public function boot()
+    {
+        $this->bindingsResolver->boot();
     }
 }

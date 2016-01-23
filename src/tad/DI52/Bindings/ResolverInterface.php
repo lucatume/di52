@@ -29,4 +29,32 @@ interface tad_DI52_Bindings_ResolverInterface
      * extension of the class.
      */
     public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false);
+
+    /**
+     * Tags an array of implementation bindings.
+     *
+     * @param array $implementationsArray
+     * @param string $tag
+     */
+    public function tag(array $implementationsArray, $tag);
+
+    /**
+     * Retrieves an array of bound implementations resolving them.
+     *
+     * @param string $tag
+     * @return array An array of resolved bound implementations.
+     */
+    public function tagged($tag);
+
+    /**
+     * Registers a service provider implementation.
+     *
+     * @param string $serviceProviderClass
+     */
+    public function register($serviceProviderClass);
+
+    /**
+     * Boots up the application calling the `boot` method of each registered service provider.
+     */
+    public function boot();
 }
