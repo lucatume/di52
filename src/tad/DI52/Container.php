@@ -211,6 +211,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
 
     public function resolve($alias)
     {
+        if (interface_exists($alias) || class_exists($alias)) {
+            return $this->bindingsResolver->resolve($alias);
+        }
         if (is_string($alias)) {
             $matches = array();
             if (preg_match('/^@(.*)$/', $alias, $matches)) {
