@@ -65,7 +65,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             if (!$skipImplementationCheck) {
                 if ($interfaceExists && !in_array($interfaceOrClass, class_implements($implementation))) {
                     throw new InvalidArgumentException("Implementation class [{$implementation}] should implement interface [{$interfaceOrClass}].");
-                } elseif ($classExists && !in_array($interfaceOrClass, class_parents($implementation))) {
+                } elseif ($classExists && !(in_array($interfaceOrClass, class_parents($implementation)) || $implementation === $interfaceOrClass)) {
                     throw new InvalidArgumentException("Implementation class [{$implementation}] should extend class [{$interfaceOrClass}].");
                 }
             }
