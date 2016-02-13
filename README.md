@@ -229,9 +229,9 @@ To define a service provider as deferred extend the `tad_DI52_ServiceProvider` c
         public function register() {
             $this->container->singleton('InterfaceOne', 'ClassOne');
             $this->container->singleton('InterfaceTwo', 'ClassTwo');
-            $this->container->singleton('InterfaceThree', 'ClassThree');
-            $this->container->singleton('InterfaceFour', 'ClassFour);
-            $this->container->singleton('InterfaceFive', 'ClassFive');
+            $this->container->bind('InterfaceThree', 'ClassThree');
+            $this->container->bind('InterfaceFour', 'ClassFour);
+            $this->container->bind('InterfaceFive', 'ClassFive');
         }
 
     }
