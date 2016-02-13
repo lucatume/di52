@@ -217,7 +217,13 @@ To define a service provider as deferred extend the `tad_DI52_ServiceProvider` c
         protected $deferred = true;
 
         public function provides(){
-            return array('DbConnectionInterface');
+            return array(
+                'InterfaceOne',
+                'InterfaceTwo',
+                'InterfaceThree',
+                'InterfaceFour',
+                'InterfaceFive'
+            );
         }
 
         public function register() {
