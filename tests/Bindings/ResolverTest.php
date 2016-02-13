@@ -439,4 +439,77 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $out = $container->tagged(23);
     }
+
+    /**
+     * @test
+     * it should allow querying for a bound implementation
+     */
+    public function it_should_allow_querying_for_a_bound_implementation()
+    {
+        $container = $this->makeInstance();
+
+        $this->assertFalse($container->isBound('TestInterfaceOne'));
+
+        $container->bind('TestInterfaceOne', 'ClassOne');
+
+        $this->assertTrue($container->isBound('TestInterfaceOne'));
+    }
+
+    /**
+     * @test
+     * it should allow querying for a bound singleton implementation
+     */
+    public function it_should_allow_querying_for_a_bound_singleton_implementation()
+    {
+        $container = $this->makeInstance();
+
+        $this->assertFalse($container->isBound('TestInterfaceOne'));
+
+        $container->singleton('TestInterfaceOne', 'ClassOne');
+
+        $this->assertTrue($container->isBound('TestInterfaceOne'));
+    }
+
+    /**
+     * @test
+     * it should throw if trying to check for bound non string
+     */
+    public function it_should_throw_if_trying_to_check_for_bound_non_string()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+
+        $container = $this->makeInstance();
+
+        $container->isBound(23);
+    }
+
+    /**
+     * @test
+     * it should throw if trying to check for tagged non string
+     */
+    public function it_should_throw_if_trying_to_check_for_tagged_non_string()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+
+        $container = $this->makeInstance();
+
+        $container->hasTag(23);
+    }
+
+    /**
+     * @test
+     * it should allow checking for tags
+     */
+    public function it_should_allow_checking_for_tags()
+    {
+        $container = $this->makeInstance();
+
+        $this->assertFalse($container->hasTag('some-tag'));
+
+        $container->bind('TestInterfaceOne', 'ClassOne');
+        $container->bind('TestInterfaceTwo', 'ClassTwo');
+        $container->tag(['TestInterfaceOne', 'TestIntrfaceTwo'], 'some-tag');
+
+        $this->assertTrue($container->hasTag('some-tag'));
+    }
 }

@@ -207,6 +207,29 @@ The service provider `register` method will be called immediatly when registerin
 
     $container->boot();
 
+### Deferred service providers
+Some service providers might define lengthy operations or require expensive bound implementations that are not required every time the application runs; to allow for that a provider can be defined as deferred.  
+Deferred service providers will only register if one of the implementations they provide is required.  
+To define a service provider as deferred extend the `tad_DI52_ServiceProvider` class and override the `deferred` property and the `provides` method.
+
+    class DeferredServiceProvider extends tad_DI52_ServiceProvider {
+        
+        protected $deferred = true;
+
+        public function provides(){
+            return array('DbConnectionInterface');
+        }
+
+        public function register() {
+            $this->container->singleton('InterfaceOne', 'ClassOne');
+            $this->container->singleton('InterfaceTwo', 'ClassTwo');
+            $this->container->singleton('InterfaceThree', 'ClassThree');
+            $this->container->singleton('InterfaceFour', 'ClassFour);
+            $this->container->singleton('InterfaceFive', 'ClassFive');
+        }
+
+    }
+
 ## Verbose resolution
 Beside the binding and automatic resolution the container implements another API using its own symbol language; the two APIs can be used together and independently.
 

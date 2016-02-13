@@ -298,4 +298,26 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     {
         $this->bindingsResolver->boot();
     }
+
+    /**
+     * Checks whether if an interface or class has been bound to a concrete implementation.
+     *
+     * @param string $classOrInterface
+     * @return bool
+     */
+    public function isBound($classOrInterface)
+    {
+        return $this->bindingsResolver->isBound($classOrInterface);
+    }
+
+    /**
+     * Checks whether a tag group exists in the container.
+     *
+     * @param string $tag
+     * @return bool
+     */
+    public function hasTag($tag)
+    {
+        return $this->bindingsResolver->hasTag($tag);
+    }
 }

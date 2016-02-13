@@ -4,7 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [1.2.1] - 2016--1-23
+## [1.2.1] - 2016-02-13
+### Added
+- `hasTag($tag)` method to the container
+- `isBound($classOrInterface)` method to the container
+- support for deferred service providers
+
+## [1.2.1] - 2016-01-23
 ### Added
 - tagging support
 - service providers support 
@@ -26,7 +32,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/1.2.1...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/1.2.2...HEAD
+[1.2.2]: https://github.com/lucatume/di52/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/lucatume/di52/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/lucatume/di52/compare/1.1.2...1.2.0
 [1.2.0]: https://github.com/lucatume/di52/compare/1.1.2...1.2.0
