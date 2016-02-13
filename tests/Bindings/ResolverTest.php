@@ -439,4 +439,34 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $out = $container->tagged(23);
     }
+
+    /**
+     * @test
+     * it should allow querying for a bound implementation
+     */
+    public function it_should_allow_querying_for_a_bound_implementation()
+    {
+        $container = $this->makeInstance();
+
+        $this->assertFalse($container->isBound('TestInterfaceOne'));
+
+        $container->bind('TestInterfaceOne', 'ClassOne');
+
+        $this->assertTrue($container->isBound('TestInterfaceOne'));
+    }
+
+    /**
+     * @test
+     * it should allow querying for a bound singleton implementation
+     */
+    public function it_should_allow_querying_for_a_bound_singleton_implementation()
+    {
+        $container = $this->makeInstance();
+
+        $this->assertFalse($container->isBound('TestInterfaceOne'));
+
+        $container->singleton('TestInterfaceOne', 'ClassOne');
+
+        $this->assertTrue($container->isBound('TestInterfaceOne'));
+    }
 }

@@ -57,4 +57,12 @@ interface tad_DI52_Bindings_ResolverInterface
      * Boots up the application calling the `boot` method of each registered service provider.
      */
     public function boot();
+
+    /**
+     * Checks whether if an interface or class has been bound to a concrete implementation.
+     *
+     * @param string $classOrInterface
+     * @return bool
+     */
+    public function isBound($classOrInterface);
 }

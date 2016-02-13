@@ -170,6 +170,17 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         return array_map(array($this, 'bootServiceProvider'), $this->serviceProviders);
     }
 
+    /**
+     * Checks whether if an interface or class has been bound to a concrete implementation.
+     *
+     * @param string $classOrInterface
+     * @return bool
+     */
+    public function isBound($classOrInterface)
+    {
+        return array_key_exists($classOrInterface, $this->bindings);
+    }
+
     protected function bootServiceProvider(tad_DI52_ServiceProviderInterface $serviceProvider)
     {
         return $serviceProvider->boot();

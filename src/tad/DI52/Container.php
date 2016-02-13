@@ -298,4 +298,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     {
         $this->bindingsResolver->boot();
     }
+
+    public function isBound($classOrInterface)
+    {
+        // TODO: Implement isBound() method.
+    }
 }
