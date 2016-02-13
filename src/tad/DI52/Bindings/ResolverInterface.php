@@ -65,4 +65,12 @@ interface tad_DI52_Bindings_ResolverInterface
      * @return bool
      */
     public function isBound($classOrInterface);
+
+    /**
+     * Checks whether a tag group exists in the container.
+     *
+     * @param string $tag
+     * @return bool
+     */
+    public function hasTag($tag);
 }

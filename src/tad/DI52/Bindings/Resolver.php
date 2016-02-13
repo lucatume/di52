@@ -178,7 +178,26 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     public function isBound($classOrInterface)
     {
+        if (!is_string($classOrInterface)) {
+            throw new InvalidArgumentException('Class or interface must be a string');
+        }
+
         return array_key_exists($classOrInterface, $this->bindings);
+    }
+
+    /**
+     * Checks whether a tag group exists in the container.
+     *
+     * @param string $tag
+     * @return bool
+     */
+    public function hasTag($tag)
+    {
+        if (!is_string($tag)) {
+            throw new InvalidArgumentException('Tag must be a string');
+        }
+
+        return array_key_exists($tag, $this->tagged);
     }
 
     protected function bootServiceProvider(tad_DI52_ServiceProviderInterface $serviceProvider)
