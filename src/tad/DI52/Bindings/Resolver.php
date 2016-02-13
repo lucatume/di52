@@ -28,6 +28,11 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $serviceProviders = array();
 
     /**
+     * @var array
+     */
+    protected $deferredServiceProviders = array();
+
+    /**
      * @var tad_DI52_Container
      */
     private $container;
@@ -142,7 +147,14 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         /** @var tad_DI52_ServiceProviderInterface $serviceProvider */
         $serviceProvider = new $serviceProviderClass($this->container);
         $this->serviceProviders[] = $serviceProvider;
-        $serviceProvider->register();
+
+        if ($serviceProvider->isDeferred()) {
+            $providedClasses = $serviceProvider->provides();
+            $buffer = array_combine($providedClasses, array_fill(0, count($providedClasses), $serviceProvider));
+            $this->deferredServiceProviders = array_merge($this->deferredServiceProviders, $buffer);
+        } else {
+            $serviceProvider->register();
+        }
 
         return $serviceProvider;
     }
@@ -173,11 +185,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     {
         $isClass = class_exists($classOrInterface);
         $isInterface = interface_exists($classOrInterface);
-        $isSingleton = in_array($classOrInterface, $this->singletons);
         if (!($isInterface || $isClass)) {
             throw new InvalidArgumentException("[{$classOrInterface}] does not exist");
         }
+        $isDeferredBound = array_key_exists($classOrInterface, $this->deferredServiceProviders);
+        if ($isDeferredBound) {
+            $serviceProvider = $this->deferredServiceProviders[$classOrInterface];
+            $serviceProvider->register();
+        }
         $isBound = array_key_exists($classOrInterface, $this->bindings);
+        $isSingleton = in_array($classOrInterface, $this->singletons);
         if (!$isBound) {
             $resolved = $this->resolveUnbound($classOrInterface);
             if ($isSingleton) {

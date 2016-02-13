@@ -26,7 +26,10 @@ $files = [
     'ClassTwo.php',
     'ClassThree.php',
     'ServiceProviderOne.php',
-    'ServiceProviderTwo.php'
+    'ServiceProviderTwo.php',
+    'DeferredServiceProviderOne.php',
+    'DeferredServiceProviderTwo.php',
+    'DeferredServiceProviderThree.php',
 ];
 foreach ($files as $file) {
     include_once dirname(__FILE__) . '/data/' . $file;
