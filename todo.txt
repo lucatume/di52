@@ -1,1 +1,3 @@
-- service provider interface
+- isBound() to check for binding
+- hasTag() to check for tagging
+- deferred providers
