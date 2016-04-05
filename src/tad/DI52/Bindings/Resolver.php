@@ -112,7 +112,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         if (!is_string($tag)) {
             throw new InvalidArgumentException('Tag must be a string.');
         }
-        if (!array_key_exists($tag, $this->tagged)) {
+        if (!isset($this->tagged[$tag])) {
             throw new InvalidArgumentException("No implementations array was tagged [$tag]");
         }
 
@@ -171,7 +171,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             throw new InvalidArgumentException('Class or interface must be a string');
         }
 
-        return array_key_exists($classOrInterface, $this->bindings);
+        return isset($this->bindings[$classOrInterface]);
     }
 
     /**
@@ -186,7 +186,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             throw new InvalidArgumentException('Tag must be a string');
         }
 
-        return array_key_exists($tag, $this->tagged);
+        return isset($this->tagged[$tag]);
     }
 
     protected function bootServiceProvider(tad_DI52_ServiceProviderInterface $serviceProvider)
@@ -266,12 +266,12 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     {
         $this->ensureClassOrInterfaceExists($classOrInterface);
 
-        $isDeferredBound = array_key_exists($classOrInterface, $this->deferredServiceProviders);
+        $isDeferredBound = isset($this->deferredServiceProviders[$classOrInterface]);
         if ($isDeferredBound) {
             $serviceProvider = $this->deferredServiceProviders[$classOrInterface];
             $serviceProvider->register();
         }
-        $isBound = array_key_exists($classOrInterface, $this->bindings);
+        $isBound = isset($this->bindings[$classOrInterface]);
         $isSingleton = in_array($classOrInterface, $this->singletons);
         if (!$isBound) {
             $resolved = $this->resolveUnbound($classOrInterface);
