@@ -472,7 +472,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase {
 
 		$container->bind( 'TestInterfaceOne', 'ClassOne' );
 		$container->bind( 'TestInterfaceTwo', 'ClassTwo' );
-		$container->tag( [ 'TestInterfaceOne', 'TestIntrfaceTwo' ], 'some-tag' );
+		$container->tag( [ 'TestInterfaceOne', 'TestInterfaceTwo' ], 'some-tag' );
 
 		$this->assertTrue( $container->hasTag( 'some-tag' ) );
 	}
