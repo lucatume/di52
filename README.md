@@ -435,11 +435,11 @@ The same syntax is available for variables too
 
 on the same page more complex constructors can be set
 
-    $c->set_shared('some-class', 'SomeClas::instance', 'one', 23);
+    $c->set_shared('some-class', 'SomeClass::instance', 'one', 23);
 
     // is the same as
 
-    $c['some-class'] = array('SomeClas::instance', 'one', 23);
+    $c['some-class'] = array('SomeClass::instance', 'one', 23);
 
 Getting hold of a shared object instance or a var follows the expected path
 
