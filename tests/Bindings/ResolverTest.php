@@ -589,4 +589,76 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($outputOne, $outputTwo);
     }
+
+    /**
+     * @test
+     * it should allow binding a decorator chain using a closure
+     */
+    public function it_should_allow_binding_a_decorator_chain_using_a_closure()
+    {
+        $container = $this->makeInstance();
+
+        $container->bind('BaseClassInterface', function ($container) {
+            $baseClass = $container->resolve('BaseClass');
+
+            return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
+        });
+
+        $instance = $container->resolve('BaseClassInterface');
+
+        $this->assertInstanceOf('BaseClassDecoratorThree', $instance);
+    }
+
+    /**
+     * @test
+     * it should allow binding a decorator chain using an array
+     */
+    public function it_should_allow_binding_a_decorator_chain_using_an_array()
+    {
+        $container = $this->makeInstance();
+
+        $decorators = array('BaseClassDecoratorThree', 'BaseClassDecoratorTwo', 'BaseClassDecoratorOne', 'BaseClass');
+        $container->bindDecorators('BaseClassInterface', $decorators);
+
+        $instance = $container->resolve('BaseClassInterface');
+
+        $this->assertInstanceOf('BaseClassDecoratorThree', $instance);
+    }
+
+    /**
+     * @test
+     * it should allow binding a decorator chain as a singleton using a closure
+     */
+    public function it_should_allow_binding_a_decorator_chain_as_a_singleton_using_a_closure()
+    {
+        $container = $this->makeInstance();
+
+        $container->singleton('BaseClassInterface', function ($container) {
+            $baseClass = $container->resolve('BaseClass');
+
+            return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
+        });
+
+        $instance = $container->resolve('BaseClassInterface');
+        $instance2 = $container->resolve('BaseClassInterface');
+
+        $this->assertSame($instance, $instance2);
+    }
+
+    /**
+     * @test
+     * it should allow binding a decorator chain as a singleton using singletonDecorators
+     */
+    public function it_should_allow_binding_a_decorator_chain_as_a_singleton_using_singletonDecorators()
+    {
+        $container = $this->makeInstance();
+
+        $decorators = array('BaseClassDecoratorThree', 'BaseClassDecoratorTwo', 'BaseClassDecoratorOne', 'BaseClass');
+        $container->singletonDecorators('BaseClassInterface', $decorators);
+
+        $instance = $container->resolve('BaseClassInterface');
+        $instance2 = $container->resolve('BaseClassInterface');
+
+        $this->assertSame($instance, $instance2);
+    }
 }
