@@ -47,18 +47,14 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      * @param $class_and_method
      * @param null $arg_one One or more optional arguments that should be passed to the class constructor.
      *
-     * @return tad_DI52_Ctor
+     * @return bool|tad_DI52_Ctor Either a new constructor instance or `false` if the constructor alias
      */
     public function set_ctor($alias, $class_and_method, $arg_one = null)
     {
-        if (!isset($this->ctors[$alias])) {
-            $func_args = func_get_args();
-            $args = array_splice($func_args, 2);
+        $func_args = func_get_args();
+        $args = array_splice($func_args, 2);
 
-            return $this->ctors[$alias] = tad_DI52_Ctor::create($class_and_method, $args, $this);
-        }
-
-        return false;
+        return $this->ctors[$alias] = tad_DI52_Ctor::create($class_and_method, $args, $this);
     }
 
     /**
@@ -233,7 +229,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      *
      * @param string $classOrInterface
      * @param string $implementation
-     * @param bool   $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
     public function bind($classOrInterface, $implementation, $skipImplementationCheck = false)
