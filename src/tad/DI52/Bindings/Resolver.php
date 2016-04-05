@@ -33,6 +33,21 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $deferredServiceProviders = array();
 
     /**
+     * @var array
+     */
+    protected $singletonAliases = array();
+
+    /**
+     * @var array
+     */
+    protected $singletonImplementations = array();
+
+    /**
+     * @var array
+     */
+    protected $singletonImplementationObjects = array();
+
+    /**
      * @var tad_DI52_Container
      */
     private $container;
@@ -206,7 +221,10 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $this->ensureClassOrInterfaceExists($classOrInterface);
 
         $implementation_object = null;
-        if (is_string($implementation)) {
+
+        if ($isSingleton && $index = array_search($implementation, $this->singletonImplementations)) {
+            $implementation_object = $this->singletonImplementationObjects[$index];
+        } elseif (is_string($implementation)) {
             if (!(class_exists($implementation))) {
                 throw new InvalidArgumentException("Implementation class [{$implementation}] does not exist.");
             }
@@ -227,6 +245,15 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         }
 
         $this->bindings[$classOrInterface] = $implementation_object;
+
+        if ($isSingleton) {
+            if (empty($index)) {
+                $index = microtime();
+                $this->singletonImplementations[$index] = $implementation;
+                $this->singletonImplementationObjects[$index] = $implementation_object;
+            }
+            $this->singletonAliases[$classOrInterface] = $index;
+        }
     }
 
     /**
@@ -248,22 +275,25 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $isSingleton = in_array($classOrInterface, $this->singletons);
         if (!$isBound) {
             $resolved = $this->resolveUnbound($classOrInterface);
-            if ($isSingleton) {
-                if (array_key_exists($classOrInterface, $this->resolvedSingletons)) {
-                    return $this->resolvedSingletons[$classOrInterface];
-                }
-                $this->resolvedSingletons[$classOrInterface] = $resolved;
-            }
             return $resolved;
         }
 
-        $resolved = $this->resolveBound($classOrInterface);
-        if ($isSingleton) {
-            if (array_key_exists($classOrInterface, $this->resolvedSingletons)) {
-                return $this->resolvedSingletons[$classOrInterface];
-            }
-            $this->resolvedSingletons[$classOrInterface] = $resolved;
+        if ($isSingleton && isset($this->resolvedSingletons[$classOrInterface])) {
+            return $this->resolvedSingletons[$classOrInterface];
         }
+
+        $resolved = $this->resolveBound($classOrInterface);
+
+        if ($isSingleton) {
+            $this->resolvedSingletons[$classOrInterface] = $resolved;
+            $index = $this->singletonAliases[$classOrInterface];
+            foreach ($this->singletonAliases as $alias => $aliasIndex) {
+                if ($alias !== $classOrInterface && $aliasIndex === $index) {
+                    $this->resolvedSingletons[$alias] = $resolved;
+                }
+            }
+        }
+
         return $resolved;
     }
 
