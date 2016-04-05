@@ -48,37 +48,36 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     /**
      * Binds an interface or class to an implementation.
      *
-     * @param string $interfaceOrClass
+     * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * @param bool   $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function bind($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    public function bind($classOrInterface, $implementation, $skipImplementationCheck = false)
     {
-        $interfaceExists = interface_exists($interfaceOrClass);
-        $classExists = class_exists($interfaceOrClass);
+        $interfaceExists = interface_exists($classOrInterface);
+        $classExists = class_exists($classOrInterface);
         $isCallbackImplementation = is_callable($implementation);
         $isInstanceImplementation = is_object($implementation);
 
-        if (!($interfaceExists || $classExists)) {
-            throw new InvalidArgumentException("Class or interface [{$interfaceOrClass}] does not exist.");
-        }
+        $this->ensureClassOrInterfaceExists($classOrInterface);
+
         if (is_string($implementation)) {
             if (!(class_exists($implementation))) {
                 throw new InvalidArgumentException("Implementation class [{$implementation}] does not exist.");
             }
             if (!$skipImplementationCheck) {
-                if ($interfaceExists && !in_array($interfaceOrClass, class_implements($implementation))) {
-                    throw new InvalidArgumentException("Implementation class [{$implementation}] should implement interface [{$interfaceOrClass}].");
-                } elseif ($classExists && !(in_array($interfaceOrClass, class_parents($implementation)) || $implementation === $interfaceOrClass)) {
-                    throw new InvalidArgumentException("Implementation class [{$implementation}] should extend class [{$interfaceOrClass}].");
+                if ($interfaceExists && !in_array($classOrInterface, class_implements($implementation))) {
+                    throw new InvalidArgumentException("Implementation class [{$implementation}] should implement interface [{$classOrInterface}].");
+                } elseif ($classExists && !( in_array($classOrInterface, class_parents($implementation)) || $implementation === $classOrInterface)) {
+                    throw new InvalidArgumentException("Implementation class [{$implementation}] should extend class [{$classOrInterface}].");
                 }
             }
-            $this->bindings[$interfaceOrClass] = new tad_DI52_Bindings_ConstructorImplementation($implementation, $this->container, $this);
+            $this->bindings[ $classOrInterface] = new tad_DI52_Bindings_ConstructorImplementation($implementation, $this->container, $this);
         } elseif ($isCallbackImplementation) {
-            $this->bindings[$interfaceOrClass] = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
+            $this->bindings[ $classOrInterface] = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
         } elseif ($isInstanceImplementation) {
-            $this->bindings[$interfaceOrClass] = new tad_DI52_Bindings_InstanceImplementation($implementation, $this->container, $this);
+            $this->bindings[ $classOrInterface] = new tad_DI52_Bindings_InstanceImplementation($implementation, $this->container, $this);
         } else {
             throw new InvalidArgumentException("Implementation should be a class name, a callback or an object instance.");
         }
@@ -206,6 +205,17 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     }
 
     /**
+     * @param $classOrInterface
+     */
+    protected function ensureClassOrInterfaceExists( $classOrInterface ) {
+        $isClass     = class_exists( $classOrInterface );
+        $isInterface = interface_exists( $classOrInterface );
+        if ( ! ( $isInterface || $isClass ) ) {
+            throw new InvalidArgumentException( "[{$classOrInterface}] does not exist" );
+        }
+    }
+
+    /**
      * Returns an instance of the class or object bound to an interface.
      *
      * @param string $classOrInterface A fully qualified class or interface name.
@@ -213,11 +223,8 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     public function resolve($classOrInterface)
     {
-        $isClass = class_exists($classOrInterface);
-        $isInterface = interface_exists($classOrInterface);
-        if (!($isInterface || $isClass)) {
-            throw new InvalidArgumentException("[{$classOrInterface}] does not exist");
-        }
+        $this->ensureClassOrInterfaceExists( $classOrInterface );
+
         $isDeferredBound = array_key_exists($classOrInterface, $this->deferredServiceProviders);
         if ($isDeferredBound) {
             $serviceProvider = $this->deferredServiceProviders[$classOrInterface];

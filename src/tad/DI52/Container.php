@@ -231,14 +231,14 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     /**
      * Binds an interface or class to an implementation.
      *
-     * @param string $interfaceOrClass
+     * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
+     * @param bool   $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function bind($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    public function bind($classOrInterface, $implementation, $skipImplementationCheck = false)
     {
-        return $this->bindingsResolver->bind($interfaceOrClass, $implementation, $skipImplementationCheck);
+        return $this->bindingsResolver->bind($classOrInterface, $implementation, $skipImplementationCheck);
     }
 
     public function _setBindingsResolver(tad_DI52_Bindings_ResolverInterface $bindingsResolver)

@@ -6,6 +6,7 @@ require_once dirname(dirname(__FILE__)) . '/vendor/autoload.php';
 $files = [
     'TestInterfaceOne.php',
     'TestInterfaceTwo.php',
+    'InterfaceOneAndTwoImplementation.php',
     'TestInterfaceThree.php',
     'ConcreteClassImplementingTestInterfaceOne.php',
     'ConcreteClassImplementingTestInterfaceTwo.php',
