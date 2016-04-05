@@ -213,6 +213,19 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $this->decoratorsChain[$classOrInterface] = $decorators;
     }
 
+    /**
+     * Binds a chain of decorators to a class or interface to be returned as a singleton.
+     *
+     * @param $classOrInterface
+     * @param array $decorators
+     */
+    public function singletonDecorators($classOrInterface, $decorators)
+    {
+        array_walk($decorators, array($this, 'ensureClassOrInterfaceExists'));
+        $this->singleton($classOrInterface, end($decorators));
+        $this->decoratorsChain[$classOrInterface] = $decorators;
+    }
+
     protected function bootServiceProvider(tad_DI52_ServiceProviderInterface $serviceProvider)
     {
         return $serviceProvider->boot();

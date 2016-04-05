@@ -1,16 +1,16 @@
 Humbug running test suite to generate logs and code coverage data...
 Humbug has completed the initial test run successfully.
-Tests: 95 Line Coverage: 96.15%
+Tests: 97 Line Coverage: 95.93%
 Humbug is analysing source files...
 Mutation Testing is commencing on 18 files...
 (.: killed, M: escaped, S: uncovered, E: fatal error, T: timed out)
 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE |   60 ( 7/18)
-EEEEEEEEEEEEEEEEEEEEEE
-82 mutations were generated:
+EEEEEEEEEEEEEEEEEEEEE
+81 mutations were generated:
        0 mutants were killed
        0 mutants were not covered by tests
        0 covered mutants were not detected
-      82 fatal errors were encountered
+      81 fatal errors were encountered
        0 time outs were encountered
 
 Metrics:
@@ -19,7 +19,7 @@ Metrics:
     Covered Code MSI: 100%
 
 Remember that some mutants will inevitably be harmless (i.e. false positives).
-Time: 19.24 seconds Memory: 8.25MB
+Time: 17.87 seconds Memory: 8.50MB
 Humbug results are being logged as TEXT to: humbuglog.txt
 
 ------
@@ -360,23 +360,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              if (!$skipImplementationCheck) {
 
 
-22) \Humbug\Mutator\IfStatement\FunctionCallNegation
-Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
---- Original
-+++ New
-@@ @@
-             $implementation_object = $this->singletonImplementationObjects[$index];
--        } elseif (is_string($implementation)) {
-+        } elseif (!is_string($implementation)) {
-             if (!(class_exists($implementation))) {
-                 throw new InvalidArgumentException("Implementation class [{$implementation}] does not exist.");
-             }
-             if (!$skipImplementationCheck) {
-                 if ($interfaceExists && !in_array($classOrInterface, class_implements($implementation))) {
-                     throw new InvalidArgumentException("Implementation class [{$implementation}] should implement interface [{$classOrInterface}].");
-
-
-23) \Humbug\Mutator\Boolean\LogicalNot
+22) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -392,7 +376,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
                  } elseif ($classExists && !(in_array($classOrInterface, class_parents($implementation)) || $implementation === $classOrInterface)) {
 
 
-24) \Humbug\Mutator\Boolean\LogicalNot
+23) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -408,7 +392,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              }
 
 
-25) \Humbug\Mutator\Boolean\LogicalAnd
+24) \Humbug\Mutator\Boolean\LogicalAnd
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -424,7 +408,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              $implementation_object = new tad_DI52_Bindings_ConstructorImplementation($implementation, $this->container, $this);
 
 
-26) \Humbug\Mutator\Boolean\LogicalNot
+25) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -440,7 +424,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              $implementation_object = new tad_DI52_Bindings_ConstructorImplementation($implementation, $this->container, $this);
 
 
-27) \Humbug\Mutator\Boolean\LogicalAnd
+26) \Humbug\Mutator\Boolean\LogicalAnd
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -456,7 +440,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              $implementation_object = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
 
 
-28) \Humbug\Mutator\Boolean\LogicalNot
+27) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -472,7 +456,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              $implementation_object = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
 
 
-29) \Humbug\Mutator\Boolean\LogicalOr
+28) \Humbug\Mutator\Boolean\LogicalOr
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -488,7 +472,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              $implementation_object = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
 
 
-30) \Humbug\Mutator\ConditionalNegation\Identical
+29) \Humbug\Mutator\ConditionalNegation\Identical
 Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -504,7 +488,7 @@ Diff on \tad_DI52_Bindings_Resolver::_bind() in /Users/Luca/Desktop/di52/src/tad
              $implementation_object = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
 
 
-31) \Humbug\Mutator\Boolean\LogicalNot
+30) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -520,7 +504,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
          }
 
 
-32) \Humbug\Mutator\Boolean\LogicalAnd
+31) \Humbug\Mutator\Boolean\LogicalAnd
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -536,7 +520,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
          }
 
 
-33) \Humbug\Mutator\Boolean\LogicalNot
+32) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -552,7 +536,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
              return $this->resolvedSingletons[$classOrInterface];
 
 
-34) \Humbug\Mutator\Boolean\LogicalAnd
+33) \Humbug\Mutator\Boolean\LogicalAnd
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -568,7 +552,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
          if ($isSingleton) {
 
 
-35) \Humbug\Mutator\ConditionalNegation\NotIdentical
+34) \Humbug\Mutator\ConditionalNegation\NotIdentical
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -584,7 +568,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
          return $resolved;
 
 
-36) \Humbug\Mutator\Boolean\LogicalAnd
+35) \Humbug\Mutator\Boolean\LogicalAnd
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -600,7 +584,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
          return $resolved;
 
 
-37) \Humbug\Mutator\ConditionalNegation\Identical
+36) \Humbug\Mutator\ConditionalNegation\Identical
 Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -616,7 +600,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolve() in /Users/Luca/Desktop/di52/src/t
          return $resolved;
 
 
-38) \Humbug\Mutator\Boolean\LogicalNot
+37) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Bindings_Resolver::resolveUnbound() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -632,7 +616,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolveUnbound() in /Users/Luca/Desktop/di5
          if (is_null($constructor)) {
 
 
-39) \Humbug\Mutator\ReturnValue\NewObject
+38) \Humbug\Mutator\ReturnValue\NewObject
 Diff on \tad_DI52_Bindings_Resolver::resolveUnbound() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -648,7 +632,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolveUnbound() in /Users/Luca/Desktop/di5
          return $reflector->newInstanceArgs($dependencies);
 
 
-40) \Humbug\Mutator\Boolean\TrueValue
+39) \Humbug\Mutator\Boolean\TrueValue
 Diff on \tad_DI52_Bindings_Resolver::resolveBoundDecoratorChain() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -664,7 +648,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolveBoundDecoratorChain() in /Users/Luca
  
 
 
-41) \Humbug\Mutator\Boolean\FalseValue
+40) \Humbug\Mutator\Boolean\FalseValue
 Diff on \tad_DI52_Bindings_Resolver::resolveBoundDecoratorChain() in /Users/Luca/Desktop/di52/src/tad/DI52/Bindings/Resolver.php:
 --- Original
 +++ New
@@ -680,7 +664,7 @@ Diff on \tad_DI52_Bindings_Resolver::resolveBoundDecoratorChain() in /Users/Luca
 
 
 
-42) \Humbug\Mutator\Boolean\LogicalNot
+41) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Container::set_var() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -696,7 +680,7 @@ Diff on \tad_DI52_Container::set_var() in /Users/Luca/Desktop/di52/src/tad/DI52/
  
 
 
-43) \Humbug\Mutator\ReturnValue\This
+42) \Humbug\Mutator\ReturnValue\This
 Diff on \tad_DI52_Container::set_var() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -712,7 +696,7 @@ Diff on \tad_DI52_Container::set_var() in /Users/Luca/Desktop/di52/src/tad/DI52/
  
 
 
-44) \Humbug\Mutator\Number\IntegerValue
+43) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Container::set_ctor() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -728,7 +712,7 @@ Diff on \tad_DI52_Container::set_ctor() in /Users/Luca/Desktop/di52/src/tad/DI52
       * Builds and returns a class instance.
 
 
-45) \Humbug\Mutator\IfStatement\FunctionCallNegation
+44) \Humbug\Mutator\IfStatement\FunctionCallNegation
 Diff on \tad_DI52_Container::make() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -744,7 +728,7 @@ Diff on \tad_DI52_Container::make() in /Users/Luca/Desktop/di52/src/tad/DI52/Con
          $ctor = $this->ctors[$alias];
 
 
-46) \Humbug\Mutator\Boolean\LogicalOr
+45) \Humbug\Mutator\Boolean\LogicalOr
 Diff on \tad_DI52_Container::make() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -760,7 +744,7 @@ Diff on \tad_DI52_Container::make() in /Users/Luca/Desktop/di52/src/tad/DI52/Con
          $ctor = $this->ctors[$alias];
 
 
-47) \Humbug\Mutator\IfStatement\FunctionCallNegation
+46) \Humbug\Mutator\IfStatement\FunctionCallNegation
 Diff on \tad_DI52_Container::make() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -776,7 +760,7 @@ Diff on \tad_DI52_Container::make() in /Users/Luca/Desktop/di52/src/tad/DI52/Con
          $ctor = $this->ctors[$alias];
 
 
-48) \Humbug\Mutator\Boolean\LogicalNot
+47) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Container::assert_ctor_alias() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -792,7 +776,7 @@ Diff on \tad_DI52_Container::assert_ctor_alias() in /Users/Luca/Desktop/di52/src
       * @param $alias
 
 
-49) \Humbug\Mutator\Boolean\LogicalNot
+48) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Container::assert_var_alias() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -808,7 +792,7 @@ Diff on \tad_DI52_Container::assert_var_alias() in /Users/Luca/Desktop/di52/src/
       * Sets a singleton (shared) object instance to be returned each time requested.
 
 
-50) \Humbug\Mutator\Boolean\LogicalNot
+49) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Container::set_shared() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -824,7 +808,7 @@ Diff on \tad_DI52_Container::set_shared() in /Users/Luca/Desktop/di52/src/tad/DI
          return $this;
 
 
-51) \Humbug\Mutator\Number\IntegerValue
+50) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Container::set_shared() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -840,7 +824,7 @@ Diff on \tad_DI52_Container::set_shared() in /Users/Luca/Desktop/di52/src/tad/DI
  
 
 
-52) \Humbug\Mutator\ReturnValue\This
+51) \Humbug\Mutator\ReturnValue\This
 Diff on \tad_DI52_Container::set_shared() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -856,7 +840,7 @@ Diff on \tad_DI52_Container::set_shared() in /Users/Luca/Desktop/di52/src/tad/DI
       * @param mixed $offset <p>
 
 
-53) \Humbug\Mutator\IfStatement\FunctionCallNegation
+52) \Humbug\Mutator\IfStatement\FunctionCallNegation
 Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -872,7 +856,7 @@ Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI5
              return $this->get_var($offset);
 
 
-54) \Humbug\Mutator\Boolean\LogicalOr
+53) \Humbug\Mutator\Boolean\LogicalOr
 Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -880,6 +864,22 @@ Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI5
      {
 -        if (interface_exists($offset) || class_exists($offset)) {
 +        if (interface_exists($offset) && class_exists($offset)) {
+             return $this->bindingsResolver->resolve($offset);
+         }
+         if (isset($this->ctors[$offset])) {
+             return $this->make($offset);
+         } else {
+             return $this->get_var($offset);
+
+
+54) \Humbug\Mutator\IfStatement\FunctionCallNegation
+Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
+--- Original
++++ New
+@@ @@
+     {
+-        if (interface_exists($offset) || class_exists($offset)) {
++        if (interface_exists($offset) || !class_exists($offset)) {
              return $this->bindingsResolver->resolve($offset);
          }
          if (isset($this->ctors[$offset])) {
@@ -889,22 +889,6 @@ Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI5
 
 
 55) \Humbug\Mutator\IfStatement\FunctionCallNegation
-Diff on \tad_DI52_Container::offsetGet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
---- Original
-+++ New
-@@ @@
-     {
--        if (interface_exists($offset) || class_exists($offset)) {
-+        if (interface_exists($offset) || !class_exists($offset)) {
-             return $this->bindingsResolver->resolve($offset);
-         }
-         if (isset($this->ctors[$offset])) {
-             return $this->make($offset);
-         } else {
-             return $this->get_var($offset);
-
-
-56) \Humbug\Mutator\IfStatement\FunctionCallNegation
 Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -920,7 +904,7 @@ Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI5
          if (strpos($class_and_method, '::') || class_exists($class_and_method)) {
 
 
-57) \Humbug\Mutator\Boolean\LogicalOr
+56) \Humbug\Mutator\Boolean\LogicalOr
 Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -936,7 +920,7 @@ Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI5
          if (strpos($class_and_method, '::') || class_exists($class_and_method)) {
 
 
-58) \Humbug\Mutator\IfStatement\FunctionCallNegation
+57) \Humbug\Mutator\IfStatement\FunctionCallNegation
 Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -952,7 +936,7 @@ Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI5
          if (strpos($class_and_method, '::') || class_exists($class_and_method)) {
 
 
-59) \Humbug\Mutator\Boolean\FalseValue
+58) \Humbug\Mutator\Boolean\FalseValue
 Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -968,7 +952,7 @@ Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI5
              $args = array_merge(array($offset), $_value);
 
 
-60) \Humbug\Mutator\Number\IntegerValue
+59) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -984,7 +968,7 @@ Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI5
          }
 
 
-61) \Humbug\Mutator\Boolean\LogicalOr
+60) \Humbug\Mutator\Boolean\LogicalOr
 Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -1000,7 +984,7 @@ Diff on \tad_DI52_Container::offsetSet() in /Users/Luca/Desktop/di52/src/tad/DI5
      }
 
 
-62) \Humbug\Mutator\Boolean\LogicalOr
+61) \Humbug\Mutator\Boolean\LogicalOr
 Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -1016,7 +1000,7 @@ Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/
                  return $this->make($matches[1]);
 
 
-63) \Humbug\Mutator\Number\IntegerValue
+62) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -1032,7 +1016,7 @@ Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/
          }
 
 
-64) \Humbug\Mutator\Number\IntegerValue
+63) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -1048,7 +1032,7 @@ Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/
          return $alias;
 
 
-65) \Humbug\Mutator\Number\IntegerValue
+64) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/Container.php:
 --- Original
 +++ New
@@ -1064,7 +1048,7 @@ Diff on \tad_DI52_Container::resolve() in /Users/Luca/Desktop/di52/src/tad/DI52/
  
 
 
-66) \Humbug\Mutator\Number\IntegerValue
+65) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Ctor::__call() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1080,7 +1064,7 @@ Diff on \tad_DI52_Ctor::__call() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.p
      {
 
 
-67) \Humbug\Mutator\Boolean\LogicalNot
+66) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1096,7 +1080,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
          }
 
 
-68) \Humbug\Mutator\ConditionalBoundary\GreaterThan
+67) \Humbug\Mutator\ConditionalBoundary\GreaterThan
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1112,7 +1096,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
              '__construct'
 
 
-69) \Humbug\Mutator\ConditionalNegation\GreaterThan
+68) \Humbug\Mutator\ConditionalNegation\GreaterThan
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1128,7 +1112,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
              '__construct'
 
 
-70) \Humbug\Mutator\Number\IntegerValue
+69) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1144,7 +1128,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
              '__construct'
 
 
-71) \Humbug\Mutator\ReturnValue\FunctionCall
+70) \Humbug\Mutator\ReturnValue\FunctionCall
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1160,7 +1144,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
  
 
 
-72) \Humbug\Mutator\ConditionalNegation\Identical
+71) \Humbug\Mutator\ConditionalNegation\Identical
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1176,7 +1160,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
      public function get_object_instance()
 
 
-73) \Humbug\Mutator\Number\IntegerValue
+72) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1192,7 +1176,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
      public function get_object_instance()
 
 
-74) \Humbug\Mutator\Number\IntegerValue
+73) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1208,7 +1192,7 @@ Diff on \tad_DI52_Ctor::get_class_and_method() in /Users/Luca/Desktop/di52/src/t
      {
 
 
-75) \Humbug\Mutator\ConditionalNegation\Identical
+74) \Humbug\Mutator\ConditionalNegation\Identical
 Diff on \tad_DI52_Ctor::create_instance() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1224,7 +1208,7 @@ Diff on \tad_DI52_Ctor::create_instance() in /Users/Luca/Desktop/di52/src/tad/DI
          return call_user_func_array(array(
 
 
-76) \Humbug\Mutator\ReturnValue\FunctionCall
+75) \Humbug\Mutator\ReturnValue\FunctionCall
 Diff on \tad_DI52_Ctor::create_instance() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1240,7 +1224,7 @@ Diff on \tad_DI52_Ctor::create_instance() in /Users/Luca/Desktop/di52/src/tad/DI
          ), $args);
 
 
-77) \Humbug\Mutator\ReturnValue\FunctionCall
+76) \Humbug\Mutator\ReturnValue\FunctionCall
 Diff on \tad_DI52_Ctor::create_instance() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1256,7 +1240,7 @@ Diff on \tad_DI52_Ctor::create_instance() in /Users/Luca/Desktop/di52/src/tad/DI
  
 
 
-78) \Humbug\Mutator\Number\IntegerValue
+77) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Ctor::call_further_methods() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1272,7 +1256,7 @@ Diff on \tad_DI52_Ctor::call_further_methods() in /Users/Luca/Desktop/di52/src/t
              ), $arg_values);
 
 
-79) \Humbug\Mutator\Number\IntegerValue
+78) \Humbug\Mutator\Number\IntegerValue
 Diff on \tad_DI52_Ctor::call_further_methods() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1288,7 +1272,7 @@ Diff on \tad_DI52_Ctor::call_further_methods() in /Users/Luca/Desktop/di52/src/t
      {
 
 
-80) \Humbug\Mutator\ReturnValue\This
+79) \Humbug\Mutator\ReturnValue\This
 Diff on \tad_DI52_Ctor::store_method_and_args() in /Users/Luca/Desktop/di52/src/tad/DI52/Ctor.php:
 --- Original
 +++ New
@@ -1301,7 +1285,7 @@ Diff on \tad_DI52_Ctor::store_method_and_args() in /Users/Luca/Desktop/di52/src/
 
 
 
-81) \Humbug\Mutator\Boolean\LogicalNot
+80) \Humbug\Mutator\Boolean\LogicalNot
 Diff on \tad_DI52_NewInstanceArgValue::create() in /Users/Luca/Desktop/di52/src/tad/DI52/NewInstanceArgValue.php:
 --- Original
 +++ New
@@ -1317,7 +1301,7 @@ Diff on \tad_DI52_NewInstanceArgValue::create() in /Users/Luca/Desktop/di52/src/
          return $instance;
 
 
-82) \Humbug\Mutator\ReturnValue\NewObject
+81) \Humbug\Mutator\ReturnValue\NewObject
 Diff on \tad_DI52_NewInstanceArgValue::get_value() in /Users/Luca/Desktop/di52/src/tad/DI52/NewInstanceArgValue.php:
 --- Original
 +++ New
