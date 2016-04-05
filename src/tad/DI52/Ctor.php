@@ -144,9 +144,6 @@ class tad_DI52_Ctor
     protected function store_method_and_args($method, array $args = array())
     {
         $_args = array();
-        if (empty($args)) {
-            return $this;
-        }
 
         foreach ($args as $value) {
             $_args[] = tad_DI52_Arg::create($value, $this->container);
