@@ -48,6 +48,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $singletonImplementationObjects = array();
 
     /**
+     * @var array
+     */
+    protected $decoratorsChain = array();
+
+    /**
+     * @var bool
+     */
+    protected $resolvingDecorator = false;
+
+    /**
      * @var tad_DI52_Container
      */
     private $container;
@@ -189,6 +199,20 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         return isset($this->tagged[$tag]);
     }
 
+
+    /**
+     * Binds a chain of decorators to a class or interface.
+     *
+     * @param $classOrInterface
+     * @param array $decorators
+     */
+    public function bindDecorators($classOrInterface, array $decorators)
+    {
+        array_walk($decorators, array($this, 'ensureClassOrInterfaceExists'));
+        $this->bind($classOrInterface, end($decorators));
+        $this->decoratorsChain[$classOrInterface] = $decorators;
+    }
+
     protected function bootServiceProvider(tad_DI52_ServiceProviderInterface $serviceProvider)
     {
         return $serviceProvider->boot();
@@ -271,7 +295,10 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             $serviceProvider = $this->deferredServiceProviders[$classOrInterface];
             $serviceProvider->register();
         }
+
         $isBound = isset($this->bindings[$classOrInterface]);
+        $isDecoratorChain = !$this->resolvingDecorator && isset($this->decoratorsChain[$classOrInterface]);
+
         $isSingleton = in_array($classOrInterface, $this->singletons);
         if (!$isBound) {
             $resolved = $this->resolveUnbound($classOrInterface);
@@ -282,7 +309,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             return $this->resolvedSingletons[$classOrInterface];
         }
 
-        $resolved = $this->resolveBound($classOrInterface);
+        $resolved = $isDecoratorChain ? $this->resolveBoundDecoratorChain($classOrInterface) : $this->resolveBound($classOrInterface);
 
         if ($isSingleton) {
             $this->resolvedSingletons[$classOrInterface] = $resolved;
@@ -352,5 +379,24 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     {
         $implementation = $this->bindings[$classOrInterface];
         return $implementation->instance();
+    }
+
+    protected function resolveBoundDecoratorChain($classOrInterface)
+    {
+        $chain = $this->decoratorsChain[$classOrInterface];
+        $base = array_pop($chain);
+        $this->bind($classOrInterface, $base);
+        $resolvedDecorator = null;
+
+        $this->resolvingDecorator = true;
+
+        foreach (array_reverse($chain) as $decorator) {
+            $resolvedDecorator = $this->resolveUnbound($decorator);
+            $this->bind($classOrInterface, $resolvedDecorator);
+        }
+
+        $this->resolvingDecorator = false;
+
+        return $resolvedDecorator;
     }
 }

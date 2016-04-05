@@ -73,4 +73,12 @@ interface tad_DI52_Bindings_ResolverInterface
      * @return bool
      */
     public function hasTag($tag);
+
+    /**
+     * Binds a chain of decorators to a class or interface.
+     *
+     * @param $classOrInterface
+     * @param array $decorators
+     */
+    public function bindDecorators($classOrInterface, array $decorators);
 }

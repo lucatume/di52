@@ -316,4 +316,15 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     {
         return $this->bindingsResolver->hasTag($tag);
     }
+
+    /**
+     * Binds a chain of decorators to a class or interface.
+     *
+     * @param $classOrInterface
+     * @param array $decorators
+     */
+    public function bindDecorators($classOrInterface, array $decorators)
+    {
+        return $this->bindingsResolver->bindDecorators($classOrInterface, $decorators);
+    }
 }

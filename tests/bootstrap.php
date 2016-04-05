@@ -31,6 +31,11 @@ $files = [
     'DeferredServiceProviderOne.php',
     'DeferredServiceProviderTwo.php',
     'DeferredServiceProviderThree.php',
+    'BaseClassInterface.php',
+    'BaseClass.php',
+    'BaseClassDecoratorOne.php',
+    'BaseClassDecoratorThree.php',
+    'BaseClassDecoratorTwo.php',
 ];
 foreach ($files as $file) {
     include_once dirname(__FILE__) . '/data/' . $file;
