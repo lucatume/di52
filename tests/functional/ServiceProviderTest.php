@@ -1,5 +1,5 @@
 <?php
-include_once dirname(__FILE__) . '/data/ServiceProviderOne.php';
+include_once dirname(__FILE__) . '../../data/ServiceProviderOne.php';
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
