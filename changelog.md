@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.3] - 2016-02-13
+### Fixed
+- singleton resolution for same implementations
+
+## [1.2.2] - 2016-02-13
+- doc updates
+
 ## [1.2.1] - 2016-02-13
 ### Added
 - `hasTag($tag)` method to the container
@@ -32,7 +39,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/1.2.2...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/1.2.3...HEAD
+[1.2.3]: https://github.com/lucatume/di52/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/lucatume/di52/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/lucatume/di52/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/lucatume/di52/compare/1.1.2...1.2.0
