@@ -125,8 +125,7 @@ $four = $container->make('InterfaceOne');
 ```
 
 ### Decorator binding
-Using the [decorator pattern](!wiki) with the container might lead to infinite circular resolution loops due to the container trying to provide a class with an instance of itself.  
-Given the following classes:
+Using the [decorator pattern](https://en.wikipedia.org/wiki/Decorator_pattern "Decorator pattern") with the container might lead to infinite circular resolution loops due to the container trying to provide a class with an instance of itself.  Given the following classes:
 
 ```PHP
 class A implements SomeInterface {

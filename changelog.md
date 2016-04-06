@@ -4,11 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [1.2.4] - 2016-02-13
+## [1.2.5] - 2016-03-06
+### Added
+- support for decorator pattern in PHP 5.2 compatible syntax
+- code highlighting for code examples in doc (thanks @omarreiss)
+
+## [1.2.4] - 2016-03-05
 ### Added
 - tests for uncovered code
 
-## [1.2.3] - 2016-02-13
+## [1.2.3] - 2016-03-04
 ### Fixed
 - singleton resolution for same implementations
 
@@ -43,7 +48,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/1.2.4...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/1.2.5...HEAD
+[1.2.5]: https://github.com/lucatume/di52/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/lucatume/di52/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/lucatume/di52/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/lucatume/di52/compare/1.2.1...1.2.2
