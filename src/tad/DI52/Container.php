@@ -338,4 +338,19 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     {
         return $this->bindingsResolver->singletonDecorators($classOrInterface, $decorators);
     }
+
+    /**
+     * Binds a class or interface implementation to a specific class resolution.
+     * When resolving `customClass` requests for the `classOrInterface` will be bound to `implementation`.
+     *
+     * @param string $customClass
+     * @param string $classOrInterface
+     * @param mixed $implementation
+     *
+     * @return mixed
+     */
+    public function bindFor($customClass, $classOrInterface, $implementation)
+    {
+        return $this->bindingsResolver->bindFor($customClass, $classOrInterface, $implementation);
+    }
 }

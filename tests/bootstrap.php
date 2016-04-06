@@ -36,6 +36,10 @@ $files = [
     'BaseClassDecoratorOne.php',
     'BaseClassDecoratorThree.php',
     'BaseClassDecoratorTwo.php',
+    'CustomClassOne.php',
+    'CustomClassTwo.php',
+    'CustomClassOneExtension.php',
+    'CustomClassThree.php',
 ];
 foreach ($files as $file) {
     include_once dirname(__FILE__) . '/data/' . $file;
