@@ -66,17 +66,18 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function make($alias)
     {
-        if ($this->bindingsResolver->isBound($alias) || interface_exists($alias) || class_exists($alias)) {
+        try {
             return $this->bindingsResolver->resolve($alias);
+        } catch (Exception $e) {
+
+            $this->assert_ctor_alias($alias);
+
+            $ctor = $this->ctors[$alias];
+
+            $instance = $ctor->get_object_instance();
+
+            return $instance;
         }
-
-        $this->assert_ctor_alias($alias);
-
-        $ctor = $this->ctors[$alias];
-
-        $instance = $ctor->get_object_instance();
-
-        return $instance;
     }
 
     /**
