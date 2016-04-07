@@ -305,17 +305,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     public function resolve($classOrInterface)
     {
-        $isSingleton = isset($this->singletons[$classOrInterface]);
-
-        if ($isSingleton && isset($this->resolvedSingletons[$classOrInterface])) {
-            return $this->resolvedSingletons[$classOrInterface];
-        }
-        
-        $isDeferredBound = isset($this->deferredServiceProviders[$classOrInterface]);
-        if ($isDeferredBound) {
+        if (isset($this->deferredServiceProviders[$classOrInterface])) {
             $serviceProvider = $this->deferredServiceProviders[$classOrInterface];
             $serviceProvider->register();
         }
+       
+        $isSingleton = isset($this->singletons[$classOrInterface]);
+        if ($isSingleton && isset($this->resolvedSingletons[$classOrInterface])) {
+            return $this->resolvedSingletons[$classOrInterface];
+        }
+
 
         $isCustomBound = array_key_exists($classOrInterface, $this->customBindings);
         $isBound = $isCustomBound || isset($this->bindings[$classOrInterface]);
