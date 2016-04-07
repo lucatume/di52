@@ -73,6 +73,11 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $container;
 
     /**
+     * @var array
+     */
+    protected $reflectors = array();
+
+    /**
      * @param tad_DI52_Container $container
      */
     public function __construct(tad_DI52_Container $container)
@@ -365,19 +370,23 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
     protected function resolveUnbound($classOrInterface)
     {
-        $reflector = new ReflectionClass($classOrInterface);
+        if (isset($this->reflectors[$classOrInterface])) {
+            list($reflector, $constructor, $parameters) = $this->reflectors[$classOrInterface];
+        } else {
+            $reflector = new ReflectionClass($classOrInterface);
+            if (!$reflector->isInstantiable()) {
+                throw new Exception('[' . $classOrInterface . '] is not instantiatable.');
+            }
+            $constructor = $reflector->getConstructor();
+            $parameters = $constructor !== null ? $constructor->getParameters() : array();
 
-        if (!$reflector->isInstantiable()) {
-            throw new \Exception("[{$classOrInterface}] is not instantiable");
+            $this->reflectors[$classOrInterface] = array($reflector, $constructor, $parameters);
         }
-
-        $constructor = $reflector->getConstructor();
 
         if ($constructor === null) {
-            return new $classOrInterface;
+            return $reflector->newInstance();
         }
 
-        $parameters = $constructor->getParameters();
         $dependencies = $this->getDependencies($parameters);
 
         $this->dependencies = array();
