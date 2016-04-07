@@ -16,19 +16,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * it should throw if trying to bind not an interface or class
-     */
-    public function it_should_throw_if_trying_to_bind_not_an_interface_or_class()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('SomeNonExistingInterfaceOrClass', 'ConcreteClassImplementingTestInterfaceOne');
-    }
-
-    /**
-     * @test
      * it should throw if trying to bind an existing interface to a non existing class or implementation
      */
     public function it_should_throw_if_trying_to_bind_an_existing_interface_to_a_non_existing_class_or_implementation()
@@ -154,19 +141,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $out = $sut->resolve('ConcreteClassImplementingTestInterfaceOne');
 
         $this->assertInstanceOf('ConcreteClassImplementingTestInterfaceOne', $out);
-    }
-
-    /**
-     * @test
-     * it should throw if trying to resolve a non existing interface or class
-     */
-    public function it_should_throw_if_trying_to_resolve_a_non_existing_interface()
-    {
-        $sut = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $sut->resolve('NonExisting');
     }
 
     /**

@@ -213,7 +213,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     public function bindDecorators($classOrInterface, array $decorators)
     {
-        array_walk($decorators, array($this, 'ensureClassOrInterfaceExists'));
         $this->bind($classOrInterface, end($decorators));
         $this->decoratorsChain[$classOrInterface] = $decorators;
     }
@@ -226,7 +225,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     public function singletonDecorators($classOrInterface, $decorators)
     {
-        array_walk($decorators, array($this, 'ensureClassOrInterfaceExists'));
         $this->singleton($classOrInterface, end($decorators));
         $this->decoratorsChain[$classOrInterface] = $decorators;
     }
@@ -256,18 +254,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
     /**
      * @param $classOrInterface
-     */
-    protected function ensureClassOrInterfaceExists($classOrInterface)
-    {
-        $isClass = class_exists($classOrInterface);
-        $isInterface = interface_exists($classOrInterface);
-        if (!($isInterface || $isClass)) {
-            throw new InvalidArgumentException("[{$classOrInterface}] does not exist");
-        }
-    }
-
-    /**
-     * @param $classOrInterface
      * @param $implementation
      * @param $skipImplementationCheck
      */
@@ -277,8 +263,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $classExists = class_exists($classOrInterface);
         $isCallbackImplementation = is_callable($implementation);
         $isInstanceImplementation = is_object($implementation);
-
-        $this->ensureClassOrInterfaceExists($classOrInterface);
 
         $implementation_object = null;
 
@@ -324,8 +308,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     public function resolve($classOrInterface)
     {
-        $this->ensureClassOrInterfaceExists($classOrInterface);
-
         $isDeferredBound = isset($this->deferredServiceProviders[$classOrInterface]);
         if ($isDeferredBound) {
             $serviceProvider = $this->deferredServiceProviders[$classOrInterface];
