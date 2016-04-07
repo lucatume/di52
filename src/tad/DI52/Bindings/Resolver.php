@@ -63,6 +63,11 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $customBindings = array();
 
     /**
+     * @var array
+     */
+    protected $existingCache = array();
+
+    /**
      * @var tad_DI52_Container
      */
     private $container;
@@ -259,11 +264,17 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     protected function ensureClassOrInterfaceExists($classOrInterface)
     {
+        if (isset($this->existingCache[$classOrInterface])) {
+            return;
+        }
+
         $isClass = class_exists($classOrInterface);
         $isInterface = interface_exists($classOrInterface);
         if (!($isInterface || $isClass)) {
             throw new InvalidArgumentException("[{$classOrInterface}] does not exist");
         }
+
+        $this->existingCache[] = $classOrInterface;
     }
 
     /**
