@@ -360,7 +360,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         foreach ($parameters as $parameter) {
             $dependency = $parameter->getClass();
 
-            if (is_null($dependency)) {
+            if ($dependency === null) {
                 $dependencies[] = $this->resolveNonClass($parameter);
             } else {
                 $dependencies[] = $this->resolve($dependency->name);
@@ -394,7 +394,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
         $constructor = $reflector->getConstructor();
 
-        if (is_null($constructor)) {
+        if ($constructor === null) {
             return new $classOrInterface;
         }
 
