@@ -111,7 +111,7 @@ class tad_DI52_Ctor
         if ($this->method === '__construct') {
             $rc = new ReflectionClass($this->class);
 
-            return count($args) ? $rc->newInstanceArgs($args) : $rc->newInstance();
+            return isset($args) ? $rc->newInstanceArgs($args) : $rc->newInstance();
         }
 
         return call_user_func_array(array(
