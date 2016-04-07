@@ -16,19 +16,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * it should throw if trying to bind an existing interface to a non existing class or implementation
-     */
-    public function it_should_throw_if_trying_to_bind_an_existing_interface_to_a_non_existing_class_or_implementation()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('TestInterfaceOne', 'SomeNonExistingClass');
-    }
-
-    /**
-     * @test
      * it should throw if trying to bind a non callable implementation
      */
     public function it_should_throw_if_trying_to_bind_a_non_callable_implementation()
@@ -38,43 +25,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('InvalidArgumentException');
 
         $resolver->bind('TestInterfaceOne', 23);
-    }
-
-    /**
-     * @test
-     * it should throw if trying to bind an interface to a class not implementing it
-     */
-    public function it_should_throw_if_trying_to_bind_an_interface_to_a_class_not_implementing_it()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo');
-    }
-
-    /**
-     * @test
-     * it should throw if trying to bind a class to a class not extending it
-     */
-    public function it_should_throw_if_trying_to_bind_a_class_to_a_class_not_extending_it()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('ConcreteClassImplementingTestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo');
-    }
-
-
-    /**
-     * @test
-     * it should allow skipping implementation check
-     */
-    public function it_should_allow_skipping_implementation_check()
-    {
-        $resolver = $this->makeInstance();
-        $resolver->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo', true);
     }
 
     /**

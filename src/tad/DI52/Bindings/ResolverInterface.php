@@ -7,10 +7,9 @@ interface tad_DI52_Bindings_ResolverInterface
      *
      * @param string $classOrInterface
      * @param string $implementation
-     * @param bool   $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function bind($classOrInterface, $implementation, $skipImplementationCheck = false);
+    public function bind($classOrInterface, $implementation);
 
     /**
      * Returns an instance of the class or object bound to an interface.
@@ -23,12 +22,11 @@ interface tad_DI52_Bindings_ResolverInterface
     /**
      * Binds an interface or class to an implementation and will always return the same instance.
      *
-     * @param string $interfaceOrClass
+     * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false);
+    public function singleton($classOrInterface, $implementation);
 
     /**
      * Tags an array of implementation bindings.

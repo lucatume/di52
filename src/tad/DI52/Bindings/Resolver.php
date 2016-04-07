@@ -80,26 +80,24 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      *
      * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function bind($classOrInterface, $implementation, $skipImplementationCheck = false)
+    public function bind($classOrInterface, $implementation)
     {
-        $this->_bind($classOrInterface, $implementation, $skipImplementationCheck);
+        $this->_bind($classOrInterface, $implementation);
     }
 
     /**
      * Binds an interface or class to an implementation and will always return the same instance.
      *
-     * @param string $interfaceOrClass
+     * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    public function singleton($classOrInterface, $implementation)
     {
-        $this->_bind($interfaceOrClass, $implementation, $skipImplementationCheck, true);
-        $this->singletons[] = $interfaceOrClass;
+        $this->_bind($classOrInterface, $implementation, true);
+        $this->singletons[$classOrInterface] = $classOrInterface;
     }
 
     /**
@@ -144,7 +142,8 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         if (!class_exists($serviceProviderClass)) {
             throw new InvalidArgumentException("Service provider class [{$serviceProviderClass}] does not exist.");
         }
-        if (!in_array('tad_DI52_ServiceProviderInterface', class_implements($serviceProviderClass))) {
+        $class_implements = class_implements($serviceProviderClass);
+        if (!isset($class_implements['tad_DI52_ServiceProviderInterface'])) {
             throw new InvalidArgumentException("Service provider class [{$serviceProviderClass}] is not an implementation of the [tad_DI52_ServiceProviderInterface] interface.");
         }
 
@@ -253,14 +252,12 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     }
 
     /**
-     * @param $classOrInterface
-     * @param $implementation
-     * @param $skipImplementationCheck
+     * @param string $classOrInterface
+     * @param mixed $implementation
+     * @param bool $isSingleton
      */
-    protected function _bind($classOrInterface, $implementation, $skipImplementationCheck, $isSingleton = false)
+    protected function _bind($classOrInterface, $implementation, $isSingleton = false)
     {
-        $interfaceExists = interface_exists($classOrInterface);
-        $classExists = class_exists($classOrInterface);
         $isCallbackImplementation = is_callable($implementation);
         $isInstanceImplementation = is_object($implementation);
 
@@ -269,16 +266,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         if ($isSingleton && $index = array_search($implementation, $this->singletonImplementations)) {
             $implementation_object = $this->singletonImplementationObjects[$index];
         } elseif (is_string($implementation)) {
-            if (!(class_exists($implementation))) {
-                throw new InvalidArgumentException("Implementation class [{$implementation}] does not exist.");
-            }
-            if (!$skipImplementationCheck) {
-                if ($interfaceExists && !in_array($classOrInterface, class_implements($implementation))) {
-                    throw new InvalidArgumentException("Implementation class [{$implementation}] should implement interface [{$classOrInterface}].");
-                } elseif ($classExists && !(in_array($classOrInterface, class_parents($implementation)) || $implementation === $classOrInterface)) {
-                    throw new InvalidArgumentException("Implementation class [{$implementation}] should extend class [{$classOrInterface}].");
-                }
-            }
             $implementation_object = new tad_DI52_Bindings_ConstructorImplementation($implementation, $this->container, $this);
         } elseif ($isCallbackImplementation) {
             $implementation_object = new tad_DI52_Bindings_CallbackImplementation($implementation, $this->container, $this);
@@ -318,7 +305,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $isBound = $isCustomBound || isset($this->bindings[$classOrInterface]);
         $isDecoratorChain = !$this->resolvingDecorator && isset($this->decoratorsChain[$classOrInterface]);
 
-        $isSingleton = in_array($classOrInterface, $this->singletons);
+        $isSingleton = isset($this->singletons[$classOrInterface]);
         if (!$isBound) {
             $resolved = $this->resolveUnbound($classOrInterface);
             return $resolved;
