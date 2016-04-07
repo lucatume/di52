@@ -16,4 +16,9 @@ interface tad_DI52_Bindings_ImplementationInterface
      * @return mixed
      */
     public function instance();
+
+    /**
+     * @return mixed
+     */
+    public function getImplementation();
 }

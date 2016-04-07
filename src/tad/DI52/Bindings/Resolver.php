@@ -425,7 +425,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     private function resolveBound($classOrInterface)
     {
         $implementation = $this->bindings[$classOrInterface];
-        return $implementation->instance();
+        return $implementation->getImplementation() === $classOrInterface ? $this->resolveUnbound($classOrInterface) : $implementation->instance();
     }
 
     protected function resolveBoundDecoratorChain($classOrInterface)

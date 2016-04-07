@@ -704,13 +704,13 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     public function it_should_use_existing_bindings_when_resolving_class_with_custom_bindings()
     {
         $container = $this->makeInstance();
-    
+
         $container->bind('TestInterfaceOne', 'ClassOne');
         $container->bind('TestInterfaceTwo', 'InterfaceOneAndTwoImplementation');
         $container->bindFor('CustomClassThree', 'TestInterfaceOne', 'CustomClassOneExtension');
 
         $classOne = $container->resolve('TestInterfaceOne');
-        $this->assertInstanceOf('ClassOne',$classOne);
+        $this->assertInstanceOf('ClassOne', $classOne);
         $this->assertNotInstanceOf('CustomClassOneExtension', $classOne);
 
         $classThree = $container->resolve('CustomClassThree');
@@ -718,5 +718,18 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('CustomClassOneExtension', $one);
         $two = $classThree->getTwo();
         $this->assertInstanceOf('InterfaceOneAndTwoImplementation', $two);
+    }
+
+    /**
+     * @test
+     * it should allow binding a class to itself
+     */
+    public function it_should_allow_binding_a_class_to_itself()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->singleton('ClassOne', 'ClassOne');
+
+        $this->assertSame($sut->resolve('ClassOne'), $sut->resolve('ClassOne'));
     }
 }
