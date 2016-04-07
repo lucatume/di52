@@ -381,11 +381,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
     private function resolveUnbound($classOrInterface)
     {
-        $isClass = class_exists($classOrInterface);
-        $isInterface = interface_exists($classOrInterface);
-        if ($isInterface) {
-            throw new InvalidArgumentException("Interface [{$classOrInterface}] is not bound to any implementation.");
-        }
         $reflector = new ReflectionClass($classOrInterface);
 
         if (!$reflector->isInstantiable()) {

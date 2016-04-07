@@ -151,9 +151,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $resolver = $this->makeInstance();
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException('Exception');
 
-        $out = $resolver->resolve('TestInterfaceOne');
+        $resolver->resolve('TestInterfaceOne');
     }
 
     /**
@@ -239,9 +239,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $sut = $this->makeInstance();
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException('Exception');
 
-        $out = $sut->resolve('DependingClassOne');
+        $sut->resolve('DependingClassOne');
     }
 
     /**
