@@ -16,6 +16,12 @@
       ]
     }
   },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/TomBZombie/php-dependency-injection-benchmarks.git"
+    }
+  ],
   "require": {
     "xrstf/composer-php52": "1.*"
   },
