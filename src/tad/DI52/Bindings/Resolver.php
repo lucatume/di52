@@ -63,9 +63,14 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $customBindings = array();
 
     /**
+     * @var array
+     */
+    protected $dependencies;
+
+    /**
      * @var tad_DI52_Container
      */
-    private $container;
+    protected $container;
 
     /**
      * @param tad_DI52_Container $container
@@ -340,24 +345,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         return $resolved;
     }
 
-    private function getDependencies($parameters)
+    protected function getDependencies($parameters)
     {
-        $dependencies = array();
+        $this->dependencies = array();
 
-        foreach ($parameters as $parameter) {
-            $dependency = $parameter->getClass();
+        array_map(array($this, 'resolveDependency'), $parameters);
 
-            if ($dependency === null) {
-                $dependencies[] = $this->resolveNonClass($parameter);
-            } else {
-                $dependencies[] = $this->resolve($dependency->name);
-            }
-        }
-
-        return $dependencies;
+        return $this->dependencies;
     }
 
-    private function resolveNonClass($parameter)
+    protected function resolveNonClass($parameter)
     {
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
@@ -366,7 +363,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         throw new InvalidArgumentException("Erm.. Cannot resolve the unkown!?");
     }
 
-    private function resolveUnbound($classOrInterface)
+    protected function resolveUnbound($classOrInterface)
     {
         $reflector = new ReflectionClass($classOrInterface);
 
@@ -383,10 +380,12 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $parameters = $constructor->getParameters();
         $dependencies = $this->getDependencies($parameters);
 
+        $this->dependencies = array();
+
         return $reflector->newInstanceArgs($dependencies);
     }
 
-    private function resolveBound($classOrInterface)
+    protected function resolveBound($classOrInterface)
     {
         $implementation = $this->bindings[$classOrInterface];
         return $implementation->getImplementation() === $classOrInterface ? $this->resolveUnbound($classOrInterface) : $implementation->instance();
@@ -414,5 +413,11 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected function resetCustomBindings()
     {
         $this->customBindings = array();
+    }
+
+    protected function resolveDependency($parameter)
+    {
+        $dependency = $parameter->getClass();
+        $this->dependencies[] = $dependency === null ? $this->resolveNonClass($parameter) : $this->resolve($dependency->name);
     }
 }
