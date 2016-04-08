@@ -196,7 +196,7 @@ $container->singletonDecorators('SomeInterface', $decoratorsChain);
 ```
 
 ### Resolving unbound implementations
-The container will do its best to return an instance even when no bindigs about it have been set: if all the dependencies of a class are concrete classes or primitives with a default value than the container will take care of that:
+The container will do its best to return an instance even when no bindings about it have been set: if all the dependencies of a class are concrete classes or primitives with a default value than the container will take care of that:
     
 ```PHP
 // file ClassFour.php
