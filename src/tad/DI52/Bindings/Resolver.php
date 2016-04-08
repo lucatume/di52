@@ -73,6 +73,16 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $reflectors = array();
 
     /**
+     * @var string
+     */
+    protected $currentlyResolvingClassOrInterface;
+
+    /**
+     * @var array
+     */
+    protected $resolvedDependencies = array();
+
+    /**
      * @param tad_DI52_Container $container
      */
     public function __construct(tad_DI52_Container $container)
@@ -316,11 +326,20 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         return $resolved;
     }
 
-    protected function getDependencies($parameters)
+
+    /**
+     * @param ReflectionParameter[] $parameters
+     * @param string $classOrInterface
+     * @return array
+     */
+    protected function getDependencies(array $parameters, $classOrInterface)
     {
         $this->dependencies = array();
+        $this->currentlyResolvingClassOrInterface = $classOrInterface;
 
         array_map(array($this, 'resolveDependency'), $parameters);
+
+        $this->currentlyResolvingClassOrInterface = false;
 
         return $this->dependencies;
     }
@@ -353,7 +372,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             return $reflector->newInstance();
         }
 
-        $dependencies = $this->getDependencies($parameters);
+        $dependencies = $this->getDependencies($parameters, $classOrInterface);
 
         $this->dependencies = array();
 
@@ -385,9 +404,20 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         return $resolvedDecorator;
     }
 
-    protected function resolveDependency($parameter)
+    /**
+     * @param ReflectionParameter $parameter
+     */
+    protected function resolveDependency(ReflectionParameter $parameter)
     {
-        $dependency = $parameter->getClass();
-        $this->dependencies[] = $dependency === null ? $this->resolveNonClass($parameter) : $this->resolve($dependency->name);
+        $parameterKey = $this->currentlyResolvingClassOrInterface . $parameter->name;
+        if (isset($this->resolvedDependencies[$parameterKey])) {
+            $resolvedDependency = $this->resolvedDependencies[$parameterKey];
+        } else {
+            $dependency = $parameter->getClass();
+            $resolvedDependency = $dependency === null ? $this->resolveNonClass($parameter) : $this->resolve($dependency->name);
+            $this->resolvedDependencies[$parameterKey] = $resolvedDependency;
+        }
+
+        $this->dependencies[] = $resolvedDependency;
     }
 }
