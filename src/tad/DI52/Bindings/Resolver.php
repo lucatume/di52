@@ -83,11 +83,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $resolvedDependencies = array();
 
     /**
-     * @var array
-     */
-    protected $instances;
-
-    /**
      * @param tad_DI52_Container $container
      */
     public function __construct(tad_DI52_Container $container)
@@ -373,23 +368,15 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             $this->reflectors[$classOrInterface] = array($reflector, $constructor, $parameters);
         }
 
-        if (isset($this->instances[$classOrInterface])) {
-            return unserialize(serialize($this->instances[$classOrInterface]));
-        }
-
         if ($constructor === null) {
-            $instance = $reflector->newInstance();
-        } else {
-            $dependencies = $this->getDependencies($parameters, $classOrInterface);
-            $this->dependencies = array();
-            $instance = $reflector->newInstanceArgs($dependencies);
+            return $reflector->newInstance();
         }
 
-        if (!isset($this->instances[$classOrInterface])) {
-            $this->instances[$classOrInterface] = $instance;
-        }
+        $dependencies = $this->getDependencies($parameters, $classOrInterface);
 
-        return $instance;
+        $this->dependencies = array();
+
+        return $reflector->newInstanceArgs($dependencies);
     }
 
     protected function resolveBound($classOrInterface)
