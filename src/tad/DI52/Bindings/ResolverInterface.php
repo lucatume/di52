@@ -87,16 +87,4 @@ interface tad_DI52_Bindings_ResolverInterface
      * @param array $decorators
      */
     public function singletonDecorators($classOrInterface, $decorators);
-
-    /**
-     * Binds a class or interface implementation to a specific class resolution.
-     * When resolving `customClass` requests for the `classOrInterface` will be bound to `implementation`.
-     *
-     * @param string $customClass
-     * @param string $classOrInterface
-     * @param mixed $implementation
-     *
-     * @return mixed
-     */
-    public function bindFor($customClass, $classOrInterface, $implementation);
 }

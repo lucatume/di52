@@ -588,64 +588,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * it should allow to bind a custom implementation class to an interface
-     */
-    public function it_should_allow_to_bind_a_custom_implementation_class_to_an_interface()
-    {
-        $container = $this->makeInstance();
-
-        $container->bindFor('CustomClassOne', 'TestInterfaceOne', 'ExtendingClassOne');
-        $container->bind('TestInterfaceOne', 'ClassOne');
-
-        $customImplementation = $container->resolve('CustomClassOne')->getOne();
-        $this->assertInstanceOf('ExtendingClassOne', $customImplementation);
-        $made = $container->resolve('TestInterfaceOne');
-        $this->assertInstanceOf('ClassOne', $made);
-        $this->assertNotInstanceOf('ExtendingClassOne', $made);
-    }
-
-    /**
-     * @test
-     * it should allow to bind a custom implementation class to a class
-     */
-    public function it_should_allow_to_bind_a_custom_implementation_class_to_a_class()
-    {
-        $container = $this->makeInstance();
-
-        $container->bindFor('CustomClassTwo', 'ClassOne', 'CustomClassOneExtension');
-
-        $made = $container->resolve('ClassOne');
-        $this->assertInstanceOf('ClassOne', $made);
-        $this->assertNotInstanceOf('CustomClassOneExtension', $made);
-        $customImplementation = $container->resolve('CustomClassTwo')->getOne();
-        $this->assertInstanceOf('CustomClassOneExtension', $customImplementation);
-    }
-
-    /**
-     * @test
-     * it should use existing bindings when resolving class with custom bindings
-     */
-    public function it_should_use_existing_bindings_when_resolving_class_with_custom_bindings()
-    {
-        $container = $this->makeInstance();
-
-        $container->bind('TestInterfaceOne', 'ClassOne');
-        $container->bind('TestInterfaceTwo', 'InterfaceOneAndTwoImplementation');
-        $container->bindFor('CustomClassThree', 'TestInterfaceOne', 'CustomClassOneExtension');
-
-        $classOne = $container->resolve('TestInterfaceOne');
-        $this->assertInstanceOf('ClassOne', $classOne);
-        $this->assertNotInstanceOf('CustomClassOneExtension', $classOne);
-
-        $classThree = $container->resolve('CustomClassThree');
-        $one = $classThree->getOne();
-        $this->assertInstanceOf('CustomClassOneExtension', $one);
-        $two = $classThree->getTwo();
-        $this->assertInstanceOf('InterfaceOneAndTwoImplementation', $two);
-    }
-
-    /**
-     * @test
      * it should allow binding a class to itself
      */
     public function it_should_allow_binding_a_class_to_itself()
