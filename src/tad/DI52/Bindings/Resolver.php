@@ -83,6 +83,11 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $resolvedDependencies = array();
 
     /**
+     * @var array
+     */
+    protected $resolvedClassDependencies;
+
+    /**
      * @param tad_DI52_Container $container
      */
     public function __construct(tad_DI52_Container $container)
@@ -334,12 +339,18 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
      */
     protected function getDependencies(array $parameters, $classOrInterface)
     {
+        if (isset($this->resolvedClassDependencies[$classOrInterface])) {
+            return $this->resolvedClassDependencies[$classOrInterface];
+        }
+
         $this->dependencies = array();
         $this->currentlyResolvingClassOrInterface = $classOrInterface;
 
         array_map(array($this, 'resolveDependency'), $parameters);
 
         $this->currentlyResolvingClassOrInterface = false;
+
+        $this->resolvedClassDependencies[$classOrInterface] = $this->dependencies;
 
         return $this->dependencies;
     }
