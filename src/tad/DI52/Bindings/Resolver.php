@@ -369,7 +369,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         }
 
         if ($constructor === null) {
-            return $reflector->newInstance();
+            return new $classOrInterface;
         }
 
         $dependencies = $this->getDependencies($parameters, $classOrInterface);
