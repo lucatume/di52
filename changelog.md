@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.2.6] - 2016-04-11
 ### Changed
 - internal workings to improve performance (using [@TomBZombie benchmarks](https://github.com/TomBZombie/php-dependency-injection-benchmarks)
 
@@ -50,7 +52,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/1.2.5...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/1.2.6...HEAD
+[1.2.6]: https://github.com/lucatume/di52/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/lucatume/di52/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/lucatume/di52/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/lucatume/di52/compare/1.2.2...1.2.3
