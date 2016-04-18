@@ -355,13 +355,13 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         return $this->dependencies;
     }
 
-    protected function resolveNonClass($parameter)
+    protected function resolveNonClass(ReflectionParameter $parameter)
     {
         if ($parameter->isDefaultValueAvailable()) {
             return $parameter->getDefaultValue();
         }
 
-        throw new InvalidArgumentException("Erm.. Cannot resolve the unkown!?");
+        throw new InvalidArgumentException("Cannot resolve parameter [$parameter->name] of class [$this->currentlyResolvingClassOrInterface]: default value for primitive misssing");
     }
 
     protected function resolveUnbound($classOrInterface)
