@@ -16,32 +16,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * it should throw if trying to bind not an interface or class
-     */
-    public function it_should_throw_if_trying_to_bind_not_an_interface_or_class()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('SomeNonExistingInterfaceOrClass', 'ConcreteClassImplementingTestInterfaceOne');
-    }
-
-    /**
-     * @test
-     * it should throw if trying to bind an existing interface to a non existing class or implementation
-     */
-    public function it_should_throw_if_trying_to_bind_an_existing_interface_to_a_non_existing_class_or_implementation()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('TestInterfaceOne', 'SomeNonExistingClass');
-    }
-
-    /**
-     * @test
      * it should throw if trying to bind a non callable implementation
      */
     public function it_should_throw_if_trying_to_bind_a_non_callable_implementation()
@@ -51,43 +25,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException('InvalidArgumentException');
 
         $resolver->bind('TestInterfaceOne', 23);
-    }
-
-    /**
-     * @test
-     * it should throw if trying to bind an interface to a class not implementing it
-     */
-    public function it_should_throw_if_trying_to_bind_an_interface_to_a_class_not_implementing_it()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo');
-    }
-
-    /**
-     * @test
-     * it should throw if trying to bind a class to a class not extending it
-     */
-    public function it_should_throw_if_trying_to_bind_a_class_to_a_class_not_extending_it()
-    {
-        $resolver = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $resolver->bind('ConcreteClassImplementingTestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo');
-    }
-
-
-    /**
-     * @test
-     * it should allow skipping implementation check
-     */
-    public function it_should_allow_skipping_implementation_check()
-    {
-        $resolver = $this->makeInstance();
-        $resolver->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo', true);
     }
 
     /**
@@ -158,28 +95,15 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * it should throw if trying to resolve a non existing interface or class
-     */
-    public function it_should_throw_if_trying_to_resolve_a_non_existing_interface()
-    {
-        $sut = $this->makeInstance();
-
-        $this->setExpectedException('InvalidArgumentException');
-
-        $sut->resolve('NonExisting');
-    }
-
-    /**
-     * @test
      * it should throw if trying to resolve an existing non bound interface alias
      */
     public function it_should_throw_if_trying_to_resolve_an_existing_non_bound_interface_alias()
     {
         $resolver = $this->makeInstance();
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException('Exception');
 
-        $out = $resolver->resolve('TestInterfaceOne');
+        $resolver->resolve('TestInterfaceOne');
     }
 
     /**
@@ -265,9 +189,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $sut = $this->makeInstance();
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException('Exception');
 
-        $out = $sut->resolve('DependingClassOne');
+        $sut->resolve('DependingClassOne');
     }
 
     /**
@@ -660,64 +584,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $instance2 = $container->resolve('BaseClassInterface');
 
         $this->assertSame($instance, $instance2);
-    }
-
-    /**
-     * @test
-     * it should allow to bind a custom implementation class to an interface
-     */
-    public function it_should_allow_to_bind_a_custom_implementation_class_to_an_interface()
-    {
-        $container = $this->makeInstance();
-
-        $container->bindFor('CustomClassOne', 'TestInterfaceOne', 'ExtendingClassOne');
-        $container->bind('TestInterfaceOne', 'ClassOne');
-
-        $customImplementation = $container->resolve('CustomClassOne')->getOne();
-        $this->assertInstanceOf('ExtendingClassOne', $customImplementation);
-        $made = $container->resolve('TestInterfaceOne');
-        $this->assertInstanceOf('ClassOne', $made);
-        $this->assertNotInstanceOf('ExtendingClassOne', $made);
-    }
-
-    /**
-     * @test
-     * it should allow to bind a custom implementation class to a class
-     */
-    public function it_should_allow_to_bind_a_custom_implementation_class_to_a_class()
-    {
-        $container = $this->makeInstance();
-
-        $container->bindFor('CustomClassTwo', 'ClassOne', 'CustomClassOneExtension');
-
-        $made = $container->resolve('ClassOne');
-        $this->assertInstanceOf('ClassOne', $made);
-        $this->assertNotInstanceOf('CustomClassOneExtension', $made);
-        $customImplementation = $container->resolve('CustomClassTwo')->getOne();
-        $this->assertInstanceOf('CustomClassOneExtension', $customImplementation);
-    }
-
-    /**
-     * @test
-     * it should use existing bindings when resolving class with custom bindings
-     */
-    public function it_should_use_existing_bindings_when_resolving_class_with_custom_bindings()
-    {
-        $container = $this->makeInstance();
-
-        $container->bind('TestInterfaceOne', 'ClassOne');
-        $container->bind('TestInterfaceTwo', 'InterfaceOneAndTwoImplementation');
-        $container->bindFor('CustomClassThree', 'TestInterfaceOne', 'CustomClassOneExtension');
-
-        $classOne = $container->resolve('TestInterfaceOne');
-        $this->assertInstanceOf('ClassOne', $classOne);
-        $this->assertNotInstanceOf('CustomClassOneExtension', $classOne);
-
-        $classThree = $container->resolve('CustomClassThree');
-        $one = $classThree->getOne();
-        $this->assertInstanceOf('CustomClassOneExtension', $one);
-        $two = $classThree->getTwo();
-        $this->assertInstanceOf('InterfaceOneAndTwoImplementation', $two);
     }
 
     /**

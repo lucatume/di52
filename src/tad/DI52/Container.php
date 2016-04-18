@@ -66,17 +66,18 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function make($alias)
     {
-        if (interface_exists($alias) || class_exists($alias)) {
+        try {
             return $this->bindingsResolver->resolve($alias);
+        } catch (Exception $e) {
+
+            $this->assert_ctor_alias($alias);
+
+            $ctor = $this->ctors[$alias];
+
+            $instance = $ctor->get_object_instance();
+
+            return $instance;
         }
-
-        $this->assert_ctor_alias($alias);
-
-        $ctor = $this->ctors[$alias];
-
-        $instance = $ctor->get_object_instance();
-
-        return $instance;
     }
 
     /**
@@ -229,12 +230,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      *
      * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function bind($classOrInterface, $implementation, $skipImplementationCheck = false)
+    public function bind($classOrInterface, $implementation)
     {
-        return $this->bindingsResolver->bind($classOrInterface, $implementation, $skipImplementationCheck);
+        return $this->bindingsResolver->bind($classOrInterface, $implementation);
     }
 
     public function _setBindingsResolver(tad_DI52_Bindings_ResolverInterface $bindingsResolver)
@@ -245,14 +245,13 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     /**
      * Binds an interface or class to an implementation.
      *
-     * @param string $interfaceOrClass
+     * @param string $classOrInterface
      * @param string $implementation
-     * @param bool $skipImplementationCheck Whether the implementation should be checked as valid implementation or
      * extension of the class.
      */
-    public function singleton($interfaceOrClass, $implementation, $skipImplementationCheck = false)
+    public function singleton($classOrInterface, $implementation)
     {
-        return $this->bindingsResolver->singleton($interfaceOrClass, $implementation, $skipImplementationCheck);
+        return $this->bindingsResolver->singleton($classOrInterface, $implementation);
     }
 
     /**
@@ -337,20 +336,5 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
     public function singletonDecorators($classOrInterface, $decorators)
     {
         return $this->bindingsResolver->singletonDecorators($classOrInterface, $decorators);
-    }
-
-    /**
-     * Binds a class or interface implementation to a specific class resolution.
-     * When resolving `customClass` requests for the `classOrInterface` will be bound to `implementation`.
-     *
-     * @param string $customClass
-     * @param string $classOrInterface
-     * @param mixed $implementation
-     *
-     * @return mixed
-     */
-    public function bindFor($customClass, $classOrInterface, $implementation)
-    {
-        return $this->bindingsResolver->bindFor($customClass, $classOrInterface, $implementation);
     }
 }
