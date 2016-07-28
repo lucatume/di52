@@ -58,11 +58,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected $resolvingDecorator = false;
 
     /**
-     * @var array
-     */
-    protected $dependencies;
-
-    /**
      * @var tad_DI52_Container
      */
     protected $container;
@@ -343,16 +338,15 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             return $this->resolvedClassDependencies[$classOrInterface];
         }
 
-        $this->dependencies = array();
         $this->currentlyResolvingClassOrInterface = $classOrInterface;
 
-        array_map(array($this, 'resolveDependency'), $parameters);
+        $dependencies = array_map(array($this, 'resolveDependency'), $parameters);
 
         $this->currentlyResolvingClassOrInterface = false;
 
-        $this->resolvedClassDependencies[$classOrInterface] = $this->dependencies;
+        $this->resolvedClassDependencies[$classOrInterface] = $dependencies;
 
-        return $this->dependencies;
+        return $dependencies;
     }
 
     protected function resolveNonClass(ReflectionParameter $parameter)
@@ -385,8 +379,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
         $dependencies = $this->getDependencies($parameters, $classOrInterface);
 
-        $this->dependencies = array();
-
         return $reflector->newInstanceArgs($dependencies);
     }
 
@@ -417,6 +409,8 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
     /**
      * @param ReflectionParameter $parameter
+     *
+     * @return mixed The resolved dependency.
      */
     protected function resolveDependency(ReflectionParameter $parameter)
     {
@@ -429,6 +423,6 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
             $this->resolvedDependencies[$parameterKey] = $resolvedDependency;
         }
 
-        $this->dependencies[] = $resolvedDependency;
+        return $resolvedDependency;
     }
 }
