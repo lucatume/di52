@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [1.3.2] - 2016-04-19
+## [1.3.2] - 2016-07-28
 ### Fixed
 - nested dependency resolving issue
 
