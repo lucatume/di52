@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.2] - 2016-04-19
+### Fixed
+- nested dependency resolving issue
+
 ## [1.3.1] - 2016-04-19
 ### Added
 - more informative exception message when default primitive value is missing
@@ -64,7 +68,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/1.3.1...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/1.3.2...HEAD
+[1.3.2]: https://github.com/lucatume/di52/compare/1.3.1...1.3.2
 [1.3.1]: https://github.com/lucatume/di52/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/lucatume/di52/compare/1.2.6...1.3.0
 [1.2.6]: https://github.com/lucatume/di52/compare/1.2.5...1.2.6
