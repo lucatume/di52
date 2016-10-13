@@ -598,4 +598,132 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($sut->resolve('ClassOne'), $sut->resolve('ClassOne'));
     }
+
+    /**
+     * @test
+     * it should allow binding a class by slug
+     */
+    public function it_should_allow_binding_a_class_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('c.one', 'ClassOne');
+        $sut->bind('c.base', 'BaseClass');
+
+        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertNotSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertNotSame($sut->resolve('c.base'), $sut->resolve('c.base'));
+    }
+
+    /**
+     * @test
+     * it should return a different instance on each call of a class bound by slug
+     */
+    public function it_should_return_a_different_instance_on_each_call_of_a_class_bound_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('c.one', 'ClassOne');
+
+        $this->assertNotSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+    }
+
+    /**
+     * @test
+     * it should allow binding singletons by slug
+     */
+    public function it_should_allow_binding_singletons_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->singleton('c.one', 'ClassOne');
+        $sut->singleton('c.base', 'BaseClass');
+
+        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertSame($sut->resolve('c.base'), $sut->resolve('c.base'));
+    }
+
+    /**
+     * @test
+     * it should return same instance when binding singletons by slug
+     */
+    public function it_should_return_same_instance_when_binding_singletons_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->singleton('c.one', 'ClassOne');
+
+        $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+    }
+
+    /**
+     * @test
+     * it should allow binding objects by slug
+     */
+    public function it_should_allow_binding_objects_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('c.one', new ClassOne());
+
+        $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+    }
+
+    /**
+     * @test
+     * it should allow binding objects as singletons by slug
+     */
+    public function it_should_allow_binding_objects_as_singletons_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->singleton('c.one', new ClassOne());
+
+        $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+    }
+
+    /**
+     * @test
+     * it should allow binding callbacks by slug
+     */
+    public function it_should_allow_binding_callbacks_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('c.one', function () {
+            return new ClassOne();
+        });
+        $sut->bind('c.base', function () {
+            return new BaseClass();
+        });
+
+        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertNotSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertNotSame($sut->resolve('c.base'), $sut->resolve('c.base'));
+    }
+
+    /**
+     * @test
+     * it should allow binding callbacks as singletons by slug
+     */
+    public function it_should_allow_binding_callbacks_as_singletons_by_slug()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->singleton('c.one', function () {
+            return new ClassOne();
+        });
+        $sut->singleton('c.base', function () {
+            return new BaseClass();
+        });
+
+        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
+        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertSame($sut->resolve('c.base'), $sut->resolve('c.base'));
+    }
 }
