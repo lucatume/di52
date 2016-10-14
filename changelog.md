@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2016-10-14
+### Added
+- more informative exception message when trying to resolve unbound slug or non existing class
+- support for after build methods
+
+### Fixed
+- another nested dependency resolving issue
+
 ## [1.3.2] - 2016-07-28
 ### Fixed
 - nested dependency resolving issue
