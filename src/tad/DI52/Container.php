@@ -235,9 +235,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      *
      * @param string $classOrInterface
      * @param string $implementation
-     * extension of the class.
+     * @param array $afterBuildMethods
      */
-    public function bind($classOrInterface, $implementation)
+    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
         return $this->bindingsResolver->bind($classOrInterface, $implementation);
     }
@@ -247,9 +247,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      *
      * @param string $classOrInterface
      * @param string $implementation
-     * extension of the class.
+     * @param array $afterBuildMethods
      */
-    public function singleton($classOrInterface, $implementation)
+    public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
         return $this->bindingsResolver->singleton($classOrInterface, $implementation);
     }
