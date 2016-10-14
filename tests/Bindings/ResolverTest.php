@@ -9,11 +9,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     protected $container;
 
-    protected function setUp()
-    {
-        $this->container = $this->prophesize('tad_DI52_Container');
-    }
-
     /**
      * @test
      * it should throw if trying to bind a non callable implementation
@@ -27,6 +22,11 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $resolver->bind('TestInterfaceOne', 23);
     }
 
+    private function makeInstance()
+    {
+        return new Resolver($this->container->reveal());
+    }
+
     /**
      * @test
      * it should allow skipping extension check
@@ -34,7 +34,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     public function it_should_allow_skipping_extension_check()
     {
         $resolver = $this->makeInstance();
-        $resolver->bind('ConcreteClassImplementingTestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo', true);
+        $resolver->bind('ConcreteClassImplementingTestInterfaceOne', 'ConcreteClassImplementingTestInterfaceTwo');
     }
 
     /**
@@ -217,7 +217,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $this->setExpectedException('InvalidArgumentException');
 
-        $out = $sut->resolve('PrimitiveDependingClassTwo');
+        $sut->resolve('PrimitiveDependingClassTwo');
     }
 
     /**
@@ -227,7 +227,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     public function it_should_allow_binding_a_class_not_implementing_an_interface_to_the_interface()
     {
         $sut = $this->makeInstance();
-        $sut->bind('TestInterfaceOne', 'ObjectOne', true);
+        $sut->bind('TestInterfaceOne', 'ObjectOne');
         $out = $sut->resolve('TestInterfaceOne');
 
         $this->assertInstanceOf('ObjectOne', $out);
@@ -240,7 +240,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     public function it_should_allow_binding_a_class_not_extending_a_class_to_the_class()
     {
         $sut = $this->makeInstance();
-        $sut->bind('ConcreteClassOne', 'ObjectOne', true);
+        $sut->bind('ConcreteClassOne', 'ObjectOne');
         $out = $sut->resolve('ConcreteClassOne');
 
         $this->assertInstanceOf('ObjectOne', $out);
@@ -306,11 +306,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->assertSame($outOne, $outTwo);
     }
 
-    private function makeInstance()
-    {
-        return new Resolver($this->container->reveal());
-    }
-
     /**
      * @test
      * it should allow tagging an array of implementations
@@ -362,7 +357,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $this->setExpectedException('InvalidArgumentException');
 
-        $out = $container->tagged(23);
+        $container->tagged(23);
     }
 
     /**
@@ -522,7 +517,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $container = $this->makeInstance();
 
-        $container->bind('BaseClassInterface', function ($container) {
+        $container->bind('BaseClassInterface', function (tad_DI52_Container $container) {
             $baseClass = $container->resolve('BaseClass');
 
             return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
@@ -557,7 +552,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $container = $this->makeInstance();
 
-        $container->singleton('BaseClassInterface', function ($container) {
+        $container->singleton('BaseClassInterface', function (tad_DI52_Container $container) {
             $baseClass = $container->resolve('BaseClass');
 
             return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
@@ -725,5 +720,124 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
         $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
         $this->assertSame($sut->resolve('c.base'), $sut->resolve('c.base'));
+    }
+
+    /**
+     * @test
+     * it should resolve dependencies bound using slugs when requested
+     */
+    public function it_should_resolve_dependencies_bound_using_slugs_when_requested()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->singleton('c.one', 'ClassOne');
+        $sut->singleton('c.requiringOne', 'RequiringOne');
+
+        $requiringOne = $sut->resolve('c.requiringOne');
+        $this->assertInstanceOf(RequiringOne::class, $requiringOne);
+        $this->assertSame($requiringOne->getOne(), $sut->resolve('c.one'));
+    }
+
+    /**
+     * @test
+     * it should resolve non singleton dependencies bound using slugs when requested
+     */
+    public function it_should_resolve_non_singleton_dependencies_bound_using_slugs_when_requested()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('c.one', 'ClassOneWithCounter');
+        $sut->bind('c.requiringOneWithCounter', 'RequiringOneWithCounter');
+
+        $this->assertInstanceOf(RequiringOne::class, $sut->resolve('c.requiringOneWithCounter'));
+        $i1 = $sut->resolve('c.requiringOneWithCounter');
+        $this->assertEquals(2, $i1->getOne()->getVar());
+        $i2 = $sut->resolve('c.requiringOneWithCounter');
+        $this->assertEquals(3, $i2->getOne()->getVar());
+        $this->assertNotSame($i1, $i2);
+    }
+
+    /**
+     * @test
+     * it should allow registering methods to call after build
+     */
+    public function it_should_allow_registering_methods_to_call_after_build()
+    {
+        $sut = $this->makeInstance();
+        ClassOne::reset();
+
+        $sut->bind('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+
+        $i = $sut->resolve('one');
+        $this->assertEquals(1, $i->getMethodOneCalled());
+        $this->assertEquals(1, $i->getMethodTwoCalled());
+        $this->assertEquals(1, $i->getMethodThreeCalled());
+    }
+
+    /**
+     * @test
+     * it should call after build methods on each new instance if not singleton
+     */
+    public function it_should_call_after_build_methods_on_each_new_instance_if_not_singleton()
+    {
+        $sut = $this->makeInstance();
+        ClassOne::reset();
+
+        $sut->bind('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+
+        $i1 = $sut->resolve('one');
+        $this->assertEquals(1, $i1->getMethodOneCalled());
+        $this->assertEquals(1, $i1->getMethodTwoCalled());
+        $this->assertEquals(1, $i1->getMethodThreeCalled());
+
+        $i2 = $sut->resolve('one');
+        $this->assertEquals(2, $i2->getMethodOneCalled());
+        $this->assertEquals(2, $i2->getMethodTwoCalled());
+        $this->assertEquals(2, $i2->getMethodThreeCalled());
+    }
+
+    /**
+     * @test
+     * it should call after build methods on singletons
+     */
+    public function it_should_call_after_build_methods_on_singletons()
+    {
+        $sut = $this->makeInstance();
+        ClassOne::reset();
+
+        $sut->singleton('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+
+        $i1 = $sut->resolve('one');
+        $this->assertEquals(1, $i1->getMethodOneCalled());
+        $this->assertEquals(1, $i1->getMethodTwoCalled());
+        $this->assertEquals(1, $i1->getMethodThreeCalled());
+    }
+
+    /**
+     * @test
+     * it should call after builds methods on singleton just once
+     */
+    public function it_should_call_after_builds_methods_on_singleton_just_once()
+    {
+        $sut = $this->makeInstance();
+        ClassOne::reset();
+
+        $sut->singleton('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+
+        $i1 = $sut->resolve('one');
+        $this->assertEquals(1, $i1->getMethodOneCalled());
+        $this->assertEquals(1, $i1->getMethodTwoCalled());
+        $this->assertEquals(1, $i1->getMethodThreeCalled());
+
+        $i2 = $sut->resolve('one');
+        $this->assertSame($i1, $i2);
+        $this->assertEquals(1, $i2->getMethodOneCalled());
+        $this->assertEquals(1, $i2->getMethodTwoCalled());
+        $this->assertEquals(1, $i2->getMethodThreeCalled());
+    }
+
+    protected function setUp()
+    {
+        $this->container = $this->prophesize('tad_DI52_Container');
     }
 }
