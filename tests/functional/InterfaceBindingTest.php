@@ -127,7 +127,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
         $container = new DI();
         $container->_setBindingsResolver($bindingsResolver->reveal());
 
-        $container->singleton('ConcreteClassOne', 'ObjectOne', true);
+        $container->singleton('ConcreteClassOne', 'ObjectOne');
         $out = $container->make('ConcreteClassOne');
     }
 }

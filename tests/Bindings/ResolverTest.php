@@ -517,7 +517,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $container = $this->makeInstance();
 
-        $container->bind('BaseClassInterface', function (tad_DI52_Container $container) {
+        $container->bind('BaseClassInterface', function (tad_DI52_Bindings_ResolverInterface $container) {
             $baseClass = $container->resolve('BaseClass');
 
             return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
@@ -552,7 +552,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $container = $this->makeInstance();
 
-        $container->singleton('BaseClassInterface', function (tad_DI52_Container $container) {
+        $container->singleton('BaseClassInterface', function (tad_DI52_Bindings_ResolverInterface $container) {
             $baseClass = $container->resolve('BaseClass');
 
             return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
