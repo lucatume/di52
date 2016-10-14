@@ -13,7 +13,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
     {
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->isBound('TestInterfaceOne')->willReturn(false);
-        $bindingsResolver->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne')->shouldBeCalled();
+        $bindingsResolver->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne', null)->shouldBeCalled();
         $bindingsResolver->resolve('TestInterfaceOne')->shouldBeCalled();
 
         $container = new DI();
@@ -30,7 +30,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
     {
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->isBound('ConcreteClassImplementingTestInterfaceOne')->willReturn(false);
-        $bindingsResolver->bind('ConcreteClassImplementingTestInterfaceOne', 'DependingClassTwo')->shouldBeCalled();
+        $bindingsResolver->bind('ConcreteClassImplementingTestInterfaceOne', 'DependingClassTwo', null)->shouldBeCalled();
         $bindingsResolver->resolve('ConcreteClassImplementingTestInterfaceOne')->shouldBeCalled();
 
         $container = new DI();
@@ -49,7 +49,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $instance = new ConcreteClassImplementingTestInterfaceOne;
         $bindingsResolver->isBound('TestInterfaceOne')->willReturn(false);
-        $bindingsResolver->bind('TestInterfaceOne', Argument::type('ConcreteClassImplementingTestInterfaceOne'))->shouldBeCalled();
+        $bindingsResolver->bind('TestInterfaceOne', Argument::type('ConcreteClassImplementingTestInterfaceOne'), null)->shouldBeCalled();
         $bindingsResolver->resolve('TestInterfaceOne')->shouldBeCalled();
 
         $container = new DI();
@@ -67,7 +67,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
     {
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->isBound('TestInterfaceOne')->willReturn(false);
-        $bindingsResolver->bind('TestInterfaceOne', 'ConcreteClassOne')->shouldBeCalled();
+        $bindingsResolver->bind('TestInterfaceOne', 'ConcreteClassOne', null)->shouldBeCalled();
         $bindingsResolver->resolve('TestInterfaceOne')->shouldBeCalled();
 
         $container = new DI();
@@ -85,7 +85,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
     {
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->isBound('ConcreteClassOne')->willReturn(false);
-        $bindingsResolver->bind('ConcreteClassOne', 'ObjectOne')->shouldBeCalled();
+        $bindingsResolver->bind('ConcreteClassOne', 'ObjectOne', null)->shouldBeCalled();
         $bindingsResolver->resolve('ConcreteClassOne')->shouldBeCalled();
 
         $container = new DI();
@@ -103,7 +103,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
     {
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->isBound('TestInterfaceOne')->willReturn(false);
-        $bindingsResolver->singleton('TestInterfaceOne', 'ObjectOne')->shouldBeCalled();
+        $bindingsResolver->singleton('TestInterfaceOne', 'ObjectOne', null)->shouldBeCalled();
         $bindingsResolver->resolve('TestInterfaceOne')->shouldBeCalled();
 
         $container = new DI();
@@ -121,7 +121,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
     {
         $bindingsResolver = $this->prophesize('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->isBound('ConcreteClassOne')->willReturn(false);
-        $bindingsResolver->singleton('ConcreteClassOne', 'ObjectOne')->shouldBeCalled();
+        $bindingsResolver->singleton('ConcreteClassOne', 'ObjectOne', null)->shouldBeCalled();
         $bindingsResolver->resolve('ConcreteClassOne')->shouldBeCalled();
 
         $container = new DI();

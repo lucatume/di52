@@ -300,9 +300,18 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
     protected function resolveDependency(ReflectionParameter $parameter)
     {
         $dependency = $parameter->getClass();
-        if (!empty($dependency) && $resolvedDependency = $this->resolveSlugAliasedDependency($parameter->getClass()->getName())) {
-        } else {
-            $resolvedDependency = $dependency === null ? $this->resolveNonClass($parameter) : $this->resolve($dependency->name);
+        $slugAliasDependency = !empty($dependency)
+            && class_exists($dependency->getName())
+            && $resolvedDependency = $this->resolveSlugAliasedDependency($dependency->getName());
+        if (!$slugAliasDependency) {
+            try {
+                $resolvedDependency = $dependency === null ? $this->resolveNonClass($parameter) : $this->resolve($dependency->name);
+            } catch (InvalidArgumentException $e) {
+                if (!$parameter->isDefaultValueAvailable()) {
+                    throw $e;
+                }
+                $resolvedDependency = $parameter->getDefaultValue();
+            }
         }
 
         return $resolvedDependency;
@@ -338,7 +347,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
         $isBound = isset($this->bindings[$classOrInterface]);
 
         if (!($isBound || class_exists($classOrInterface))) {
-            throw new InvalidArgumentException("[{$classOrInterface}] is not a bound slug or an existing class.");
+            throw new InvalidArgumentException("[{$classOrInterface}] is not a bound slug, implementation or existing class.");
         }
 
         $isSingleton = isset($this->singletons[$classOrInterface]);
