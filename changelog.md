@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.4.2] - 2016-10-14
+### Fixed
+- nested dependency resolution issue with interfaces and default values
+
 ## [1.4.1b] - 2016-10-14
 ### Fixed
 - pass the `afterBuildMethods` argument along...
@@ -84,7 +88,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/1.4.1b...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/1.4.2...HEAD
+[1.4.2]: https://github.com/lucatume/di52/compare/1.4.1b...1.4.2
 [1.4.1b]: https://github.com/lucatume/di52/compare/1.4.1...1.4.1b
 [1.4.1]: https://github.com/lucatume/di52/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/lucatume/di52/compare/1.3.1...1.4.0
