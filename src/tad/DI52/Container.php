@@ -239,7 +239,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        return $this->bindingsResolver->bind($classOrInterface, $implementation);
+        return $this->bindingsResolver->bind($classOrInterface, $implementation, $afterBuildMethods);
     }
 
     /**
@@ -251,7 +251,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        return $this->bindingsResolver->singleton($classOrInterface, $implementation);
+        return $this->bindingsResolver->singleton($classOrInterface, $implementation, $afterBuildMethods);
     }
 
     /**
