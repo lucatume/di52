@@ -10,4 +10,4 @@ php:
   - hhvm
   - nightly
 
-script: ./vendor/bin/phpunit-php52
+script: vendor/bin/phpunit-php52
