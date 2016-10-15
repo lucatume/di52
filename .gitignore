@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### Composer template
 vendor/
+!vendor/composer
 !vendor/autoload.php
 !vendor/autoload_52.php
 
