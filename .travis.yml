@@ -9,5 +9,3 @@ php:
   - '7.0'
   - hhvm
   - nightly
-
-script: php $TRAVIS_BUILD_DIR/vendor/phpunit/phpunit/composer/bin/phpunit-php52
