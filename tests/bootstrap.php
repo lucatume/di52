@@ -13,7 +13,7 @@ $files = array(
 
 foreach ($files as $file) {
     if (file_exists($file)) {
-        require_once $vendor . $file;
+        require_once $vendorDir . $file;
     }
 }
 
