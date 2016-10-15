@@ -24,7 +24,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     private function makeInstance()
     {
-        return new Resolver($this->container->reveal());
+        return new Resolver($this->container);
     }
 
     /**
@@ -101,7 +101,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $resolver = $this->makeInstance();
 
-        $this->setExpectedException('Exception');
+        $this->setExpectedException('InvalidArgumentException');
 
         $resolver->resolve('TestInterfaceOne');
     }
@@ -189,7 +189,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $sut = $this->makeInstance();
 
-        $this->setExpectedException('Exception');
+        $this->setExpectedException('InvalidArgumentException');
 
         $sut->resolve('DependingClassOne');
     }
@@ -838,6 +838,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->container = $this->prophesize('tad_DI52_Container');
+        $this->container = $this->getMock('tad_DI52_Container');
     }
 }
