@@ -15,7 +15,28 @@ class ComposerStaticInite53ac96aed6a15e34dccd578c757c08e
         'd4cec4c1ab59bc84356816be55838054' => __DIR__ . '/..' . '/phpunit/phpunit/PHPUnit/Autoload.php',
     );
 
+    public static $prefixLengthsPsr4 = array(
+        'S' =>
+            array(
+                'Symfony\\Component\\Yaml\\' => 23,
+            ),
+    );
+
+    public static $prefixDirsPsr4 = array(
+        'Symfony\\Component\\Yaml\\' =>
+            array(
+                0 => __DIR__ . '/..' . '/symfony/yaml',
+            ),
+    );
+
     public static $prefixesPsr0 = array (
+        'x' =>
+            array(
+                'xrstf\\Composer52' =>
+                    array(
+                        0 => __DIR__ . '/..' . '/xrstf/composer-php52/lib',
+                    ),
+            ),
         't' => 
         array (
             'tad_DI52_' => 
@@ -67,6 +88,8 @@ class ComposerStaticInite53ac96aed6a15e34dccd578c757c08e
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInite53ac96aed6a15e34dccd578c757c08e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite53ac96aed6a15e34dccd578c757c08e::$prefixDirsPsr4;
             $loader->prefixesPsr0 = ComposerStaticInite53ac96aed6a15e34dccd578c757c08e::$prefixesPsr0;
             $loader->classMap = ComposerStaticInite53ac96aed6a15e34dccd578c757c08e::$classMap;
 

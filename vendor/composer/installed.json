@@ -1,95 +1,5 @@
 [
     {
-        "name": "xrstf/composer-php52",
-        "version": "v1.0.20",
-        "version_normalized": "1.0.20.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/composer-php52/composer-php52.git",
-            "reference": "bd41459d5e27df8d33057842b32377c39e97a5a8"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/composer-php52/composer-php52/zipball/bd41459d5e27df8d33057842b32377c39e97a5a8",
-            "reference": "bd41459d5e27df8d33057842b32377c39e97a5a8",
-            "shasum": ""
-        },
-        "time": "2016-04-16 21:52:24",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-default": "1.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "xrstf\\Composer52": "lib/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ]
-    },
-    {
-        "name": "symfony/yaml",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/yaml.git",
-            "reference": "f3abbc0c63c0c7803db79a7398bb983e5b089f53"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/yaml/zipball/f3abbc0c63c0c7803db79a7398bb983e5b089f53",
-            "reference": "f3abbc0c63c0c7803db79a7398bb983e5b089f53",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.5.9"
-        },
-        "require-dev": {
-            "symfony/console": "~2.8|~3.0"
-        },
-        "suggest": {
-            "symfony/console": "For validating YAML files using the lint command"
-        },
-        "time": "2016-09-28 14:20:56",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "3.2-dev"
-            }
-        },
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\Yaml\\": ""
-            },
-            "exclude-from-classmap": [
-                "/Tests/"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Yaml Component",
-        "homepage": "https://symfony.com"
-    },
-    {
         "name": "phpunit/php-token-stream",
         "version": "1.1.4",
         "version_normalized": "1.1.4.0",
@@ -408,5 +318,95 @@
         "include-path": [
             ""
         ]
+    },
+  {
+    "name": "xrstf/composer-php52",
+    "version": "v1.0.20",
+    "version_normalized": "1.0.20.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/composer-php52/composer-php52.git",
+      "reference": "bd41459d5e27df8d33057842b32377c39e97a5a8"
+    },
+    "dist": {
+      "type": "zip",
+      "url": "https://api.github.com/repos/composer-php52/composer-php52/zipball/bd41459d5e27df8d33057842b32377c39e97a5a8",
+      "reference": "bd41459d5e27df8d33057842b32377c39e97a5a8",
+      "shasum": ""
+    },
+    "time": "2016-04-16 21:52:24",
+    "type": "library",
+    "extra": {
+      "branch-alias": {
+        "dev-default": "1.x-dev"
+      }
+    },
+    "installation-source": "dist",
+    "autoload": {
+      "psr-0": {
+        "xrstf\\Composer52": "lib/"
+      }
+    },
+    "notification-url": "https://packagist.org/downloads/",
+    "license": [
+      "MIT"
+    ]
+  },
+  {
+    "name": "symfony/yaml",
+    "version": "dev-master",
+    "version_normalized": "9999999-dev",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/symfony/yaml.git",
+      "reference": "f3abbc0c63c0c7803db79a7398bb983e5b089f53"
+    },
+    "dist": {
+      "type": "zip",
+      "url": "https://api.github.com/repos/symfony/yaml/zipball/f3abbc0c63c0c7803db79a7398bb983e5b089f53",
+      "reference": "f3abbc0c63c0c7803db79a7398bb983e5b089f53",
+      "shasum": ""
+    },
+    "require": {
+      "php": ">=5.5.9"
+    },
+    "require-dev": {
+      "symfony/console": "~2.8|~3.0"
+    },
+    "suggest": {
+      "symfony/console": "For validating YAML files using the lint command"
+    },
+    "time": "2016-09-28 14:20:56",
+    "type": "library",
+    "extra": {
+      "branch-alias": {
+        "dev-master": "3.2-dev"
+      }
+    },
+    "installation-source": "source",
+    "autoload": {
+      "psr-4": {
+        "Symfony\\Component\\Yaml\\": ""
+      },
+      "exclude-from-classmap": [
+        "/Tests/"
+      ]
+    },
+    "notification-url": "https://packagist.org/downloads/",
+    "license": [
+      "MIT"
+    ],
+    "authors": [
+      {
+        "name": "Fabien Potencier",
+        "email": "fabien@symfony.com"
+      },
+      {
+        "name": "Symfony Community",
+        "homepage": "https://symfony.com/contributors"
+      }
+    ],
+    "description": "Symfony Yaml Component",
+    "homepage": "https://symfony.com"
     }
 ]

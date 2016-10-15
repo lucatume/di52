@@ -1,6 +1,10 @@
 <?php
 
-require_once dirname(__DIR__) . '/vendor/autoload_52.php';
+if (!getenv('TRAVIS_CI')) {
+    require_once dirname(__DIR__) . '/vendor/autoload_52.php';
+} else {
+    require_once dirname(__DIR__) . '/vendor/autoload_52_travis.php';
+}
 
 // include test classes
 $files = array(
