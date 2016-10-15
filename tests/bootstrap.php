@@ -1,9 +1,9 @@
 <?php
 
-if (!getenv('TRAVIS_CI')) {
-    require_once dirname(__DIR__) . '/vendor/autoload_52.php';
-} else {
+if (getenv('TRAVIS')) {
     require_once dirname(__DIR__) . '/vendor/autoload_52_travis.php';
+} else {
+    require_once dirname(__DIR__) . '/vendor/autoload_52.php';
 }
 
 // include test classes
