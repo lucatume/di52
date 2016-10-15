@@ -10,4 +10,4 @@ php:
   - hhvm
   - nightly
 
-script: $TRAVIS_BUILD_DIR/vendor/bin/phpunit-php52
+script: php $TRAVIS_BUILD_DIR/vendor/phpunit/phpunit/composer/bin/phpunit-php52
