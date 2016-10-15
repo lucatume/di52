@@ -1,10 +1,12 @@
 <?php
 
-if (getenv('TRAVIS')) {
-    require_once dirname(__DIR__) . '/vendor/autoload_52_travis.php';
-} else {
-    require_once dirname(__DIR__) . '/vendor/autoload_52.php';
-}
+$vendorDir = dirname(__DIR__) . '/vendor';
+require_once $vendorDir . '/phpunit/php-text-template/Text/Template/Autoload.php';
+require_once $vendorDir . '/phpunit/php-token-stream/PHP/Token/Stream/Autoload.php';
+require_once $vendorDir . '/phpunit/php-file-iterator/File/Iterator/Autoload.php';
+require_once $vendorDir . '/phpunit/php-timer/PHP/Timer/Autoload.php';
+require_once $vendorDir . '/phpunit/php-code-coverage/PHP/CodeCoverage/Autoload.php';
+require_once $vendorDir . '/phpunit/phpunit/PHPUnit/Autoload.php';
 
 // include test classes
 $files = array(
