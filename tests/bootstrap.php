@@ -1,12 +1,21 @@
 <?php
 
 $vendorDir = dirname(__DIR__) . '/vendor';
-require_once $vendorDir . '/phpunit/php-text-template/Text/Template/Autoload.php';
-require_once $vendorDir . '/phpunit/php-token-stream/PHP/Token/Stream/Autoload.php';
-require_once $vendorDir . '/phpunit/php-file-iterator/File/Iterator/Autoload.php';
-require_once $vendorDir . '/phpunit/php-timer/PHP/Timer/Autoload.php';
-require_once $vendorDir . '/phpunit/php-code-coverage/PHP/CodeCoverage/Autoload.php';
-require_once $vendorDir . '/phpunit/phpunit/PHPUnit/Autoload.php';
+
+$files = array(
+    '/phpunit/php-text-template/Text/Template/Autoload.php',
+    '/phpunit/php-token-stream/PHP/Token/Stream/Autoload.php',
+    '/phpunit/php-file-iterator/File/Iterator/Autoload.php',
+    '/phpunit/php-timer/PHP/Timer/Autoload.php',
+    '/phpunit/php-code-coverage/PHP/CodeCoverage/Autoload.php',
+    '/phpunit/phpunit/PHPUnit/Autoload.php'
+);
+
+foreach ($files as $file) {
+    if (file_exists($file)) {
+        require_once $vendor . $file;
+    }
+}
 
 // include test classes
 $files = array(
