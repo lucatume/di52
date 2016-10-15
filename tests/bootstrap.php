@@ -17,6 +17,8 @@ foreach ($files as $file) {
     }
 }
 
+require_once $vendorDir . '/autoload_52.php';
+
 // include test classes
 $files = array(
     'TestInterfaceOne.php',
