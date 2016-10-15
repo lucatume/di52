@@ -1,4 +1,7 @@
 <?php
+
+require_once dirname(__DIR__) . '/vendor/autoload_52.php';
+
 // include test classes
 $files = array(
     'TestInterfaceOne.php',
