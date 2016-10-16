@@ -1,6 +1,4 @@
 <?php
-use tad_DI52_Bindings_Resolver as Resolver;
-
 class ResolverTest extends PHPUnit_Framework_TestCase
 {
 
@@ -24,7 +22,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
     private function makeInstance()
     {
-        return new Resolver($this->container);
+        return new tad_DI52_Bindings_Resolver($this->container);
     }
 
     /**

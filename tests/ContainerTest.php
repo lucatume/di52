@@ -1,13 +1,7 @@
 <?php
 
-
 class ContainerTest extends PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @var string
-     */
-    protected $sut_class = 'tad_DI52_Container';
 
     /**
      * @var tad_DI52_Container
@@ -25,7 +19,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_be_instantiatable()
     {
-        $this->assertInstanceOf($this->sut_class, $this->sut);
+        $this->assertInstanceOf('tad_DI52_Container', $this->sut);
     }
 
     /**
