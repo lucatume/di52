@@ -41,11 +41,11 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_callback_to_an_interface()
     {
-        if (!function_exists('array_replace')) {
+        // if (!function_exists('array_replace')) {
             $this->markTestSkipped();
-        }
+        //}
 
-        $resolver = $this->makeInstance();
+        $risolver = $this->makeInstance();
 
         $object = (object)array('foo' => 'bar');
         $callback = function () use ($object) {
