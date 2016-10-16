@@ -42,8 +42,8 @@ class ArrayAccessBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_an_a_singleton_callback_to_an_interface()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $container = new tad_DI52_Container();
@@ -65,8 +65,8 @@ class ArrayAccessBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_a_concrete_class_implementation()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $container = new tad_DI52_Container();

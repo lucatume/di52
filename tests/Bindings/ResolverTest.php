@@ -42,12 +42,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_callback_to_an_interface()
     {
-        echo 'phpversion: ' . phpversion();
-        echo 'PHP_VERSION: ' . PHP_VERSION;
-        $this->asssertEquals('5.2.17', phpversion());
-        return;
-
-        if (version_compare(phpversion(), '5.3.0') < 0) {
+        if (!function_exists('array_replace')) {
             $this->markTestIncomplete();
         }
 
@@ -75,8 +70,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_rerun_the_callback_on_each_resolution()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $resolver = $this->makeInstance();
@@ -292,8 +287,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_an_interface()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $sut = $this->makeInstance();
@@ -312,8 +307,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_a_class()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $sut = $this->makeInstance();
@@ -493,8 +488,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_resolve_singleton_bindings_of_different_interfaces_with_same_implementation_to_same_callback()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $container = $this->makeInstance();
@@ -518,8 +513,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_resolve_singleton_bindings_of_different_class_and_interface_with_same_implementation_to_same_callback()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $container = $this->makeInstance();
@@ -714,8 +709,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_callbacks_by_slug()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $sut = $this->makeInstance();
@@ -739,8 +734,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_callbacks_as_singletons_by_slug()
     {
-        if (version_compare(phpversion(), '5.3.0') < 0) {
-            $this->markTestSkipped();
+        if (!function_exists('array_replace')) {
+            $this->markTestIncomplete();
         }
 
         $sut = $this->makeInstance();
