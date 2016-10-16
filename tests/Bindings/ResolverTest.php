@@ -44,6 +44,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         if (version_compare(PHP_VERSION, '5.3.0') < 0) {
             $this->markTestIncomplete();
+            return;
         }
 
         $resolver = $this->makeInstance();
