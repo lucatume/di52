@@ -39,13 +39,10 @@ class ArrayAccessBindingTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      * it should allow binding an a singleton callback to an interface
+     * @requires PHP 5.3
      */
     public function it_should_allow_binding_an_a_singleton_callback_to_an_interface()
     {
-        if (version_compare(PHP_VERSION, '5.2') <= 0) {
-            $this->markTestSkipped();
-        }
-
         $container = new tad_DI52_Container();
 
         $container['TestInterfaceOne'] = function () {
@@ -62,13 +59,10 @@ class ArrayAccessBindingTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      * it should allow binding a singleton callback to a concrete class implementation
+     * @requires PHP 5.3
      */
     public function it_should_allow_binding_a_singleton_callback_to_a_concrete_class_implementation()
     {
-        if (version_compare(PHP_VERSION, '5.2') <= 0) {
-            $this->markTestSkipped();
-        }
-
         $container = new tad_DI52_Container();
 
         $container['ConcreteClassImplementingTestInterfaceOne'] = function () {
