@@ -42,6 +42,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_callback_to_an_interface()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $resolver = $this->makeInstance();
 
         $object = (object)array('foo' => 'bar');
@@ -66,6 +70,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_rerun_the_callback_on_each_resolution()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $resolver = $this->makeInstance();
 
         $callback = function () {
@@ -279,6 +287,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_an_interface()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $sut = $this->makeInstance();
         $sut->singleton('TestInterfaceOne', function () {
             return microtime();
@@ -295,6 +307,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_a_class()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $sut = $this->makeInstance();
         $sut->singleton('ConcreteClassImplementingTestInterfaceOne', function () {
             return microtime();
@@ -472,6 +488,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_resolve_singleton_bindings_of_different_interfaces_with_same_implementation_to_same_callback()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $container = $this->makeInstance();
 
         $f = function () {
@@ -493,6 +513,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_resolve_singleton_bindings_of_different_class_and_interface_with_same_implementation_to_same_callback()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $container = $this->makeInstance();
 
         $f = function () {
@@ -685,6 +709,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_callbacks_by_slug()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $sut = $this->makeInstance();
 
         $sut->bind('c.one', function () {
@@ -706,6 +734,10 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_callbacks_as_singletons_by_slug()
     {
+        if (version_compare(PHP_VERSION, '5.2', '<=')) {
+            $this->markTestSkipped();
+        }
+
         $sut = $this->makeInstance();
 
         $sut->singleton('c.one', function () {
