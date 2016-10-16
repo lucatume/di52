@@ -42,7 +42,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_callback_to_an_interface()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -70,7 +70,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_rerun_the_callback_on_each_resolution()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -287,7 +287,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_an_interface()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -307,7 +307,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_a_class()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -488,7 +488,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_resolve_singleton_bindings_of_different_interfaces_with_same_implementation_to_same_callback()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -513,7 +513,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_resolve_singleton_bindings_of_different_class_and_interface_with_same_implementation_to_same_callback()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -709,7 +709,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_callbacks_by_slug()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
@@ -734,7 +734,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_callbacks_as_singletons_by_slug()
     {
-        if (!version_compare(PHP_VERSION, '5.3', '>=')) {
+        if (!version_compare(PHP_VERSION, '5.2', '>')) {
             $this->markTestSkipped();
         }
 
