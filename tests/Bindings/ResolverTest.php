@@ -2,7 +2,6 @@
 
 class ResolverTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      * @var tad_DI52_Container
      */
