@@ -1,4 +1,5 @@
 <?php
+
 class ResolverTest extends PHPUnit_Framework_TestCase
 {
 
@@ -43,7 +44,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     {
         $resolver = $this->makeInstance();
 
-        $object = (object)['foo' => 'bar'];
+        $object = (object)array('foo' => 'bar');
         $callback = function () use ($object) {
             return $object;
         };
@@ -315,7 +316,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $container->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne');
         $container->bind('TestInterfaceTwo', 'ConcreteClassImplementingTestInterfaceTwo');
 
-        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 'tag1');
+        $container->tag(array('TestInterfaceOne', 'TestInterfaceTwo'), 'tag1');
 
         $out = $container->tagged('tag1');
 
@@ -337,7 +338,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $this->setExpectedException('InvalidArgumentException');
 
-        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 23);
+        $container->tag(array('TestInterfaceOne', 'TestInterfaceTwo'), 23);
     }
 
     /**
@@ -351,7 +352,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $container->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne');
         $container->bind('TestInterfaceTwo', 'ConcreteClassImplementingTestInterfaceTwo');
 
-        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 'tag1');
+        $container->tag(array('TestInterfaceOne', 'TestInterfaceTwo'), 'tag1');
 
         $this->setExpectedException('InvalidArgumentException');
 
@@ -426,7 +427,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
 
         $container->bind('TestInterfaceOne', 'ClassOne');
         $container->bind('TestInterfaceTwo', 'ClassTwo');
-        $container->tag(['TestInterfaceOne', 'TestInterfaceTwo'], 'some-tag');
+        $container->tag(array('TestInterfaceOne', 'TestInterfaceTwo'), 'some-tag');
 
         $this->assertTrue($container->hasTag('some-tag'));
     }
@@ -764,7 +765,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut = $this->makeInstance();
         ClassOne::reset();
 
-        $sut->bind('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+        $sut->bind('one', 'ClassOne', array('methodOne', 'methodTwo', 'methodThree'));
 
         $i = $sut->resolve('one');
         $this->assertEquals(1, $i->getMethodOneCalled());
@@ -781,7 +782,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut = $this->makeInstance();
         ClassOne::reset();
 
-        $sut->bind('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+        $sut->bind('one', 'ClassOne', array('methodOne', 'methodTwo', 'methodThree'));
 
         $i1 = $sut->resolve('one');
         $this->assertEquals(1, $i1->getMethodOneCalled());
@@ -803,7 +804,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut = $this->makeInstance();
         ClassOne::reset();
 
-        $sut->singleton('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+        $sut->singleton('one', 'ClassOne', array('methodOne', 'methodTwo', 'methodThree'));
 
         $i1 = $sut->resolve('one');
         $this->assertEquals(1, $i1->getMethodOneCalled());
@@ -820,7 +821,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut = $this->makeInstance();
         ClassOne::reset();
 
-        $sut->singleton('one', 'ClassOne', ['methodOne', 'methodTwo', 'methodThree']);
+        $sut->singleton('one', 'ClassOne', array('methodOne', 'methodTwo', 'methodThree'));
 
         $i1 = $sut->resolve('one');
         $this->assertEquals(1, $i1->getMethodOneCalled());
