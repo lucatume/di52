@@ -42,6 +42,11 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_callback_to_an_interface()
     {
+        echo 'phpversion: ' . phpversion();
+        echo 'PHP_VERSION: ' . PHP_VERSION;
+        $this->asssertEquals('5.2.17', phpversion());
+        return;
+
         if (version_compare(phpversion(), '5.3.0') < 0) {
             $this->markTestIncomplete();
         }
