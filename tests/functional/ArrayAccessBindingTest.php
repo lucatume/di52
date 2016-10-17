@@ -42,7 +42,7 @@ class ArrayAccessBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_an_a_singleton_callback_to_an_interface()
     {
-        if (!function_exists('array_replace')) {
+        if (version_compare(phpversion(), '5.2.17', '<=')) {
             $this->markTestSkipped();
         }
 
@@ -65,7 +65,7 @@ class ArrayAccessBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_callback_to_a_concrete_class_implementation()
     {
-        if (!function_exists('array_replace')) {
+        if (version_compare(phpversion(), '5.2.17', '<=')) {
             $this->markTestSkipped();
         }
 
