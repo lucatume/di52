@@ -7,6 +7,6 @@ class VersionTest extends PHPUnit_Framework_TestCase
      */
     public function test_version_compare_on_travis()
     {
-        $this->assertFalse(version_compare(phpversion(), '5.2.17', '>'));
+        $this->assertTrue(version_compare(phpversion(), '5.2.17', '>'));
     }
 }
