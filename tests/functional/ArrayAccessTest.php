@@ -35,7 +35,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
     public function it_should_allow_setting_a_shared_instance_and_args_using_array_access()
     {
         $sut = new DI();
-        $sut['one'] = ['arrayAccessDummy', 4, 5];
+        $sut['one'] = array('arrayAccessDummy', 4, 5);
 
         $i1 = $sut['one'];
         $i2 = $sut['one'];
