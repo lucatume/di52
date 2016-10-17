@@ -628,9 +628,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut->bind('c.one', 'ClassOne');
         $sut->bind('c.base', 'BaseClass');
 
-        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertInstanceOf('ClassOne', $sut->resolve('c.one'));
         $this->assertNotSame($sut->resolve('c.one'), $sut->resolve('c.one'));
-        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertInstanceOf('BaseClass', $sut->resolve('c.base'));
         $this->assertNotSame($sut->resolve('c.base'), $sut->resolve('c.base'));
     }
 
@@ -658,9 +658,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut->singleton('c.one', 'ClassOne');
         $sut->singleton('c.base', 'BaseClass');
 
-        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertInstanceOf('ClassOne', $sut->resolve('c.one'));
         $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
-        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertInstanceOf('BaseClass', $sut->resolve('c.base'));
         $this->assertSame($sut->resolve('c.base'), $sut->resolve('c.base'));
     }
 
@@ -722,9 +722,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
             return new BaseClass();
         });
 
-        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertInstanceOf('ClassOne', $sut->resolve('c.one'));
         $this->assertNotSame($sut->resolve('c.one'), $sut->resolve('c.one'));
-        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertInstanceOf('BaseClass', $sut->resolve('c.base'));
         $this->assertNotSame($sut->resolve('c.base'), $sut->resolve('c.base'));
     }
 
@@ -747,9 +747,9 @@ class ResolverTest extends PHPUnit_Framework_TestCase
             return new BaseClass();
         });
 
-        $this->assertInstanceOf(ClassOne::class, $sut->resolve('c.one'));
+        $this->assertInstanceOf('ClassOne', $sut->resolve('c.one'));
         $this->assertSame($sut->resolve('c.one'), $sut->resolve('c.one'));
-        $this->assertInstanceOf(BaseClass::class, $sut->resolve('c.base'));
+        $this->assertInstanceOf('BaseClass', $sut->resolve('c.base'));
         $this->assertSame($sut->resolve('c.base'), $sut->resolve('c.base'));
     }
 
@@ -765,7 +765,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut->singleton('c.requiringOne', 'RequiringOne');
 
         $requiringOne = $sut->resolve('c.requiringOne');
-        $this->assertInstanceOf(RequiringOne::class, $requiringOne);
+        $this->assertInstanceOf('RequiringOne', $requiringOne);
         $this->assertSame($requiringOne->getOne(), $sut->resolve('c.one'));
     }
 
@@ -780,7 +780,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $sut->bind('c.one', 'ClassOneWithCounter');
         $sut->bind('c.requiringOneWithCounter', 'RequiringOneWithCounter');
 
-        $this->assertInstanceOf(RequiringOne::class, $sut->resolve('c.requiringOneWithCounter'));
+        $this->assertInstanceOf('RequiringOne', $sut->resolve('c.requiringOneWithCounter'));
         $i1 = $sut->resolve('c.requiringOneWithCounter');
         $this->assertEquals(2, $i1->getOne()->getVar());
         $i2 = $sut->resolve('c.requiringOneWithCounter');
