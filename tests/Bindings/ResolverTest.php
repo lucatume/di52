@@ -39,6 +39,7 @@ class ResolverTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      * it should allow binding a callback to an interface
+     * @requires PHP 5.3.0
      */
     public function it_should_allow_binding_a_callback_to_an_interface()
     {
