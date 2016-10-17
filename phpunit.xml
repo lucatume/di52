@@ -2,7 +2,8 @@
          colors='true'>
     <testsuites>
         <testsuite name='All'>
-            <directory>tests</directory>
+            <!--<directory>tests</directory>-->
+            <file>tests/VersionTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
