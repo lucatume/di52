@@ -54,7 +54,7 @@ class tad_DI52_Ctor
         return $this->store_method_and_args($method_name, $args);
     }
 
-    public function call_method($method_name, $arg1 = null)
+    public function call_method($method_name)
     {
         $args = func_get_args();
         array_shift($args);

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "edd6db6965546e660f8f26093fd8c2d9",
-    "content-hash": "6bc2a6c285f20325f1a5e71d70ab9bc6",
+    "hash": "7ec75e33ab9efbaac7c5171ca6a7d764",
+    "content-hash": "21d2d1cfe07d9e4e835907431fc9c87e",
     "packages": [
         {
             "name": "xrstf/composer-php52",
@@ -274,7 +274,32 @@
             "time": "2012-09-23 00:00:00"
         },
         {
-            "name": "phpunit/phpunit",
+            "name": "phpunit/phpunit-mock-objects-php52",
+            "version": "dev-1.1.0-php52",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/garex/phpunit-mock-objects",
+                "reference": "625622b0678d53aa47c6dc7e232e0171e2623d75"
+            },
+            "require": {
+                "ext-reflection": "*",
+                "ext-spl": "*",
+                "php": ">=5.2.6",
+                "phpunit/php-text-template": ">=1.1.1@stable"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "PHPUnit/"
+                ]
+            },
+            "include-path": [
+                ""
+            ],
+            "time": "2014-10-02 18:21:59"
+        },
+        {
+            "name": "phpunit/phpunit-php52",
             "version": "dev-3.6.12-php52",
             "source": {
                 "type": "git",
@@ -320,31 +345,6 @@
                 ]
             },
             "time": "2015-10-20 11:09:30"
-        },
-        {
-            "name": "phpunit/phpunit-mock-objects-php52",
-            "version": "dev-1.1.0-php52",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/garex/phpunit-mock-objects",
-                "reference": "625622b0678d53aa47c6dc7e232e0171e2623d75"
-            },
-            "require": {
-                "ext-reflection": "*",
-                "ext-spl": "*",
-                "php": ">=5.2.6",
-                "phpunit/php-text-template": ">=1.1.1@stable"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "PHPUnit/"
-                ]
-            },
-            "include-path": [
-                ""
-            ],
-            "time": "2014-10-02 18:21:59"
         },
         {
             "name": "symfony/yaml",
@@ -405,7 +405,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "phpunit/phpunit": 20,
+        "phpunit/phpunit-php52": 20,
         "phpunit/phpunit-mock-objects-php52": 20
     },
     "prefer-stable": false,
