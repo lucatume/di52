@@ -29,7 +29,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_concrete_class_name_to_a_concrete_class_name()
     {
-        $bindingsResolver = $this->getMock('tad_tad_DI52_Container52_Bindings_ResolverInterface');
+        $bindingsResolver = $this->getMock('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->expects($this->once())
             ->method('bind')
             ->with('ConcreteClassImplementingTestInterfaceOne', 'DependingClassTwo', null);
@@ -50,7 +50,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_an_object_instance_to_an_interface()
     {
-        $bindingsResolver = $this->getMock('tad_tad_DI52_Container52_Bindings_ResolverInterface');
+        $bindingsResolver = $this->getMock('tad_DI52_Bindings_ResolverInterface');
         $instance = new ConcreteClassImplementingTestInterfaceOne;
         $bindingsResolver->expects($this->once())
             ->method('bind')
@@ -72,7 +72,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_class_not_implementing_an_interface_to_an_interface()
     {
-        $bindingsResolver = $this->getMock('tad_tad_DI52_Container52_Bindings_ResolverInterface');
+        $bindingsResolver = $this->getMock('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->expects($this->once())
             ->method('bind')
             ->with('TestInterfaceOne', 'ConcreteClassOne', null);
@@ -93,7 +93,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_concrete_class_non_extending_the_bound_class()
     {
-        $bindingsResolver = $this->getMock('tad_tad_DI52_Container52_Bindings_ResolverInterface');
+        $bindingsResolver = $this->getMock('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->expects($this->once())
             ->method('bind')
             ->with('ConcreteClassOne', 'ObjectOne', null);
@@ -114,7 +114,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_to_an_interface()
     {
-        $bindingsResolver = $this->getMock('tad_tad_DI52_Container52_Bindings_ResolverInterface');
+        $bindingsResolver = $this->getMock('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->expects($this->once())
             ->method('singleton')
             ->with('TestInterfaceOne', 'ObjectOne', null);
@@ -135,7 +135,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_singleton_to_a_concrete_class()
     {
-        $bindingsResolver = $this->getMock('tad_tad_DI52_Container52_Bindings_ResolverInterface');
+        $bindingsResolver = $this->getMock('tad_DI52_Bindings_ResolverInterface');
         $bindingsResolver->expects($this->once())
             ->method('singleton')
             ->with('ConcreteClassOne', 'ObjectOne', null);
