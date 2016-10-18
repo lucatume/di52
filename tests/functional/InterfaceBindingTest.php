@@ -18,7 +18,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('TestInterfaceOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
         $container->bind('TestInterfaceOne', 'ConcreteClassImplementingTestInterfaceOne');
         $container->make('TestInterfaceOne');
     }
@@ -38,7 +38,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('ConcreteClassImplementingTestInterfaceOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
 
         $container->bind('ConcreteClassImplementingTestInterfaceOne', 'DependingClassTwo');
         $container->make('ConcreteClassImplementingTestInterfaceOne');
@@ -60,7 +60,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('TestInterfaceOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
 
         $container->bind('TestInterfaceOne', $instance);
         $container->make('TestInterfaceOne');
@@ -81,7 +81,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('TestInterfaceOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
 
         $container->bind('TestInterfaceOne', 'ConcreteClassOne');
         $container->make('TestInterfaceOne');
@@ -102,7 +102,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('ConcreteClassOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
 
         $container->bind('ConcreteClassOne', 'ObjectOne');
         $container->make('ConcreteClassOne');
@@ -123,7 +123,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('TestInterfaceOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
 
         $container->singleton('TestInterfaceOne', 'ObjectOne');
         $container->make('TestInterfaceOne');
@@ -144,7 +144,7 @@ class InterfaceBindingTest extends PHPUnit_Framework_TestCase
             ->with('ConcreteClassOne');
 
         $container = new tad_DI52_Container();
-        $container->_setBindingsResolver($bindingsResolver);
+        $container->setBindingsResolver($bindingsResolver);
 
         $container->singleton('ConcreteClassOne', 'ObjectOne');
         $container->make('ConcreteClassOne');

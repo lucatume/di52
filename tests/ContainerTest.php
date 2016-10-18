@@ -28,9 +28,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_registering_a_variable()
     {
-        $this->sut->set_var('foo', 23);
+        $this->sut->setVar('foo', 23);
 
-        $this->assertEquals(23, $this->sut->get_var('foo'));
+        $this->assertEquals(23, $this->sut->getVar('foo'));
     }
 
     /**
@@ -39,9 +39,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_null_value()
     {
-        $this->sut->set_var('foo');
+        $this->sut->setVar('foo');
 
-        $this->assertNull($this->sut->get_var('foo'));
+        $this->assertNull($this->sut->getVar('foo'));
     }
 
     /**
@@ -50,12 +50,12 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_not_allow_setting_a_variable_a_second_time()
     {
-        $this->sut->set_var('foo', 23);
+        $this->sut->setVar('foo', 23);
 
-        $this->assertEquals(23, $this->sut->get_var('foo'));
-        $this->sut->set_var('foo', 'new value');
+        $this->assertEquals(23, $this->sut->getVar('foo'));
+        $this->sut->setVar('foo', 'new value');
 
-        $this->assertEquals(23, $this->sut->get_var('foo'));
+        $this->assertEquals(23, $this->sut->getVar('foo'));
     }
 
     /**
@@ -65,7 +65,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     public function it_should_throw_if_trying_to_get_non_set_var()
     {
         $this->setExpectedException('InvalidArgumentException');
-        $this->sut->get_var('foo');
+        $this->sut->getVar('foo');
     }
 
     /**
@@ -74,7 +74,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_registering_a_constructor()
     {
-        $this->sut->set_ctor('object', 'ObjectOne');
+        $this->sut->setCtor('object', 'ObjectOne');
 
         $object = $this->sut->make('object');
 
@@ -87,7 +87,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_a_new_instance_of_an_object_on_each_make_call()
     {
-        $this->sut->set_ctor('object', 'ObjectOne');
+        $this->sut->setCtor('object', 'ObjectOne');
 
         $object1 = $this->sut->make('object');
         $object2 = $this->sut->make('object');
@@ -103,7 +103,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectOne';
 
-        $this->sut->set_ctor('object', $class . '::create');
+        $this->sut->setCtor('object', $class . '::create');
 
         $object = $this->sut->make('object');
 
@@ -118,7 +118,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectTwo';
 
-        $this->sut->set_ctor('object', $class, 'foo', 23);
+        $this->sut->setCtor('object', $class, 'foo', 23);
 
         $object = $this->sut->make('object');
 
@@ -135,7 +135,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectThree';
 
-        $this->sut->set_ctor('object', $class . '::one', 'foo', 23);
+        $this->sut->setCtor('object', $class . '::one', 'foo', 23);
 
         $object = $this->sut->make('object');
 
@@ -151,10 +151,10 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     public function it_should_allow_specifying_previously_registered_vars_as_args()
     {
         $class = 'ObjectThree';
-        $this->sut->set_var('string', 'foo');
-        $this->sut->set_var('int', 23);
+        $this->sut->setVar('string', 'foo');
+        $this->sut->setVar('int', 23);
 
-        $this->sut->set_ctor('object', $class . '::one', '#string', '#int');
+        $this->sut->setCtor('object', $class . '::one', '#string', '#int');
 
         $object = $this->sut->make('object');
 
@@ -171,10 +171,10 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectFour';
 
-        $this->sut->set_ctor('myObject', 'ObjectOne');
-        $this->sut->set_var('string', 'foo');
+        $this->sut->setCtor('myObject', 'ObjectOne');
+        $this->sut->setVar('string', 'foo');
 
-        $this->sut->set_ctor('dependingObject', 'ObjectFour::create', '@myObject', '#string');
+        $this->sut->setCtor('dependingObject', 'ObjectFour::create', '@myObject', '#string');
 
         $object = $this->sut->make('dependingObject');
 
@@ -191,7 +191,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectOne';
 
-        $this->sut->set_shared('singleton', $class);
+        $this->sut->setShared('singleton', $class);
 
         $i1 = $this->sut->make('singleton');
         $i2 = $this->sut->make('singleton');
@@ -207,10 +207,10 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectTwo';
 
-        $this->sut->set_var('string', 'foo');
-        $this->sut->set_var('int', 23);
+        $this->sut->setVar('string', 'foo');
+        $this->sut->setVar('int', 23);
 
-        $this->sut->set_shared('singleton', $class, '#string', '#int');
+        $this->sut->setShared('singleton', $class, '#string', '#int');
 
         $i1 = $this->sut->make('singleton');
         $i2 = $this->sut->make('singleton');
@@ -226,9 +226,9 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectFour';
 
-        $this->sut->set_ctor('myObject', 'ObjectOne::create');
+        $this->sut->setCtor('myObject', 'ObjectOne::create');
 
-        $this->sut->set_shared('singleton', $class . '::create', '@myObject', 'foo');
+        $this->sut->setShared('singleton', $class . '::create', '@myObject', 'foo');
 
         $i1 = $this->sut->make('singleton');
         $i2 = $this->sut->make('singleton');
@@ -244,7 +244,7 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectFive';
 
-        $this->sut->set_ctor('object', $class)
+        $this->sut->setCtor('object', $class)
             ->setDependency(new DependencyObjectOne())
             ->setString('foo')
             ->setInt(23);
@@ -264,10 +264,10 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectFive';
 
-        $this->sut->set_ctor('dependency', 'DependencyObjectOne');
-        $this->sut->set_var('string', 'foo');
-        $this->sut->set_var('int', 23);
-        $this->sut->set_ctor('object', $class)->setDependency('@dependency')->setString('#string')
+        $this->sut->setCtor('dependency', 'DependencyObjectOne');
+        $this->sut->setVar('string', 'foo');
+        $this->sut->setVar('int', 23);
+        $this->sut->setCtor('object', $class)->setDependency('@dependency')->setString('#string')
             ->setInt('#int');
 
         $i = $this->sut->make('object');
@@ -286,11 +286,11 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectFive';
 
-        $this->sut->set_ctor('dependency', 'DependencyObjectOne');
-        $this->sut->set_var('string', 'foo');
-        $this->sut->set_var('int', 23);
+        $this->sut->setCtor('dependency', 'DependencyObjectOne');
+        $this->sut->setVar('string', 'foo');
+        $this->sut->setVar('int', 23);
 
-        $this->sut->set_ctor('object', $class . '::makeOne', '@dependency')
+        $this->sut->setCtor('object', $class . '::makeOne', '@dependency')
             ->setString('#string')
             ->setInt('#int');
 
@@ -310,13 +310,13 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
         $class = 'ObjectFive';
 
-        $this->sut->set_ctor('dependency', 'DependencyObjectOne');
-        $this->sut->set_var('string', 'foo');
-        $this->sut->set_var('int', 23);
+        $this->sut->setCtor('dependency', 'DependencyObjectOne');
+        $this->sut->setVar('string', 'foo');
+        $this->sut->setVar('int', 23);
 
-        $this->sut->set_ctor('object', $class . '::makeOne', '@dependency')
-            ->call_method('setString', '#string')
-            ->call_method('setInt', '#int');
+        $this->sut->setCtor('object', $class . '::makeOne', '@dependency')
+            ->callMethod('setString', '#string')
+            ->callMethod('setInt', '#int');
 
         $i = $this->sut->make('object');
 
@@ -334,13 +334,13 @@ class ContainerTest extends PHPUnit_Framework_TestCase
     {
 
         // not specifying a ctor method for tad_Dependency
-        // $this->sut->set_ctor( 'dependency', 'DependencyObjectOne' );
-        $this->sut->set_var('string', 'foo');
-        $this->sut->set_var('int', 23);
+        // $this->sut->setCtor( 'dependency', 'DependencyObjectOne' );
+        $this->sut->setVar('string', 'foo');
+        $this->sut->setVar('int', 23);
 
         $class = 'DependingClassThree';
         $dependencyClass = 'ConcreteClassOne';
-        $this->sut->set_ctor('object', $class, '~' . $dependencyClass);
+        $this->sut->setCtor('object', $class, '~' . $dependencyClass);
 
         $i = $this->sut->make('object');
 
