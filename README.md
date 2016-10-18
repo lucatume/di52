@@ -1,5 +1,7 @@
 A PHP 5.2 compatible dependency injection container heavily inspired by [Laravel IOC](https://laravel.com/docs/5.0/container "Service Container - Laravel - The PHP Framework For Web Artisans").
 
+[![Build Status](https://travis-ci.org/lucatume/di52.svg?branch=master)](https://travis-ci.org/lucatume/di52)
+
 ## Installation
 Use [Composer](https://getcomposer.org/) to require the library:
 
