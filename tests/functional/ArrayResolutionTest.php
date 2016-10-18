@@ -1,7 +1,5 @@
 <?php
 
-use tad_DI52_Container as DI;
-
 class Dummy23423424
 {
 
@@ -15,7 +13,7 @@ class ArrayResolutionTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_an_array_of_variables_and_resolve_them()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['var-one'] = 'foo';
         $container['var-two'] = 'baz';
         $container['var-three'] = 'bar';
@@ -34,7 +32,7 @@ class ArrayResolutionTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_an_array_of_constructors_and_resolve_them()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['ctor-one'] = 'Dummy23423424';
         $container['ctor-two'] = 'Dummy23423424';
         $container['ctor-three'] = 'Dummy23423424';
@@ -53,7 +51,7 @@ class ArrayResolutionTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_and_array_of_variables_and_constructors_and_resolve_them()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['ctor-one'] = 'Dummy23423424';
         $container['ctor-two'] = 'Dummy23423424';
         $container['var-one'] = 'foo';
@@ -74,7 +72,7 @@ class ArrayResolutionTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_mixing_ctors_vars_and_real_values()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['ctor-one'] = 'Dummy23423424';
         $container['ctor-two'] = 'Dummy23423424';
         $container['var-one'] = 'foo';

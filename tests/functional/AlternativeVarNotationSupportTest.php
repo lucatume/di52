@@ -1,7 +1,4 @@
 <?php
-
-use tad_DI52_Container as DI;
-
 class Dummy242423
 {
     protected $var;
@@ -26,7 +23,7 @@ class AlternativeVarNotationSupportTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_throw_if_trying_to_reference_non_existing_var_()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['object'] = array('Dummy242423', '%some-var%');
 
         $this->setExpectedException('InvalidArgumentException');
@@ -41,7 +38,7 @@ class AlternativeVarNotationSupportTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_marking_vars_using_the_var_notation()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['some-var'] = 23;
         $container['object'] = array('Dummy242423', '%some-var%');
 
@@ -56,7 +53,7 @@ class AlternativeVarNotationSupportTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_the_var_value_when_directly_requested()
     {
-        $container = new DI();
+        $container = new tad_DI52_Container();
         $container['some-var'] = 23;
 
         $value = $container->resolve('%some-var%');

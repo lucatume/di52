@@ -1,7 +1,5 @@
 <?php
 
-use tad_DI52_Container as DI;
-
 class ArrayAccessTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -10,7 +8,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_implement_the_array_access_interface()
     {
-        $this->assertInstanceOf('ArrayAccess', new DI());
+        $this->assertInstanceOf('ArrayAccess', new tad_DI52_Container());
     }
 
     /**
@@ -19,7 +17,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_shared_instance_using_array_access()
     {
-        $sut = new DI();
+        $sut = new tad_DI52_Container();
         $sut['one'] = 'arrayAccessDummyWithNoConstructor';
 
         $i1 = $sut['one'];
@@ -34,7 +32,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_shared_instance_and_args_using_array_access()
     {
-        $sut = new DI();
+        $sut = new tad_DI52_Container();
         $sut['one'] = array('arrayAccessDummy', 4, 5);
 
         $i1 = $sut['one'];
@@ -50,7 +48,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_var_using_array_access()
     {
-        $sut = new DI();
+        $sut = new tad_DI52_Container();
 
         $sut['var'] = 'foo';
 
@@ -63,7 +61,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_unset_a_constructor()
     {
-        $sut = new DI();
+        $sut = new tad_DI52_Container();
         $sut['one'] = 'arrayAccessDummyWithNoConstructor';
 
         unset($sut['one']);
@@ -78,7 +76,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_unset_a_var()
     {
-        $sut = new DI();
+        $sut = new tad_DI52_Container();
         $sut['one'] = 'foo';
 
         unset($sut['one']);
@@ -93,7 +91,7 @@ class ArrayAccessTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_for_lazy_instantiation()
     {
-        $sut = new DI();
+        $sut = new tad_DI52_Container();
         global $_foo;
         $_foo = 1;
         $sut['dependency'] = 'arrayAccessDummyDependency';
