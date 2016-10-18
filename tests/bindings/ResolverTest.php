@@ -393,26 +393,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->assertSame($instanceOne, $instanceTwo);
     }
 
-
-    /**
-     * @test
-     * it should allow binding a decorator chain using a closure
-     */
-    public function it_should_allow_binding_a_decorator_chain_using_a_closure()
-    {
-        $container = $this->makeInstance();
-
-        $container->bind('BaseClassInterface', function (tad_DI52_Bindings_ResolverInterface $container) {
-            $baseClass = $container->resolve('BaseClass');
-
-            return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
-        });
-
-        $instance = $container->resolve('BaseClassInterface');
-
-        $this->assertInstanceOf('BaseClassDecoratorThree', $instance);
-    }
-
     /**
      * @test
      * it should allow binding a decorator chain using an array
@@ -427,26 +407,6 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $instance = $container->resolve('BaseClassInterface');
 
         $this->assertInstanceOf('BaseClassDecoratorThree', $instance);
-    }
-
-    /**
-     * @test
-     * it should allow binding a decorator chain as a singleton using a closure
-     */
-    public function it_should_allow_binding_a_decorator_chain_as_a_singleton_using_a_closure()
-    {
-        $container = $this->makeInstance();
-
-        $container->singleton('BaseClassInterface', function (tad_DI52_Bindings_ResolverInterface $container) {
-            $baseClass = $container->resolve('BaseClass');
-
-            return new BaseClassDecoratorThree(new BaseClassDecoratorTwo(new BaseClassDecoratorOne($baseClass)));
-        });
-
-        $instance = $container->resolve('BaseClassInterface');
-        $instance2 = $container->resolve('BaseClassInterface');
-
-        $this->assertSame($instance, $instance2);
     }
 
     /**
