@@ -1,7 +1,20 @@
 <?php
 
-interface tad_DI52_Bindings_ResolverInterface
+interface tad_DI52_ContainerInterface
 {
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
+    public function setVar($key, $value);
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getVar($key);
+
     /**
      * Binds an interface or class to an implementation.
      *
@@ -17,7 +30,7 @@ interface tad_DI52_Bindings_ResolverInterface
      * @param string $classOrInterface A fully qualified class or interface name.
      * @return mixed
      */
-    public function resolve($classOrInterface);
+    public function make($classOrInterface);
 
     /**
      * Binds an interface or class to an implementation and will always return the same instance.

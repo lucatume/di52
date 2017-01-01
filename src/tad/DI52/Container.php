@@ -1,71 +1,144 @@
 <?php
 
 
-class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInterface
+class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 {
-
     /**
-     * @var tad_DI52_Var[]
+     * @param string $key
+     * @param mixed $value
      */
-    protected $vars = array();
-
-    /**
-     * @var tad_DI52_Ctor[]
-     */
-    protected $ctors = array();
-
-    /**
-     * @var tad_DI52_Bindings_ResolverInterface
-     */
-    protected $bindingsResolver;
-
-    public function __construct()
+    public function setVar($key, $value)
     {
-        $this->setBindingsResolver(new tad_DI52_Bindings_Resolver($this));
-    }
-
-    public function setBindingsResolver(tad_DI52_Bindings_ResolverInterface $bindingsResolver)
-    {
-        $this->bindingsResolver = $bindingsResolver;
+        // TODO: Implement setVar() method.
     }
 
     /**
-     * Sets a class instance constructor with optional arguments.
+     * @param string $key
      *
-     * @param $alias
-     * @param $class_and_method
-     * @param null $arg_one One or more optional arguments that should be passed to the class constructor.
-     *
-     * @return bool|tad_DI52_Ctor Either a new constructor instance or `false` if the constructor alias
+     * @return mixed
      */
-    public function setCtor($alias, $class_and_method, $arg_one = null)
+    public function getVar($key)
     {
-        $func_args = func_get_args();
-        $args = array_splice($func_args, 2);
-
-        return $this->ctors[$alias] = tad_DI52_Ctor::create($class_and_method, $args, $this);
+        // TODO: Implement getVar() method.
     }
 
     /**
-     * Sets a singleton (shared) object instance to be returned each time requested.
+     * Binds an interface or class to an implementation.
      *
-     * @param string $alias The pretty name the shared instance will go by.
-     * @param string $class_and_method The fully qualified name of the class to instance and an optional double colon
-     *                          separated static constructor method.
-     *
-     * @param null $arg_one One or more optional parameters to use in the object construction.
-     *
-     * @return $this
+     * @param string $classOrInterface
+     * @param string $implementation
+     * @param array $afterBuildMethods
      */
-    public function setShared($alias, $class_and_method, $arg_one = null)
+    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        if (!isset($this->ctors[$alias])) {
-            $func_args = func_get_args();
-            $args = array_splice($func_args, 2);
-            $this->ctors[$alias] = tad_DI52_Singleton::create($class_and_method, $args, $this);
-        }
+        // TODO: Implement bind() method.
+    }
 
-        return $this;
+    /**
+     * Returns an instance of the class or object bound to an interface.
+     *
+     * @param string $classOrInterface A fully qualified class or interface name.
+     * @return mixed
+     */
+    public function make($classOrInterface)
+    {
+        // TODO: Implement make() method.
+    }
+
+    /**
+     * Binds an interface or class to an implementation and will always return the same instance.
+     *
+     * @param string $classOrInterface
+     * @param string $implementation
+     * @param array $afterBuildMethods
+     */
+    public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
+    {
+        // TODO: Implement singleton() method.
+    }
+
+    /**
+     * Tags an array of implementation bindings.
+     *
+     * @param array $implementationsArray
+     * @param string $tag
+     */
+    public function tag(array $implementationsArray, $tag)
+    {
+        // TODO: Implement tag() method.
+    }
+
+    /**
+     * Retrieves an array of bound implementations resolving them.
+     *
+     * @param string $tag
+     * @return array An array of resolved bound implementations.
+     */
+    public function tagged($tag)
+    {
+        // TODO: Implement tagged() method.
+    }
+
+    /**
+     * Registers a service provider implementation.
+     *
+     * @param string $serviceProviderClass
+     */
+    public function register($serviceProviderClass)
+    {
+        // TODO: Implement register() method.
+    }
+
+    /**
+     * Boots up the application calling the `boot` method of each registered service provider.
+     */
+    public function boot()
+    {
+        // TODO: Implement boot() method.
+    }
+
+    /**
+     * Checks whether if an interface or class has been bound to a concrete implementation.
+     *
+     * @param string $classOrInterface
+     * @return bool
+     */
+    public function isBound($classOrInterface)
+    {
+        // TODO: Implement isBound() method.
+    }
+
+    /**
+     * Checks whether a tag group exists in the container.
+     *
+     * @param string $tag
+     * @return bool
+     */
+    public function hasTag($tag)
+    {
+        // TODO: Implement hasTag() method.
+    }
+
+    /**
+     * Binds a chain of decorators to a class or interface.
+     *
+     * @param $classOrInterface
+     * @param array $decorators
+     */
+    public function bindDecorators($classOrInterface, array $decorators)
+    {
+        // TODO: Implement bindDecorators() method.
+    }
+
+    /**
+     * Binds a chain of decorators to a class or interface to be returned as a singleton.
+     *
+     * @param $classOrInterface
+     * @param array $decorators
+     */
+    public function singletonDecorators($classOrInterface, $decorators)
+    {
+        // TODO: Implement singletonDecorators() method.
     }
 
     /**
@@ -82,7 +155,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function offsetExists($offset)
     {
-        return isset($this->ctors[$offset]);
+        // TODO: Implement offsetExists() method.
     }
 
     /**
@@ -96,64 +169,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function offsetGet($offset)
     {
-        if (interface_exists($offset) || class_exists($offset)) {
-            return $this->bindingsResolver->resolve($offset);
-        }
-        if (isset($this->ctors[$offset])) {
-            return $this->make($offset);
-        } else {
-            return $this->getVar($offset);
-        }
-    }
-
-    /**
-     * Builds and returns a class instance.
-     *
-     * @param $alias
-     *
-     * @return mixed|object
-     */
-    public function make($alias)
-    {
-        try {
-            return $this->bindingsResolver->resolve($alias);
-        } catch (Exception $e) {
-
-            $this->assertCtorAlias($alias);
-
-            $ctor = $this->ctors[$alias];
-
-            $instance = $ctor->getObjectInstance();
-
-            return $instance;
-        }
-    }
-
-    /**
-     * @param $alias
-     */
-    protected function assertCtorAlias($alias)
-    {
-        if (!array_key_exists($alias, $this->ctors)) {
-            throw new InvalidArgumentException("No constructor with the $alias alias is registered");
-        }
-    }
-
-    public function getVar($alias)
-    {
-        $this->assertVarAlias($alias);
-
-        return $this->vars[$alias]->getValue();
-    }
-
-    /**
-     * @param $alias
-     */
-    protected function assertVarAlias($alias)
-    {
-        if (!array_key_exists($alias, $this->vars)) {
-            throw new InvalidArgumentException("No variable with the $alias alias is registered");
-        }
+        // TODO: Implement offsetGet() method.
     }
 
     /**
@@ -170,27 +186,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function offsetSet($offset, $value)
     {
-        if (interface_exists($offset) || class_exists($offset)) {
-            $this->bindingsResolver->singleton($offset, $value);
-            return;
-        }
-        $_value = is_array($value) ? $value : array($value);
-        $class_and_method = $_value[0];
-        if (strpos($class_and_method, '::') || class_exists($class_and_method)) {
-            $args = array_merge(array($offset), $_value);
-            call_user_func_array(array($this, 'setShared'), $args);
-        } else {
-            $this->setVar($offset, $value);
-        }
-    }
-
-    public function setVar($alias, $value = null)
-    {
-        if (!isset($this->vars[$alias])) {
-            $this->vars[$alias] = tad_DI52_Var::create($value, $this);
-        }
-
-        return $this;
+        // TODO: Implement offsetSet() method.
     }
 
     /**
@@ -204,137 +200,6 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_Bindings_ResolverInter
      */
     public function offsetUnset($offset)
     {
-        if (isset($this->ctors[$offset])) {
-            unset($this->ctors[$offset]);
-        } else {
-            unset($this->vars[$offset]);
-        }
-    }
-
-    public function resolve($alias)
-    {
-        if (interface_exists($alias) || class_exists($alias)) {
-            return $this->bindingsResolver->resolve($alias);
-        }
-        if (is_string($alias)) {
-            $matches = array();
-            if (preg_match('/^@(.*)$/', $alias, $matches)) {
-                return $this->make($matches[1]);
-            } elseif (preg_match('/^#(.*)$/', $alias, $matches)) {
-                return $this->getVar($matches[1]);
-            } elseif (preg_match('/^%(.*)%$/', $alias, $matches)) {
-                return $this->getVar($matches[1]);
-            }
-        }
-
-        return $alias;
-    }
-
-    /**
-     * Binds an interface or class to an implementation.
-     *
-     * @param string $classOrInterface
-     * @param string $implementation
-     * @param array $afterBuildMethods
-     */
-    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
-    {
-        return $this->bindingsResolver->bind($classOrInterface, $implementation, $afterBuildMethods);
-    }
-
-    /**
-     * Binds an interface or class to an implementation.
-     *
-     * @param string $classOrInterface
-     * @param string $implementation
-     * @param array $afterBuildMethods
-     */
-    public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
-    {
-        return $this->bindingsResolver->singleton($classOrInterface, $implementation, $afterBuildMethods);
-    }
-
-    /**
-     * Registers a service provider implementation.
-     *
-     * @param string $serviceProviderClass
-     */
-    public function register($serviceProviderClass)
-    {
-        return $this->bindingsResolver->register($serviceProviderClass);
-    }
-
-    /**
-     * Tags an array of implementation bindings.
-     *
-     * @param array $implementationsArray
-     * @param string $tag
-     */
-    public function tag(array $implementationsArray, $tag)
-    {
-        return $this->bindingsResolver->tag($implementationsArray, $tag);
-    }
-
-    /**
-     * Retrieves an array of bound implementations resolving them.
-     *
-     * @param string $tag
-     * @return array An array of resolved bound implementations.
-     */
-    public function tagged($tag)
-    {
-        return $this->bindingsResolver->tagged($tag);
-    }
-
-    /**
-     * Boots up the application calling the `boot` method of each registered service provider.
-     */
-    public function boot()
-    {
-        $this->bindingsResolver->boot();
-    }
-
-    /**
-     * Checks whether if an interface or class has been bound to a concrete implementation.
-     *
-     * @param string $classOrInterface
-     * @return bool
-     */
-    public function isBound($classOrInterface)
-    {
-        return $this->bindingsResolver->isBound($classOrInterface);
-    }
-
-    /**
-     * Checks whether a tag group exists in the container.
-     *
-     * @param string $tag
-     * @return bool
-     */
-    public function hasTag($tag)
-    {
-        return $this->bindingsResolver->hasTag($tag);
-    }
-
-    /**
-     * Binds a chain of decorators to a class or interface.
-     *
-     * @param $classOrInterface
-     * @param array $decorators
-     */
-    public function bindDecorators($classOrInterface, array $decorators)
-    {
-        return $this->bindingsResolver->bindDecorators($classOrInterface, $decorators);
-    }
-
-    /**
-     * Binds a chain of decorators to a class or interface to be returned as a singleton.
-     *
-     * @param $classOrInterface
-     * @param array $decorators
-     */
-    public function singletonDecorators($classOrInterface, $decorators)
-    {
-        return $this->bindingsResolver->singletonDecorators($classOrInterface, $decorators);
+        // TODO: Implement offsetUnset() method.
     }
 }

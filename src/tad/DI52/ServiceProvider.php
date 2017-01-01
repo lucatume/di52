@@ -43,4 +43,12 @@ abstract class tad_DI52_ServiceProvider implements tad_DI52_ServiceProviderInter
     {
         return array();
     }
+
+    /**
+     * Binds and sets up implementations at boot time.
+     */
+    public function boot()
+    {
+        // no-op
+    }
 }
