@@ -100,4 +100,21 @@ interface tad_DI52_ContainerInterface
      * @param array $decorators
      */
     public function singletonDecorators($classOrInterface, $decorators);
+
+    /**
+     * Starts the `whenRequiredBy->[bind|singleton]` chain for a contextual binding.
+     *
+     * @param string $class The fully qualified name of the requesting class.
+     *
+     * Example:
+     *
+     *      // any class requesting an implementation of `LoggerInterface` will receive this implementation...
+     *      $container->singleton('LoggerInterface', 'FilesystemLogger');
+     *      // but if the requesting class is `Worker` return another implementation
+     *      $container->whenRequestedBy('Worker')
+     *          ->singleton('LoggerInterface', 'RemoteLogger');
+     *
+     * @return tad_DI52_ContainerInterface
+     */
+    public function whenRequiredBy($class);
 }
