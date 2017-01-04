@@ -3,13 +3,74 @@
 
 class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 {
+
+    /**
+     * @var array
+     */
+    protected $protected = array();
+
+    /**
+     * @var array
+     */
+    protected $strings = array();
+
+    /**
+     * @var array
+     */
+    protected $objects = array();
+
+    /**
+     * @var array
+     */
+    protected $callables = array();
+
+    /**
+     * @var array
+     */
+    protected $singletons = array();
+
+    /**
+     * @var array
+     */
+    protected $deferred = array();
+
+    /**
+     * @var array
+     */
+    protected $chains = array();
+
+    /**
+     * @var array
+     */
+    protected $reflections = array();
+
+    /**
+     * @var array
+     */
+    protected $parameterReflections = array();
+
+    /**
+     * @var array
+     */
+    protected $afterbuild = array();
+
+    /**
+     * @var string
+     */
+    protected $resolving = '';
+
+    /**
+     * @var array
+     */
+    protected $tags = array();
+
     /**
      * @param string $key
      * @param mixed $value
      */
     public function setVar($key, $value)
     {
-        // TODO: Implement setVar() method.
+        $this->offsetSet($key, $value);
     }
 
     /**
@@ -19,7 +80,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function getVar($key)
     {
-        // TODO: Implement getVar() method.
+        return $this->offsetGet($key);
     }
 
     /**
@@ -31,7 +92,10 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        // TODO: Implement bind() method.
+        $this->strings[$classOrInterface] = $implementation;
+        if (!empty($afterBuildMethods)) {
+            $this->afterbuild[$classOrInterface] = $afterBuildMethods;
+        }
     }
 
     /**
@@ -42,7 +106,17 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function make($classOrInterface)
     {
-        // TODO: Implement make() method.
+        if (isset($this->objects[$classOrInterface])) {
+            return $this->objects[$classOrInterface];
+        }
+
+        $resolved = $this->resolve($classOrInterface);
+
+        if (isset($this->singletons[$classOrInterface])) {
+            $this->objects[$classOrInterface] = $resolved;
+        }
+
+        return $resolved;
     }
 
     /**
@@ -54,7 +128,8 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        // TODO: Implement singleton() method.
+        $this->singletons[$classOrInterface] = $classOrInterface;
+        $this->bind($classOrInterface, $implementation, $afterBuildMethods);
     }
 
     /**
@@ -65,7 +140,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function tag(array $implementationsArray, $tag)
     {
-        // TODO: Implement tag() method.
+        $this->tags[$tag] = $implementationsArray;
     }
 
     /**
@@ -76,7 +151,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function tagged($tag)
     {
-        // TODO: Implement tagged() method.
+        if ($this->hasTag($tag)) {
+            return array_map(array($this, 'offsetGet'), $this->tags[$tag]);
+        }
+
+        throw new RuntimeException("Nothing has been tagged {$tag}.");
     }
 
     /**
@@ -105,7 +184,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function isBound($classOrInterface)
     {
-        // TODO: Implement isBound() method.
+        return $this->offsetExists($classOrInterface);
     }
 
     /**
@@ -116,18 +195,21 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function hasTag($tag)
     {
-        // TODO: Implement hasTag() method.
+        return isset($this->tags[$tag]);
     }
 
     /**
      * Binds a chain of decorators to a class or interface.
+     *
+     * The base decorated class must be the last one in the array.
      *
      * @param $classOrInterface
      * @param array $decorators
      */
     public function bindDecorators($classOrInterface, array $decorators)
     {
-        // TODO: Implement bindDecorators() method.
+        $this->strings[$classOrInterface] = $decorators;
+        $this->chains[$classOrInterface] = $decorators;
     }
 
     /**
@@ -138,7 +220,8 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function singletonDecorators($classOrInterface, $decorators)
     {
-        // TODO: Implement singletonDecorators() method.
+        $this->bindDecorators($classOrInterface, $decorators);
+        $this->singletons[$classOrInterface] = $classOrInterface;
     }
 
     /**
@@ -155,7 +238,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function offsetExists($offset)
     {
-        // TODO: Implement offsetExists() method.
+        return isset($this->strings[$offset]) || isset($this->objects[$offset]);
     }
 
     /**
@@ -169,7 +252,37 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function offsetGet($offset)
     {
-        // TODO: Implement offsetGet() method.
+        if (is_object($offset)) {
+            return is_callable($offset) ? call_user_func($offset, $this) : $offset;
+        }
+
+        if (isset($this->objects[$offset])) {
+            return $this->objects[$offset];
+        }
+
+        if (isset($this->strings[$offset])) {
+            if (class_exists($this->strings[$offset])) {
+                $instance = $this->make($this->strings[$offset]);
+                $this->objects[$offset] = $instance;
+                return $instance;
+            }
+            return $this->strings[$offset];
+        }
+
+        if (isset($this->callables[$offset])) {
+            return call_user_func($this->callables[$offset]);
+        }
+
+        if (isset($this->singletons[$offset])) {
+            $this->objects[$offset] = call_user_func($this->singletons[$offset]);
+            return $this->objects[$offset];
+        }
+
+        if (class_exists($offset)) {
+            return $this->resolve($offset);
+        }
+
+        throw new RuntimeException("Nothing is bound to the key '{$offset}'");
     }
 
     /**
@@ -186,7 +299,27 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function offsetSet($offset, $value)
     {
-        // TODO: Implement offsetSet() method.
+        if ($value instanceof tad_DI52_ProtectedValue) {
+            $this->protected[$offset] = true;
+            /** @var tad_DI52_ProtectedValue $value */
+            $value = $value->getValue();
+        }
+
+        $this->singletons[$offset] = $offset;
+
+        if (isset($this->protected[$offset])) {
+            $this->strings[$offset] = $value;
+        }
+
+        if (is_object($value)) {
+            $this->objects[$offset] = $value;
+        }
+
+        if (is_callable($value)) {
+            $this->callables[$offset] = $value;
+        }
+
+        $this->strings[$offset] = $value;
     }
 
     /**
@@ -200,7 +333,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function offsetUnset($offset)
     {
-        // TODO: Implement offsetUnset() method.
+        unset($this->strings[$offset], $this->objects[$offset]);
     }
 
     /**
@@ -221,5 +354,139 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     public function whenRequiredBy($class)
     {
         // TODO: Implement whenRequiredBy() method.
+    }
+
+    /**
+     * Protects a value from being resolved by the container.
+     *
+     * Example usage `$container['var'] = $container->protect(function(){return 'bar';});`
+     *
+     * @param mixed $value
+     */
+    public function protect($value)
+    {
+        return new tad_DI52_ProtectedValue($value);
+    }
+
+    protected function getParameter(ReflectionParameter $parameter)
+    {
+        $class = $parameter->getClass();
+
+        if (null === $class) {
+            if (!$parameter->isDefaultValueAvailable()) {
+                throw new RuntimeException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
+            }
+            return $parameter->getDefaultValue();
+        }
+        return $this->make($parameter->getClass()->getName());
+    }
+
+    /**
+     * @param $classOrInterface
+     * @param $implementation
+     * @return mixed
+     */
+    protected function build($classOrInterface, $implementation)
+    {
+        if (!isset($this->reflections[$implementation])) {
+            $this->reflections[$implementation] = new ReflectionClass($implementation);
+        }
+
+        if (!isset($this->parameterReflections[$implementation])) {
+            /** @var ReflectionClass $classReflection */
+            $classReflection = $this->reflections[$implementation];
+            $constructor = $classReflection->getConstructor();
+            $parameters = empty($constructor) ? array() : $constructor->getParameters();
+            $this->parameterReflections[$implementation] = array_map(array($this, 'getParameter'), $parameters);
+        }
+
+        $instance = !empty($this->parameterReflections[$implementation]) ?
+            $this->reflections[$implementation]->newInstanceArgs($this->parameterReflections[$implementation])
+            : new $implementation;
+
+        if (isset($this->afterbuild[$classOrInterface])) {
+            foreach ($this->afterbuild[$classOrInterface] as $method) {
+                call_user_func(array($instance, $method));
+            }
+            return $instance;
+        }
+        return $instance;
+    }
+
+    /**
+     * @param $classOrInterface
+     * @return mixed
+     */
+    protected function buildFromCallable($classOrInterface)
+    {
+        $instance = call_user_func($this->strings[$classOrInterface], $this);
+        return $instance;
+    }
+
+    /**
+     * @param string $classOrInterface
+     * @return mixed
+     */
+    protected function buildFromChain($classOrInterface)
+    {
+        $chainElements = $this->chains[$classOrInterface];
+        unset($this->chains[$classOrInterface]);
+
+        foreach (array_reverse($chainElements) as $element) {
+            $instance = $this->resolve($element);
+            $this->objects[$classOrInterface] = $instance;
+        }
+
+        $this->chains[$classOrInterface] = $chainElements;
+        unset($this->objects[$classOrInterface]);
+
+        return $instance;
+    }
+
+    /**
+     * @param string $classOrInterface
+     * @return array|mixed
+     */
+    protected function resolve($classOrInterface)
+    {
+        $this->resolving = $classOrInterface;
+
+        try {
+            if (isset($this->deferred[$classOrInterface])) {
+                /** @var tad_DI52_ServiceProviderInterface $provider */
+                $provider = $this->deferred[$classOrInterface];
+                $provider->register();
+            }
+
+            if (!isset($this->strings[$classOrInterface])) {
+                if (!class_exists($classOrInterface)) {
+                    throw new RuntimeException("'{$classOrInterface}' is not a bound alias or an existing class.");
+                }
+
+                $instance = $this->build($classOrInterface, $classOrInterface);
+            } else {
+                if (is_callable($this->strings[$classOrInterface])) {
+                    $instance = $this->buildFromCallable($classOrInterface);
+                } elseif (isset($this->chains[$classOrInterface])) {
+                    $instance = $this->buildFromChain($classOrInterface);
+                } else {
+                    $instance = $this->build($classOrInterface, $this->strings[$classOrInterface]);
+                }
+            }
+
+            return $instance;
+        } catch (Exception $e) {
+            preg_match('/Error while making/', $e->getMessage(), $matches);
+            if (count($matches)) {
+                $divider = "\n\t => ";
+                $prefix = ' ';
+            } else {
+                $divider = ':';
+                $prefix = 'Error while making ';
+            }
+            $message = "{$prefix} '{$classOrInterface}'{$divider} " . $e->getMessage();
+
+            throw new RuntimeException($message);
+        }
     }
 }
