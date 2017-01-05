@@ -31,6 +31,19 @@ class ClassOneTwo implements One
     }
 }
 
+class ClassOneThree
+{
+    public function methodOne()
+    {
+
+    }
+
+    public function methodTwo()
+    {
+
+    }
+}
+
 class ClassTwo implements Two
 {
     public function __construct(One $one)

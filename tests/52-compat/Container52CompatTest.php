@@ -477,4 +477,21 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($sut->isBound('One'));
     }
+
+    /**
+     * @test
+     * it should call after build methods on implementations
+     */
+    public function it_should_call_after_build_methods_on_implementations()
+    {
+        $sut = new tad_DI52_Container();
+
+        $mock = $this->getMock('ClassOneThree');
+        $mock->expects($this->once())->method('methodOne');
+        $mock->expects($this->once())->method('methodTwo');
+
+        $sut->bind('One', $mock, array('methodOne', 'methodTwo'));
+
+        $sut->make('One');
+    }
 }
