@@ -65,6 +65,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     protected $tags = array();
 
     /**
+     * @var array
+     */
+    protected $bootable = array();
+
+    /**
      * @param string $key
      * @param mixed $value
      */
@@ -165,7 +170,24 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function register($serviceProviderClass)
     {
-        // TODO: Implement register() method.
+        /** @var tad_DI52_ServiceProviderInterface $provider */
+        $provider = new $serviceProviderClass($this);
+        if (!$provider->isDeferred()) {
+            $provider->register();
+        } else {
+            $provided = $provider->provides();
+            $count = count($provided);
+            if ($count === 0) {
+                throw new RuntimeException("Service provider '{$serviceProviderClass}' is marked as deferred but is not providing any implementation.");
+            }
+            $this->deferred = array_merge($this->deferred,
+                array_combine($provided, array_fill(0, $count, $provider)));
+        }
+        $ref = new \ReflectionMethod($provider, 'boot');
+        $requiresBoot = ($ref->getDeclaringClass()->getName() === get_class($provider));
+        if ($requiresBoot) {
+            $this->bootable[] = $provider;
+        }
     }
 
     /**
@@ -173,7 +195,14 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function boot()
     {
-        // TODO: Implement boot() method.
+        if (empty($this->bootable)) {
+            return;
+        }
+
+        foreach ($this->bootable as $provider) {
+            /** @var tad_DI52_ServiceProviderInterface $provider */
+            $provider->boot();
+        }
     }
 
     /**

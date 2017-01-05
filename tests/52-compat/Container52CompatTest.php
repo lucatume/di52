@@ -404,4 +404,77 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ClassOneOne', $made[1]);
         $this->assertInstanceOf('ClassOneTwo', $made[2]);
     }
+
+    /**
+     * @test
+     * it should call register method on on deferred service providers when registering
+     */
+    public function it_should_call_register_method_on_on_deferred_service_providers_when_registering()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->register('ProviderOne');
+
+        $this->assertTrue($sut->isBound('foo'));
+    }
+
+    /**
+     * @test
+     * it should not call register method on deferred provider on registration
+     */
+    public function it_should_not_call_register_method_on_deferred_provider_on_registration()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->register('DeferredProviderTwo');
+
+        $this->assertFalse($sut->isBound('One'));
+    }
+
+    /**
+     * @test
+     * it should throw if deferred provider is not providing anything
+     */
+    public function it_should_throw_if_deferred_provider_is_not_providing_anything()
+    {
+        $sut = new tad_DI52_Container();
+
+        $this->setExpectedException('RuntimeException');
+
+        $sut->register('DeferredProviderOne');
+    }
+
+    /**
+     * @test
+     * it should register deferred provider when trying to resolve provided class
+     */
+    public function it_should_register_deferred_provider_when_trying_to_resolve_provided_class()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->register('DeferredProviderTwo');
+
+        $this->assertFalse($sut->isBound('One'));
+
+        $sut->make('One');
+
+        $this->assertTrue($sut->isBound('One'));
+    }
+
+    /**
+     * @test
+     * it should call boot method on providers when booting the container
+     */
+    public function it_should_call_boot_method_on_providers_when_booting_the_container()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->register('ProviderThree');
+
+        $this->assertFalse($sut->isBound('One'));
+
+        $sut->boot();
+
+        $this->assertTrue($sut->isBound('One'));
+    }
 }
