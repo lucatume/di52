@@ -102,7 +102,7 @@ interface tad_DI52_ContainerInterface
     public function singletonDecorators($classOrInterface, $decorators);
 
     /**
-     * Starts the `whenRequiredBy->[bind|singleton]` chain for a contextual binding.
+     * Starts the `when->needs->give` chain for a contextual binding.
      *
      * @param string $class The fully qualified name of the requesting class.
      *
@@ -111,10 +111,47 @@ interface tad_DI52_ContainerInterface
      *      // any class requesting an implementation of `LoggerInterface` will receive this implementation...
      *      $container->singleton('LoggerInterface', 'FilesystemLogger');
      *      // but if the requesting class is `Worker` return another implementation
-     *      $container->whenRequestedBy('Worker')
-     *          ->singleton('LoggerInterface', 'RemoteLogger');
+     *      $container->when('Worker')
+     *          ->needs('LoggerInterface)
+     *          ->give('RemoteLogger);
      *
      * @return tad_DI52_ContainerInterface
      */
-    public function whenRequiredBy($class);
+    public function when($class);
+
+    /**
+     * Second step the `when->needs->give` chain for a contextual binding.
+     *
+     * @param string $classOrInterface The fully qualified name of the requested class.
+     *
+     * Example:
+     *
+     *      // any class requesting an implementation of `LoggerInterface` will receive this implementation...
+     *      $container->singleton('LoggerInterface', 'FilesystemLogger');
+     *      // but if the requesting class is `Worker` return another implementation
+     *      $container->when('Worker')
+     *          ->needs('LoggerInterface)
+     *          ->give('RemoteLogger);
+     *
+     * @return tad_DI52_ContainerInterface
+     */
+    public function needs($classOrInterface);
+
+    /**
+     * Last step the `when->needs->give` chain for a contextual binding.
+     *
+     * @param mixed $implementation An implementation of the requested class.
+     *
+     * Example:
+     *
+     *      // any class requesting an implementation of `LoggerInterface` will receive this implementation...
+     *      $container->singleton('LoggerInterface', 'FilesystemLogger');
+     *      // but if the requesting class is `Worker` return another implementation
+     *      $container->when('Worker')
+     *          ->needs('LoggerInterface)
+     *          ->give('RemoteLogger);
+     *
+     * @return tad_DI52_ContainerInterface
+     */
+    public function give($implementation);
 }

@@ -10,7 +10,27 @@ interface Two
 
 }
 
+interface Four
+{
+
+}
+
+interface Five
+{
+
+}
+
 class ClassOne implements One
+{
+
+}
+
+class ExtendingClassOneOne extends ClassOne
+{
+
+}
+
+class ExtendingClassOneTwo extends ClassOne
 {
 
 }
@@ -92,11 +112,6 @@ class ClassFour
     }
 }
 
-interface Four
-{
-
-}
-
 class FourBase implements Four
 {
     public function __construct()
@@ -132,11 +147,6 @@ class FourDecoratorThree implements Four
     {
 
     }
-}
-
-interface Five
-{
-
 }
 
 class FiveBase implements Five
@@ -175,3 +185,65 @@ class FiveTwo implements Five
 
 }
 
+
+class ClassSix
+{
+    private $one;
+
+    public function __construct(One $one)
+    {
+        $this->one = $one;
+    }
+
+    public function getOne()
+    {
+        return $this->one;
+    }
+}
+
+class ClassSeven
+{
+    private $one;
+
+    public function __construct(One $one)
+    {
+
+        $this->one = $one;
+    }
+
+    public function getOne()
+    {
+        return $this->one;
+    }
+}
+
+class ClassSixOne
+{
+    private $one;
+
+    public function __construct(ClassOne $one)
+    {
+        $this->one = $one;
+    }
+
+    public function getOne()
+    {
+        return $this->one;
+    }
+}
+
+class ClassSevenOne
+{
+    private $one;
+
+    public function __construct(ClassOne $one)
+    {
+
+        $this->one = $one;
+    }
+
+    public function getOne()
+    {
+        return $this->one;
+    }
+}

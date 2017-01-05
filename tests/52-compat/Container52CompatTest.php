@@ -494,4 +494,64 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
         $sut->make('One');
     }
+
+    /**
+     * @test
+     * it should bind an object implementation as a singleton even when using bind
+     */
+    public function it_should_bind_an_object_implementation_as_a_singleton_even_when_using_bind()
+    {
+        $sut = new tad_DI52_Container();
+
+        $object = new stdClass();
+
+        $sut->bind('foo', $object);
+
+        $this->assertInstanceOf('stdClass', $sut->make('foo'));
+        $this->assertSame($sut->make('foo'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should support contextual binding of interfaces
+     */
+    public function it_should_support_contextual_binding_of_interfaces()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('One', 'ClassOne');
+
+        $sut->when('ClassSix')
+            ->needs('One')
+            ->give('ClassOneOne');
+
+        $sut->when('ClassSeven')
+            ->needs('One')
+            ->give('ClassOneTwo');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+        $this->assertInstanceOf('ClassOneOne', $sut->make('ClassSix')->getOne());
+        $this->assertInstanceOf('ClassOneTwo', $sut->make('ClassSeven')->getOne());
+    }
+
+    /**
+     * @test
+     * it should support contextual binding of classes
+     */
+    public function it_should_support_contextual_binding_of_classes()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->when('ClassSixOne')
+            ->needs('ClassOne')
+            ->give('ExtendingClassOneOne');
+
+        $sut->when('ClassSevenOne')
+            ->needs('ClassOne')
+            ->give('ExtendingClassOneTwo');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('ClassOne'));
+        $this->assertInstanceOf('ExtendingClassOneOne', $sut->make('ClassSixOne')->getOne());
+        $this->assertInstanceOf('ExtendingClassOneTwo', $sut->make('ClassSevenOne')->getOne());
+    }
 }
