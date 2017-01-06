@@ -565,7 +565,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         $parameterClass = $parameter->getClass()->getName();
 
         return isset($this->contexts[$parameterClass][$this->resolving]) ?
-            $this->make($this->contexts[$parameterClass][$this->resolving])
-            : $this->make($parameterClass);
+            $this->offsetGet($this->contexts[$parameterClass][$this->resolving])
+            : $this->offsetGet($parameterClass);
     }
 }

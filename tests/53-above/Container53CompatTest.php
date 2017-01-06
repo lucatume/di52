@@ -167,4 +167,29 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ClassOneOne', $made[1]);
         $this->assertInstanceOf('ClassOneTwo', $made[2]);
     }
+
+    /**
+     * @test
+     * it should allow contextual binding of closures
+     */
+    public function it_should_allow_contextual_binding_of_closures()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->when('ClassSixOne')
+            ->needs('ClassOne')
+            ->give(function ($container) {
+                return $container->make('ExtendingClassOneOne');
+            });
+
+        $sut->when('ClassSevenOne')
+            ->needs('ClassOne')
+            ->give(function ($container) {
+                return $container->make('ExtendingClassOneTwo');
+            });
+
+        $this->assertInstanceOf('ClassOne', $sut->make('ClassOne'));
+        $this->assertInstanceOf('ExtendingClassOneOne', $sut->make('ClassSixOne')->getOne());
+        $this->assertInstanceOf('ExtendingClassOneTwo', $sut->make('ClassSevenOne')->getOne());
+    }
 }
