@@ -102,6 +102,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      * @param mixed $value <p>
      * The value to set.
      * </p>
+     *
+     * When using the container as an array setting any binding will be set as a singleton.
+     *
      * @return void
      * @since 5.0.0
      */
@@ -134,6 +137,8 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
+     * Returns a variable stored in the container.
+     *
      * @param string $key
      *
      * @return mixed
@@ -149,6 +154,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      * @param mixed $offset <p>
      * The offset to retrieve.
      * </p>
+     *
+     * If the offset references a bound implementation then the implementation will be resolved and returned.
+     *
      * @return mixed Can return all value types.
      * @since 5.0.0
      */
@@ -191,7 +199,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Returns an instance of the class or object bound to an interface.
+     * Returns an instance of the class or object bound to an interface, class  or string slug if any, else it will try
+     * to automagically resolve the object to a usable instance.
+     *
+     * If the implementation has been bound as singleton using the `singleton` method
+     * or the ArrayAccess API then the implementation will be resolved just on the first request.
      *
      * @param string $classOrInterface A fully qualified class or interface name.
      * @return mixed
@@ -205,13 +217,24 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         $resolved = $this->resolve($classOrInterface);
 
         if (isset($this->singletons[$classOrInterface])) {
-            $this->objects[$classOrInterface] = $resolved;
+            if ($this->singletons[$classOrInterface] instanceof tad_DI52_BindGroup) {
+                foreach ($this->singletons[$classOrInterface] as $key) {
+                    $this->objects[$key] = $resolved;
+                }
+            } else {
+                $this->objects[$classOrInterface] = $resolved;
+            }
         }
 
         return $resolved;
     }
 
     /**
+     * Returns an instance of the class or object bound to an interface, class  or string slug if any, else it will try
+     * to automagically resolve the object to a usable instance.
+     *
+     * Differently from the `make` method singleton implementations will be be ignored.
+     *
      * @param string $classOrInterface
      * @return array|mixed
      */
@@ -326,28 +349,47 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Binds an interface or class to an implementation and will always return the same instance.
+     * Binds an interface a class or a string slug to an implementation and will always return the same instance.
      *
-     * @param string $classOrInterface
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
      * @param string $implementation
      * @param array $afterBuildMethods
      */
     public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        $this->singletons[$classOrInterface] = $classOrInterface;
         $this->bind($classOrInterface, $implementation, $afterBuildMethods);
+
+        if (is_array($classOrInterface)) {
+            $group = new tad_DI52_BindGroup($classOrInterface);
+            foreach ($classOrInterface as $key) {
+                $this->singletons[$key] = $group;
+            }
+        } else {
+            $this->singletons[$classOrInterface] = $classOrInterface;
+        }
     }
 
     /**
-     * Binds an interface or class to an implementation.
+     * Binds an interface, a class or a string slug to an implementation.
      *
-     * @param string $classOrInterface
+     *
+     *
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
      * @param string $implementation
      * @param array $afterBuildMethods
      */
     public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
-        $this->strings[$classOrInterface] = $implementation;
+        if (is_array($classOrInterface)) {
+            foreach ($classOrInterface as $key) {
+                unset($this->strings[$key], $this->singletons[$key], $this->objects[$key], $this->callables[$key], $this->chains[$key]);
+            }
+            $this->strings = array_merge($this->strings,
+                array_combine($classOrInterface, array_fill(0, count($classOrInterface), $implementation)));
+        } else {
+            unset($this->strings[$classOrInterface], $this->singletons[$classOrInterface], $this->objects[$classOrInterface], $this->callables[$classOrInterface], $this->chains[$classOrInterface]);
+            $this->strings[$classOrInterface] = $implementation;
+        }
 
         if (!empty($afterBuildMethods)) {
             $this->afterbuild[$classOrInterface] = $afterBuildMethods;
@@ -355,7 +397,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Tags an array of implementation bindings.
+     * Tags an array of implementations bindings for later retrieval.
+     *
+     * The implementations can also reference interfaces, classes or string slugs.
      *
      * @param array $implementationsArray
      * @param string $tag
@@ -394,6 +438,15 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     /**
      * Registers a service provider implementation.
      *
+     * The `register`  method will be called immediately.
+     * If the provider overloads the  `isDeferred` method returning a truthy value then the `register` method will be
+     * called only if one of the implementations provided by the provider is requested. The container defines which
+     * implementations is offering overloading the `provides` method; the method should return an array of provided
+     * implementations.
+     *
+     * If a provider overloads the `boot` method that method will be called when the `boot` method is called on the
+     * container itself.
+     *
      * @param string $serviceProviderClass
      */
     public function register($serviceProviderClass)
@@ -420,6 +473,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 
     /**
      * Boots up the application calling the `boot` method of each registered service provider.
+     *
+     * If there are bootable providers (providers overloading the `boot` method) then the `boot` method will be
+     * called on each bootable provider.
      */
     public function boot()
     {
@@ -432,7 +488,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Checks whether if an interface or class has been bound to a concrete implementation.
+     * Checks whether an interface, class or string slug has been bound to a concrete implementation.
      *
      * @param string $classOrInterface
      * @return bool
@@ -444,6 +500,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 
     /**
      * Whether a offset exists
+     *
+     * @see isBound
+     *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      * @param mixed $offset <p>
      * An offset to check for.
@@ -460,10 +519,13 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Binds a chain of decorators to a class or interface to be returned as a singleton.
+     * Binds a chain of decorators to a class, interface or string slug to a chain of implementations decorating a base
+     * object; the chain will be resolved only on the first call.
      *
-     * @param $classOrInterface
-     * @param array $decorators
+     * The base decorated object must be the last element of the array.
+     *
+     * @param string $classOrInterface
+     * @param array $decorators An array of implementations that decorate an object.
      */
     public function singletonDecorators($classOrInterface, $decorators)
     {
@@ -472,12 +534,13 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Binds a chain of decorators to a class or interface.
+     * Binds a chain of decorators to a class, interface or string slug to to a chain of implementations decorating a
+     * base object.
      *
-     * The base decorated class must be the last one in the array.
+     * The base decorated object must be the last element of the array.
      *
-     * @param $classOrInterface
-     * @param array $decorators
+     * @param string $classOrInterface
+     * @param array $decorators An array of implementations that decorate an object.
      */
     public function bindDecorators($classOrInterface, array $decorators)
     {

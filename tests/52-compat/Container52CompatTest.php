@@ -567,4 +567,207 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
         $sut->make('SomeNonExistingClass');
     }
+
+    /**
+     * @test
+     * it should allow binding same implementation to multiple aliases
+     */
+    public function it_should_allow_binding_same_implementation_to_multiple_aliases()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind(array('foo', 'One'), 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('foo'));
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+    }
+
+    /**
+     * @test
+     * it should allow binding same singleton implementation to multiple aliases
+     */
+    public function it_should_allow_binding_same_singleton_implementation_to_multiple_aliases()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton(array('foo', 'One'), 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('foo'));
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+        $this->assertSame($sut->make('foo'), $sut->make('One'));
+    }
+
+    /**
+     * @test
+     * it should replace a binding when re-binding
+     */
+    public function it_should_replace_a_binding_when_re_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('One', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+
+        $sut->bind('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+    }
+
+    /**
+     * @test
+     * it should replace a singleton bind when re-binding a singleton binding
+     */
+    public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton('One', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+
+        $sut->bind('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertNotSame($sut->make('One'), $sut->make('One'));
+    }
+
+    /**
+     * @test
+     * it should replace bind with singleton if re-binding as singleton
+     */
+    public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton('One', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+        $this->assertSame($sut->make('One'), $sut->make('One'));
+
+        $sut->singleton('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertSame($sut->make('One'), $sut->make('One'));
+    }
+
+    /**
+     * @test
+     * it should replace singleton with simple bind if re-binding as non singleton
+     */
+    public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton('One', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+        $this->assertSame($sut->make('One'), $sut->make('One'));
+
+        $sut->bind('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertNotSame($sut->make('One'), $sut->make('One'));
+    }
+
+    /**
+     * @test
+     * it should replace a binding when re-binding with multiple aliases with multiple aliases
+     */
+    public function it_should_replace_a_binding_when_re_binding_with_multiple_aliases()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind(array('One', 'foo'), 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+
+        $sut->bind('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertInstanceOf('ClassOne', $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should replace a singleton bind when re-binding a singleton binding with multiple aliases
+     */
+    public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding_with_multiple_aliases()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton(array('One', 'foo'), 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+
+        $sut->bind('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertInstanceOf('ClassOne', $sut->make('foo'));
+        $this->assertNotSame($sut->make('One'), $sut->make('One'));
+        $this->assertSame($sut->make('foo'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should replace bind with singleton if re-binding as singleton with multiple aliases
+     */
+    public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton_with_multiple_aliases()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton(array('One', 'foo'), 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+        $this->assertSame($sut->make('One'), $sut->make('One'));
+
+        $sut->singleton('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertSame($sut->make('One'), $sut->make('One'));
+        $this->assertInstanceOf('ClassOne', $sut->make('foo'));
+        $this->assertSame($sut->make('foo'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should replace singleton with simple bind if re-binding as non singleton with multiple aliases
+     */
+    public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton_with_multiple_aliases()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton(array('One', 'foo'), 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->make('One'));
+        $this->assertSame($sut->make('One'), $sut->make('One'));
+
+        $sut->bind('One', 'ClassOneOne');
+
+        $this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+        $this->assertNotSame($sut->make('One'), $sut->make('One'));
+        $this->assertInstanceOf('ClassOne', $sut->make('foo'));
+        $this->assertSame($sut->make('foo'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should allow tagging non concrete implementations
+     */
+    public function it_should_allow_tagging_non_concrete_implementations()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('foo', 'ClassOne');
+        $sut->bind('One', 'ClassOne');
+
+        $sut->tag(array('foo', 'One'), 'bar');
+
+        $resolved = $sut->tagged('bar');
+
+        $this->assertCount(2, $resolved);
+        $this->assertInstanceOf('ClassOne', $resolved[0]);
+        $this->assertInstanceOf('ClassOne', $resolved[1]);
+        $this->assertNotSame($resolved[0], $resolved[1]);
+    }
 }
