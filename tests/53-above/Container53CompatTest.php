@@ -192,4 +192,19 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ExtendingClassOneOne', $sut->make('ClassSixOne')->getOne());
         $this->assertInstanceOf('ExtendingClassOneTwo', $sut->make('ClassSevenOne')->getOne());
     }
+
+    /**
+     * @test
+     * it should call a closure when bound to an offset in ArrayAccess API
+     */
+    public function it_should_call_a_closure_when_bound_to_an_offset_in_array_access_api()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut['foo'] = function () {
+            return 'bar';
+        };
+
+        $this->assertEquals('bar', $sut['foo']);
+    }
 }

@@ -554,4 +554,17 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ExtendingClassOneOne', $sut->make('ClassSixOne')->getOne());
         $this->assertInstanceOf('ExtendingClassOneTwo', $sut->make('ClassSevenOne')->getOne());
     }
+
+    /**
+     * @test
+     * it should throw when trying to make non existing class
+     */
+    public function it_should_throw_when_trying_to_make_non_existing_class()
+    {
+        $sut = new tad_DI52_Container();
+
+        $this->setExpectedException('RuntimeException');
+
+        $sut->make('SomeNonExistingClass');
+    }
 }

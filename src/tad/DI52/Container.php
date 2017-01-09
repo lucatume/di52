@@ -116,15 +116,19 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 
         if (isset($this->protected[$offset])) {
             $this->strings[$offset] = $value;
-        }
-
-        if (is_object($value)) {
-            $this->objects[$offset] = $value;
+            return;
         }
 
         if (is_callable($value)) {
             $this->callables[$offset] = $value;
+            return;
         }
+
+        if (is_object($value)) {
+            $this->objects[$offset] = $value;
+            return;
+        }
+
 
         $this->strings[$offset] = $value;
     }
@@ -159,6 +163,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         }
 
         if (isset($this->strings[$offset])) {
+            if (isset($this->protected[$offset])) {
+                return $this->strings[$offset];
+            }
             if (class_exists($this->strings[$offset])) {
                 $instance = $this->make($this->strings[$offset]);
                 $this->objects[$offset] = $instance;
@@ -416,13 +423,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function boot()
     {
-        if (empty($this->bootable)) {
-            return;
-        }
-
-        foreach ($this->bootable as $provider) {
-            /** @var tad_DI52_ServiceProviderInterface $provider */
-            $provider->boot();
+        if (!empty($this->bootable)) {
+            foreach ($this->bootable as $provider) {
+                /** @var tad_DI52_ServiceProviderInterface $provider */
+                $provider->boot();
+            }
         }
     }
 

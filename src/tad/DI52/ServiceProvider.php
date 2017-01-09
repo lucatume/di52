@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class tad_DI52_ServiceProvider
+ * @codeCoverageIgnore
+ */
 abstract class tad_DI52_ServiceProvider implements tad_DI52_ServiceProviderInterface
 {
     /**
