@@ -41,7 +41,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      * @test
      * it should return an instance of the concrete class if trying to resolve a non bound concrete class alias
      */
-    public function it_should_return_an_instance_of_the_concrete_class_if_trying_to_resolve_a_non_bound_concrete_class_alias()
+    public function it_should_return_an_instance_of_the_concrete_class_if_trying_to_resolve_a_non_bound_concrete_class_alias(
+    )
     {
         $sut = $this->makeInstance();
 
@@ -363,7 +364,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      * @test
      * it should resolve singleton bindings of different interfaces with same implementation to same instance
      */
-    public function it_should_resolve_singleton_bindings_of_different_interfaces_with_same_implementation_to_same_instance()
+    public function it_should_resolve_singleton_bindings_of_different_interfaces_with_same_implementation_to_same_instance(
+    )
     {
         $container = $this->makeInstance();
 
@@ -380,7 +382,8 @@ class ResolverTest extends PHPUnit_Framework_TestCase
      * @test
      * it should resolve singleton bindings of different class and interface with same implementation to same instance
      */
-    public function it_should_resolve_singleton_bindings_of_different_class_and_interface_with_same_implementation_to_same_instance()
+    public function it_should_resolve_singleton_bindings_of_different_class_and_interface_with_same_implementation_to_same_instance(
+    )
     {
         $container = $this->makeInstance();
 
@@ -637,6 +640,44 @@ class ResolverTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $i2->getMethodOneCalled());
         $this->assertEquals(1, $i2->getMethodTwoCalled());
         $this->assertEquals(1, $i2->getMethodThreeCalled());
+    }
+
+    /**
+     * @test
+     * it should allow re-registering a bound implementation
+     */
+    public function it_should_allow_re_registering_a_bound_implementation()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('TestInterfaceOne', 'ClassOne');
+
+        $sut->bind('foo', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->resolve('foo'));
+
+        $sut->replaceBind('foo', 'ClassTwo');
+
+        $this->assertInstanceOf('ClassTwo', $sut->resolve('foo'));
+    }
+
+    /**
+     * @test
+     * it should allow re-registering a singleton bound implementation
+     */
+    public function it_should_allow_re_registering_a_singleton_bound_implementation()
+    {
+        $sut = $this->makeInstance();
+
+        $sut->bind('TestInterfaceOne', 'ClassOne');
+
+        $sut->singleton('foo', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $sut->resolve('foo'));
+
+        $sut->replaceSingleton('foo', 'ClassTwo');
+
+        $this->assertInstanceOf('ClassTwo', $sut->resolve('foo'));
     }
 
     protected function setUp()
