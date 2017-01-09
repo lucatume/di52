@@ -332,7 +332,6 @@ class ContainerTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_allow_not_specifying_the_class_of_simple_objects()
     {
-
         // not specifying a ctor method for tad_Dependency
         // $this->sut->setCtor( 'dependency', 'DependencyObjectOne' );
         $this->sut->setVar('string', 'foo');
@@ -346,5 +345,39 @@ class ContainerTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf($class, $i);
         $this->assertInstanceOf($dependencyClass, $i->classOne);
+    }
+
+    /**
+     * @test
+     * it should allow re-registering a bound implementation
+     */
+    public function it_should_allow_re_registering_a_bound_implementation()
+    {
+        $this->sut->bind('TestInterfaceOne', 'ClassOne');
+
+        $this->sut->bind('foo', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $this->sut->make('foo'));
+
+        $this->sut->replaceBind('foo', 'ClassTwo');
+
+        $this->assertInstanceOf('ClassTwo', $this->sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should allow re-registering a singleton bound implementation
+     */
+    public function it_should_allow_re_registering_a_singleton_bound_implementation()
+    {
+        $this->sut->bind('TestInterfaceOne', 'ClassOne');
+
+        $this->sut->singleton('foo', 'ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $this->sut->make('foo'));
+
+        $this->sut->replaceSingleton('foo', 'ClassTwo');
+
+        $this->assertInstanceOf('ClassTwo', $this->sut->make('foo'));
     }
 }
