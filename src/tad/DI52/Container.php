@@ -84,6 +84,9 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         $this->id = uniqid();
         $GLOBALS['__container_' . $this->id] = $this;
         $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
+        if ($this->useClosures) {
+            include_once __DIR__ . '/closures.php';
+        }
     }
 
     /**
@@ -678,12 +681,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         }
 
         if ($this->useClosures) {
-            $container = $this;
-            $f = function () use ($container, $classOrInterface, $method) {
-                $a = func_get_args();
-                $i = $container->make($classOrInterface);
-                return call_user_func_array(array($i, $method), $a);
-            };
+            $f = di52_LazyMakeClosure($this, $classOrInterface, $method);
         } else {
             $args = '';
             $code = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
