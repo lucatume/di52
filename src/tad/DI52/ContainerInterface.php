@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Interface tad_DI52_ContainerInterface
+ *
+ * The API supported by the container.
+ */
 interface tad_DI52_ContainerInterface
 {
     /**
@@ -18,11 +23,20 @@ interface tad_DI52_ContainerInterface
     /**
      * Binds an interface or class to an implementation.
      *
+     * @param string|array $classOrInterface An alias or an array of implementation aliases
+     * @param mixed $implementation
+     * @param array $afterBuildMethods
+     */
+    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null);
+
+    /**
+     * Binds an interface or class to an implementation replacing an existing implementation.
+     *
      * @param string $classOrInterface
      * @param string $implementation
      * @param array $afterBuildMethods
      */
-    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null);
+    public function replaceBind($classOrInterface, $implementation, array $afterBuildMethods = null);
 
     /**
      * Returns an instance of the class or object bound to an interface.
@@ -40,6 +54,16 @@ interface tad_DI52_ContainerInterface
      * @param array $afterBuildMethods
      */
     public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null);
+
+    /**
+     * Binds an interface or class to an implementation and will always return the same instance replacing an
+     * existing singleton binding.
+     *
+     * @param string $classOrInterface
+     * @param string $implementation
+     * @param array $afterBuildMethods
+     */
+    public function replaceSingleton($classOrInterface, $implementation, array $afterBuildMethods = null);
 
     /**
      * Tags an array of implementation bindings.

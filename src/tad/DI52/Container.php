@@ -1,9 +1,7 @@
 <?php
 
-
 class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 {
-
     /**
      * @var array
      */
@@ -85,12 +83,34 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     protected $neededImplementation;
 
     /**
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * @var array
+     */
+    public $lazyMakes = array();
+
+    /**
+     * @var mixed
+     */
+    public $useClosures = false;
+
+    /**
      * @param string $key
      * @param mixed $value
      */
     public function setVar($key, $value)
     {
         $this->offsetSet($key, $value);
+    }
+
+    public function __construct()
+    {
+        $this->id = uniqid();
+        $GLOBALS['__container_' . $this->id] = $this;
+        $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
     }
 
     /**
@@ -352,8 +372,8 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      * Binds an interface a class or a string slug to an implementation and will always return the same instance.
      *
      * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
-     * @param string $implementation
-     * @param array $afterBuildMethods
+     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
+     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
      */
     public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
@@ -372,11 +392,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     /**
      * Binds an interface, a class or a string slug to an implementation.
      *
-     *
+     * Existing implementations are replaced.
      *
      * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
-     * @param string $implementation
-     * @param array $afterBuildMethods
+     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
+     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
      */
     public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
@@ -541,11 +561,17 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      *
      * @param string $classOrInterface
      * @param array $decorators An array of implementations that decorate an object.
+     * @param array $afterBuildMethods
      */
-    public function bindDecorators($classOrInterface, array $decorators)
+    public function bindDecorators($classOrInterface, array $decorators, array $afterBuildMethods = null)
     {
         $this->strings[$classOrInterface] = $decorators;
         $this->chains[$classOrInterface] = $decorators;
+
+        if (!empty($afterBuildMethods)) {
+            $base = end($decorators);
+            $this->afterbuild[$base] = $afterBuildMethods;
+        }
     }
 
     /**
@@ -635,5 +661,69 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         return isset($this->contexts[$parameterClass][$this->resolving]) ?
             $this->offsetGet($this->contexts[$parameterClass][$this->resolving])
             : $this->offsetGet($parameterClass);
+    }
+
+    /**
+     * Binds an interface, a class or a string slug to an implementation replacing an eventually existing one.
+     *
+     * Existing implementations are replaced.
+     *
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
+     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
+     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
+     */
+    public function replaceBind($classOrInterface, $implementation, array $afterBuildMethods = null)
+    {
+        $this->bind($classOrInterface, $implementation, $afterBuildMethods);
+    }
+
+    /**
+     * Binds an interface a class or a string slug to an implementation and will always return the same instance eventually
+     * replacing an existing one.
+     *
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
+     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
+     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
+     */
+    public function replaceSingleton($classOrInterface, $implementation, array $afterBuildMethods = null)
+    {
+        $this->singleton($classOrInterface, $implementation, $afterBuildMethods);
+    }
+
+    /**
+     * Returns a lambda function suitable to use as a callback; when called the function will build the implementation
+     * bound to `$classOrInterface` and return the value of a call to `$method` method with the call arguments.
+     *
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
+     * @param string $method The method that should be called on the resolved implementation with the specified array arguments.
+     *
+     * @return mixed The called method return value.
+     */
+    public function lazyMake($classOrInterface, $method)
+    {
+        if (!is_string($method)) {
+            throw new RuntimeException('Lazy make method must be a string');
+        }
+
+        if (isset($this->lazyMakes[$classOrInterface . '::' . $method])) {
+            return $this->lazyMakes[$classOrInterface . '::' . $method];
+        }
+
+        if ($this->useClosures) {
+            $container = $this;
+            $f = function () use ($container, $classOrInterface, $method) {
+                $a = func_get_args();
+                $i = $container->make($classOrInterface);
+                return call_user_func_array(array($i, $method), $a);
+            };
+        } else {
+            $args = '';
+            $code = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
+            $f = create_function($args, $code);
+        }
+
+        $this->lazyMakes[$classOrInterface . '::' . $method] = $f;
+
+        return $f;
     }
 }

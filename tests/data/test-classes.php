@@ -74,7 +74,23 @@ class ClassTwo implements Two
 
 class ClassTwoOne implements Two
 {
+    private $one;
+
     public function __construct(ClassOne $one)
+    {
+
+        $this->one = $one;
+    }
+
+    public function getOne()
+    {
+        return $this->one;
+    }
+}
+
+class ClassTwoTwo implements Two
+{
+    public function __construct(One $one)
     {
 
     }
@@ -110,6 +126,11 @@ class ClassFour
     {
 
     }
+
+    public function methodOne($n)
+    {
+        return $n + 23;
+    }
 }
 
 class FourBase implements Four
@@ -117,6 +138,23 @@ class FourBase implements Four
     public function __construct()
     {
 
+    }
+
+    public function methodOne()
+    {
+        global $one;
+        $one = __CLASS__;
+    }
+
+    public function methodTwo()
+    {
+        global $two;
+        $two = __CLASS__;
+    }
+
+    public function methodThree($n)
+    {
+        return $n + 23;
     }
 }
 
@@ -130,6 +168,11 @@ class FourDecoratorOne implements Four
     public function __construct(Four $decorated)
     {
 
+    }
+
+    public function methodOne($n)
+    {
+        return $n + 23;
     }
 }
 
@@ -246,4 +289,65 @@ class ClassSevenOne
     {
         return $this->one;
     }
+}
+
+interface Eight
+{
+    public function methodOne();
+
+    public function methodTwo();
+
+    public function methodThree();
+}
+
+class ClassEight implements Eight
+{
+    public static $called = array();
+    public static $calledWith = array();
+
+    public static function reset()
+    {
+        self::$called = array();
+        self::$calledWith = array();
+    }
+
+    public function methodOne()
+    {
+        self::$called[] = 'methodOne';
+    }
+
+    public function methodTwo()
+    {
+        self::$called[] = 'methodTwo';
+    }
+
+    public function methodThree()
+    {
+        self::$called[] = 'methodThree';
+    }
+
+    public function methodFour()
+    {
+        self::$calledWith = func_get_args();
+    }
+}
+
+class ClassEightExtension extends ClassEight
+{
+}
+
+class ClassNine{
+    public function __construct()
+    {
+        
+    }
+    public static function reset()
+    {
+        unset($GLOBALS['nine']);
+    }
+
+    public function methodOne()
+    {
+       $GLOBALS['nine']  = 'called';
+    }    
 }

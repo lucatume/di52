@@ -13,6 +13,11 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    protected function setUp()
+    {
+        ClassEight::reset();
+    }
+
     /**
      * @test
      * it should allow setting a var on the container
@@ -306,6 +311,26 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Four', $sut->make('Four'));
         $this->assertNotSame($sut->make('Four'), $sut->make('Four'));
+    }
+
+    /**
+     * @test
+     * it should allow specifying after build methods to call on a decorator chain base
+     */
+    public function it_should_allow_specifying_after_build_methods_to_call_on_a_decorator_chain_base()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'),
+            array('methodOne', 'methodTwo'));
+
+        $this->assertInstanceOf('Four', $sut->make('Four'));
+        $this->assertNotSame($sut->make('Four'), $sut->make('Four'));
+
+        global $one, $two;
+
+        $this->assertEquals('FourBase', $one);
+        $this->assertEquals('FourBase', $two);
     }
 
     /**
@@ -769,5 +794,286 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ClassOne', $resolved[0]);
         $this->assertInstanceOf('ClassOne', $resolved[1]);
         $this->assertNotSame($resolved[0], $resolved[1]);
+    }
+
+    /**
+     * @test
+     * it should allow binding a chain of decorators to multiple aliases
+     */
+    public function it_should_allow_binding_a_chain_of_decorators_to_multiple_aliases()
+    {
+        $this->markTestSkipped();
+        $sut = new tad_DI52_Container();
+
+        $sut->bindDecorators(array('Four', 'foo'),
+            array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
+
+        $this->assertInstanceOf('Four', $sut->make('Four'));
+        $this->assertNotSame($sut->make('Four'), $sut->make('Four'));
+        $this->assertInstanceOf('Four', $sut->make('foo'));
+        $this->assertNotSame($sut->make('foo'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should allow binding a chain of decorators to multiple aliases as a singleton
+     */
+    public function it_should_allow_binding_a_chain_of_decorators_to_multiple_aliases_as_a_singleton()
+    {
+        $this->markTestSkipped();
+        $sut = new tad_DI52_Container();
+
+        $sut->singletonDecorators(array('Four', 'foo'),
+            array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
+
+        $this->assertInstanceOf('Four', $sut->make('Four'));
+        $this->assertSame($sut->make('Four'), $sut->make('Four'));
+        $this->assertInstanceOf('Four', $sut->make('foo'));
+        $this->assertSame($sut->make('foo'), $sut->make('foo'));
+        $this->assertSame($sut->make('Four'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should allow lazy building an interface binding
+     */
+    public function it_should_allow_lazy_building_an_interface_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('Eight', 'ClassEight');
+        $f = $sut->lazyMake('Eight', 'methodOne');
+
+        $f();
+
+        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertNotSame($sut->make('Eight'), $sut->make('Eight'));
+    }
+
+    /**
+     * @test
+     * it should allow lazy building an class binding
+     */
+    public function it_should_allow_lazy_building_an_class_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('ClassEight', 'ClassEightExtension');
+        $f = $sut->lazyMake('ClassEight', 'methodOne');
+
+        $f();
+
+        $this->assertEquals(array('methodOne'), ClassEightExtension::$called);
+        $this->assertNotSame($sut->make('ClassEight'), $sut->make('ClassEight'));
+    }
+
+    /**
+     * @test
+     * it should allow lazy building an slug binding
+     */
+    public function it_should_allow_lazy_building_an_slug_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('foo', 'ClassEight');
+        $f = $sut->lazyMake('foo', 'methodOne');
+
+        $f();
+
+        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertNotSame($sut->make('foo'), $sut->make('foo'));
+    }
+
+    /**
+     * @test
+     * it should allow lazy binding a singleton interface binding
+     */
+    public function it_should_allow_lazy_binding_a_singleton_interface_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton('Eight', 'ClassEight');
+        $f = $sut->lazyMake('Eight', 'methodOne');
+
+        $f();
+
+        $this->assertSame($sut->make('Eight'), $sut->make('Eight'));
+        $this->assertEquals(array('methodOne'), ClassEight::$called);
+    }
+
+    /**
+     * @test
+     * it should allow lazy binding a singleton class binding
+     */
+    public function it_should_allow_lazy_binding_a_singleton_class_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton('ClassEight', 'ClassEightExtension');
+        $f = $sut->lazyMake('ClassEight', 'methodOne');
+
+        $f();
+
+        $this->assertSame($sut->make('ClassEight'), $sut->make('ClassEight'));
+        $this->assertEquals(array('methodOne'), ClassEight::$called);
+    }
+
+    /**
+     * @test
+     * it should allow lazy binding a singleton slug binding
+     */
+    public function it_should_allow_lazy_binding_a_singleton_slug_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singleton('foo', 'ClassEight');
+        $f = $sut->lazyMake('foo', 'methodOne');
+
+        $f();
+
+        $this->assertSame($sut->make('foo'), $sut->make('foo'));
+        $this->assertEquals(array('methodOne'), ClassEight::$called);
+    }
+
+    /**
+     * @test
+     * it should pass the calling arguments to the lazy made instance
+     */
+    public function it_should_pass_the_calling_arguments_to_the_lazy_made_instance()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('foo', 'ClassEight');
+        $f = $sut->lazyMake('foo', 'methodFour');
+
+        $f('foo', 23);
+        $this->assertEquals(array('foo', 23), ClassEight::$calledWith);
+    }
+
+    /**
+     * @test
+     * it should allow lazy making a decorator binding
+     */
+    public function it_should_allow_lazy_making_a_decorator_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
+
+        $f = $sut->lazyMake('Four', 'methodOne');
+        $this->assertEquals(26, $f(3));
+    }
+
+    /**
+     * @test
+     * it should allow lazy making a decorator singleton binding
+     */
+    public function it_should_allow_lazy_making_a_decorator_singleton_binding()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->singletonDecorators('Four',
+            array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
+
+        $f = $sut->lazyMake('Four', 'methodOne');
+        $this->assertEquals(26, $f(3));
+        $this->assertSame($sut->make('Four'), $sut->make('Four'));
+    }
+
+    /**
+     * @test
+     * it should allow lazy making an unbound class
+     */
+    public function it_should_allow_lazy_making_an_unbound_class()
+    {
+        $sut = new tad_DI52_Container();
+
+        $f = $sut->lazyMake('FourBase', 'methodThree');
+
+        $this->assertEquals(26, $f(3));
+    }
+
+    /**
+     * @test
+     * it should throw if trying to lazy make a non string method
+     */
+    public function it_should_throw_if_trying_to_lazy_make_a_non_string_method()
+    {
+        $sut = new tad_DI52_Container();
+
+        $this->setExpectedException('RuntimeException');
+
+        $sut->lazyMake('foo', 23);
+    }
+
+    /**
+     * @test
+     * it should apply contextual binding to unbound classes
+     */
+    public function it_should_apply_contextual_binding_to_unbound_classes()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('One', 'ClassOne');
+        $sut->bind('Two', 'ClassTwo');
+        $sut->when('ClassTwoOne')->needs('ClassOne')->give('ExtendingClassOneOne');
+
+        $resolved = $sut->make('ClassTwoOne');
+        $this->assertInstanceOf('ExtendingClassOneOne', $resolved->getOne());
+    }
+
+    /**
+     * @test
+     * it should allow lazy making contextually bound interfaces
+     */
+    public function it_should_allow_lazy_making_contextually_bound_interfaces()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('One', 'ClassOne');
+        $sut->bind('Two', 'ClassTwo');
+        $sut->when('ClassTwoOne')->needs('ClassOne')->give('ExtendingClassOneOne');
+
+        $f = $sut->lazyMake('ClassTwoOne', 'getOne');
+
+        $this->assertInstanceOf('ExtendingClassOneOne', $f());
+    }
+
+    /**
+     * @test
+     * it should return same instance when lazy making contextually bound singleton
+     */
+    public function it_should_return_same_instance_when_lazy_making_contextually_bound_singleton()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('One', 'ClassOne');
+        $sut->bind('Two', 'ClassTwo');
+        $sut->singleton('two.one', 'ClassTwoOne');
+        $sut->when('two.one')->needs('ClassOne')->give('ExtendingClassOneOne');
+
+        $f = $sut->lazyMake('two.one', 'getOne');
+
+        $this->assertInstanceOf('ExtendingClassOneOne', $f());
+        $this->assertSame($f(), $f());
+    }
+
+    /**
+     * @test
+     * it should not build lazy made object immediately
+     */
+    public function it_should_not_build_lazy_made_object_immediately()
+    {
+        $sut = new tad_DI52_Container();
+
+        ClassNine::reset();
+        $f = $sut->lazyMake('ClassNine', 'methodOne');
+
+        global $nine;
+        $this->assertEmpty($nine);
+
+        $f();
+
+        $this->assertEquals('called', $nine);
     }
 }

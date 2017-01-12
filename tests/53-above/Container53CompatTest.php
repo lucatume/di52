@@ -425,4 +425,21 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ClassOne', $sut->make('foo'));
         $this->assertSame($sut->make('foo'), $sut->make('foo'));
     }
+
+    /**
+     * @test
+     * it should allow to lazy make a closure
+     */
+    public function it_should_allow_to_lazy_make_a_closure()
+    {
+        $sut = new tad_DI52_Container();
+
+        $sut->bind('foo', function ($container) {
+            return $container->make('FourBase');
+        });
+
+        $f = $sut->lazyMake('foo', 'methodThree');
+
+        $this->assertEquals(28, $f(5));
+    }
 }
