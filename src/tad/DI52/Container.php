@@ -165,7 +165,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function getVar($key)
     {
-        return $this->offsetGet($key);
+        try {
+            return $this->offsetGet($key);
+        } catch (RuntimeException $e) {
+            return null;
+        }
     }
 
     /**

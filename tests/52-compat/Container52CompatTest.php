@@ -48,6 +48,30 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * it should return null when trying to get non existing var
+     */
+    public function it_should_return_null_when_trying_to_get_non_existing_var()
+    {
+        $sut = new tad_DI52_Container();
+
+        $this->assertNull($sut->getVar('foo'));
+    }
+
+    /**
+     * @test
+     * it should return throw when using ArrayAccess API to get non set var
+     */
+    public function it_should_return_throw_when_using_array_access_api_to_get_non_set_var()
+    {
+        $sut = new tad_DI52_Container();
+
+        $this->setExpectedException('RuntimeException');
+
+        $this->assertNull($sut['foo']);
+    }
+
+    /**
+     * @test
      * it should allow binding an implementation with no constructor to an interface
      */
     public function it_should_allow_binding_an_implementation_with_no_constructor_to_an_interface()
