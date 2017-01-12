@@ -5,97 +5,86 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     /**
      * @var array
      */
+    public $lazyMakes = array();
+    /**
+     * @var mixed
+     */
+    public $useClosures = false;
+    /**
+     * @var array
+     */
     protected $protected = array();
-
     /**
      * @var array
      */
     protected $strings = array();
-
     /**
      * @var array
      */
     protected $objects = array();
-
     /**
      * @var array
      */
     protected $callables = array();
-
     /**
      * @var array
      */
     protected $singletons = array();
-
     /**
      * @var array
      */
     protected $deferred = array();
-
     /**
      * @var array
      */
     protected $chains = array();
-
     /**
      * @var array
      */
     protected $reflections = array();
-
     /**
      * @var array
      */
     protected $parameterReflections = array();
-
     /**
      * @var array
      */
     protected $afterbuild = array();
-
     /**
      * @var string
      */
     protected $resolving = '';
-
     /**
      * @var array
      */
     protected $tags = array();
-
     /**
      * @var array
      */
     protected $bootable = array();
-
     /**
      * @var array
      */
     protected $contexts = array();
-
     /**
      * @var string
      */
     protected $bindingFor;
-
     /**
      * @var string
      */
     protected $neededImplementation;
-
     /**
      * @var string
      */
     protected $id;
 
-    /**
-     * @var array
-     */
-    public $lazyMakes = array();
-
-    /**
-     * @var mixed
-     */
-    public $useClosures = false;
+    public function __construct()
+    {
+        $this->id = uniqid();
+        $GLOBALS['__container_' . $this->id] = $this;
+        $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
+    }
 
     /**
      * @param string $key
@@ -104,13 +93,6 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     public function setVar($key, $value)
     {
         $this->offsetSet($key, $value);
-    }
-
-    public function __construct()
-    {
-        $this->id = uniqid();
-        $GLOBALS['__container_' . $this->id] = $this;
-        $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
     }
 
     /**
@@ -373,54 +355,6 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
-     * Binds an interface a class or a string slug to an implementation and will always return the same instance.
-     *
-     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
-     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
-     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
-     */
-    public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
-    {
-        $this->bind($classOrInterface, $implementation, $afterBuildMethods);
-
-        if (is_array($classOrInterface)) {
-            $group = new tad_DI52_BindGroup($classOrInterface);
-            foreach ($classOrInterface as $key) {
-                $this->singletons[$key] = $group;
-            }
-        } else {
-            $this->singletons[$classOrInterface] = $classOrInterface;
-        }
-    }
-
-    /**
-     * Binds an interface, a class or a string slug to an implementation.
-     *
-     * Existing implementations are replaced.
-     *
-     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
-     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
-     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
-     */
-    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
-    {
-        if (is_array($classOrInterface)) {
-            foreach ($classOrInterface as $key) {
-                unset($this->strings[$key], $this->singletons[$key], $this->objects[$key], $this->callables[$key], $this->chains[$key]);
-            }
-            $this->strings = array_merge($this->strings,
-                array_combine($classOrInterface, array_fill(0, count($classOrInterface), $implementation)));
-        } else {
-            unset($this->strings[$classOrInterface], $this->singletons[$classOrInterface], $this->objects[$classOrInterface], $this->callables[$classOrInterface], $this->chains[$classOrInterface]);
-            $this->strings[$classOrInterface] = $implementation;
-        }
-
-        if (!empty($afterBuildMethods)) {
-            $this->afterbuild[$classOrInterface] = $afterBuildMethods;
-        }
-    }
-
-    /**
      * Tags an array of implementations bindings for later retrieval.
      *
      * The implementations can also reference interfaces, classes or string slugs.
@@ -488,7 +422,7 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
             $this->deferred = array_merge($this->deferred,
                 array_combine($provided, array_fill(0, $count, $provider)));
         }
-        $ref = new \ReflectionMethod($provider, 'boot');
+        $ref = new ReflectionMethod($provider, 'boot');
         $requiresBoot = ($ref->getDeclaringClass()->getName() === get_class($provider));
         if ($requiresBoot) {
             $this->bootable[] = $provider;
@@ -649,24 +583,6 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         return new tad_DI52_ProtectedValue($value);
     }
 
-    protected function getParameter(ReflectionParameter $parameter)
-    {
-        $class = $parameter->getClass();
-
-        if (null === $class) {
-            if (!$parameter->isDefaultValueAvailable()) {
-                throw new RuntimeException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
-            }
-            return $parameter->getDefaultValue();
-        }
-
-        $parameterClass = $parameter->getClass()->getName();
-
-        return isset($this->contexts[$parameterClass][$this->resolving]) ?
-            $this->offsetGet($this->contexts[$parameterClass][$this->resolving])
-            : $this->offsetGet($parameterClass);
-    }
-
     /**
      * Binds an interface, a class or a string slug to an implementation replacing an eventually existing one.
      *
@@ -682,6 +598,33 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     }
 
     /**
+     * Binds an interface, a class or a string slug to an implementation.
+     *
+     * Existing implementations are replaced.
+     *
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
+     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
+     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
+     */
+    public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
+    {
+        if (is_array($classOrInterface)) {
+            foreach ($classOrInterface as $key) {
+                unset($this->strings[$key], $this->singletons[$key], $this->objects[$key], $this->callables[$key], $this->chains[$key]);
+            }
+            $this->strings = array_merge($this->strings,
+                array_combine($classOrInterface, array_fill(0, count($classOrInterface), $implementation)));
+        } else {
+            unset($this->strings[$classOrInterface], $this->singletons[$classOrInterface], $this->objects[$classOrInterface], $this->callables[$classOrInterface], $this->chains[$classOrInterface]);
+            $this->strings[$classOrInterface] = $implementation;
+        }
+
+        if (!empty($afterBuildMethods)) {
+            $this->afterbuild[$classOrInterface] = $afterBuildMethods;
+        }
+    }
+
+    /**
      * Binds an interface a class or a string slug to an implementation and will always return the same instance eventually
      * replacing an existing one.
      *
@@ -692,6 +635,27 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     public function replaceSingleton($classOrInterface, $implementation, array $afterBuildMethods = null)
     {
         $this->singleton($classOrInterface, $implementation, $afterBuildMethods);
+    }
+
+    /**
+     * Binds an interface a class or a string slug to an implementation and will always return the same instance.
+     *
+     * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of the two type of values.
+     * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name, an object or a closure.
+     * @param array $afterBuildMethods An array of methods that should be called on the built implementation after resolving it.
+     */
+    public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
+    {
+        $this->bind($classOrInterface, $implementation, $afterBuildMethods);
+
+        if (is_array($classOrInterface)) {
+            $group = new tad_DI52_BindGroup($classOrInterface);
+            foreach ($classOrInterface as $key) {
+                $this->singletons[$key] = $group;
+            }
+        } else {
+            $this->singletons[$classOrInterface] = $classOrInterface;
+        }
     }
 
     /**
@@ -729,5 +693,23 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
         $this->lazyMakes[$classOrInterface . '::' . $method] = $f;
 
         return $f;
+    }
+
+    protected function getParameter(ReflectionParameter $parameter)
+    {
+        $class = $parameter->getClass();
+
+        if (null === $class) {
+            if (!$parameter->isDefaultValueAvailable()) {
+                throw new RuntimeException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
+            }
+            return $parameter->getDefaultValue();
+        }
+
+        $parameterClass = $parameter->getClass()->getName();
+
+        return isset($this->contexts[$parameterClass][$this->resolving]) ?
+            $this->offsetGet($this->contexts[$parameterClass][$this->resolving])
+            : $this->offsetGet($parameterClass);
     }
 }
