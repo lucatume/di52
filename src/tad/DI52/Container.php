@@ -1,79 +1,92 @@
 <?php
 
-class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
+class tad_DI52_Container implements ArrayAccess
 {
     /**
      * @var array
      */
-    public $lazyMakes = array();
-    /**
-     * @var mixed
-     */
-    public $useClosures = false;
+    public $callbacks = array();
+
     /**
      * @var array
      */
     protected $protected = array();
+
     /**
      * @var array
      */
     protected $strings = array();
+
     /**
      * @var array
      */
     protected $objects = array();
+
     /**
      * @var array
      */
     protected $callables = array();
+
     /**
      * @var array
      */
     protected $singletons = array();
+
     /**
      * @var array
      */
     protected $deferred = array();
+
     /**
      * @var array
      */
     protected $chains = array();
+
     /**
      * @var array
      */
     protected $reflections = array();
+
     /**
      * @var array
      */
     protected $parameterReflections = array();
+
     /**
      * @var array
      */
     protected $afterbuild = array();
+
     /**
      * @var string
      */
     protected $resolving = '';
+
     /**
      * @var array
      */
     protected $tags = array();
+
     /**
      * @var array
      */
     protected $bootable = array();
+
     /**
      * @var array
      */
     protected $contexts = array();
+
     /**
      * @var string
      */
     protected $bindingFor;
+
     /**
      * @var string
      */
     protected $neededImplementation;
+
     /**
      * @var string
      */
@@ -83,10 +96,10 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
     {
         $this->id = uniqid();
         $GLOBALS['__container_' . $this->id] = $this;
-        $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
-        if ($this->useClosures) {
-            include_once __DIR__ . '/closures.php';
-        }
+//        $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
+//        if ($this->useClosures) {
+//            include_once __DIR__ . '/closures.php';
+//        }
     }
 
     /**
@@ -219,6 +232,14 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      */
     public function make($classOrInterface)
     {
+        if (!isset($this->strings[$classOrInterface]) && !isset($this->deferred[$classOrInterface]) && !isset($this->contexts[$classOrInterface])) {
+            try {
+                return $this->build($classOrInterface, true);
+            } catch (Exception $e) {
+                // continue... we tried an early resolution
+            }
+        }
+
         if (isset($this->objects[$classOrInterface])) {
             return $this->objects[$classOrInterface];
         }
@@ -260,11 +281,11 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
             }
 
             if (!isset($this->strings[$classOrInterface])) {
-                if (!class_exists($classOrInterface)) {
+                try {
+                    $instance = $this->build($classOrInterface);
+                } catch (Exception $e) {
                     throw new RuntimeException("'{$classOrInterface}' is not a bound alias or an existing class.");
                 }
-
-                $instance = $this->build($classOrInterface);
             } else {
                 if (is_object($this->strings[$classOrInterface]) && !is_callable($this->strings[$classOrInterface])) {
                     $instance = $this->strings[$classOrInterface];
@@ -303,10 +324,13 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
 
     /**
      * @param $implementation
+     * @param bool $resolving
+     *
      * @return mixed
      */
-    protected function build($implementation)
+    protected function build($implementation, $resolving = false)
     {
+        $this->resolving = $resolving ? $implementation : $this->resolving;
         if (!isset($this->reflections[$implementation])) {
             $this->reflections[$implementation] = new ReflectionClass($implementation);
         }
@@ -670,25 +694,22 @@ class tad_DI52_Container implements ArrayAccess, tad_DI52_ContainerInterface
      *
      * @return mixed The called method return value.
      */
-    public function lazyMake($classOrInterface, $method)
+    public function callback($classOrInterface, $method)
     {
         if (!is_string($method)) {
             throw new RuntimeException('Lazy make method must be a string');
         }
 
-        if (isset($this->lazyMakes[$classOrInterface . '::' . $method])) {
-            return $this->lazyMakes[$classOrInterface . '::' . $method];
+        if (isset($this->callbacks[$classOrInterface . '::' . $method])) {
+            return $this->callbacks[$classOrInterface . '::' . $method];
         }
 
-        if ($this->useClosures) {
-            $f = di52_LazyMakeClosure($this, $classOrInterface, $method);
-        } else {
-            $args = '';
-            $code = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
-            $f = create_function($args, $code);
-        }
+        $f = create_function(
+            '',
+            '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);'
+        );
 
-        $this->lazyMakes[$classOrInterface . '::' . $method] = $f;
+        $this->callbacks[$classOrInterface . '::' . $method] = $f;
 
         return $f;
     }

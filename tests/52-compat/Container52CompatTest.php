@@ -866,7 +866,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->bind('Eight', 'ClassEight');
-        $f = $sut->lazyMake('Eight', 'methodOne');
+        $f = $sut->callback('Eight', 'methodOne');
 
         $f();
 
@@ -883,7 +883,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->bind('ClassEight', 'ClassEightExtension');
-        $f = $sut->lazyMake('ClassEight', 'methodOne');
+        $f = $sut->callback('ClassEight', 'methodOne');
 
         $f();
 
@@ -900,7 +900,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->bind('foo', 'ClassEight');
-        $f = $sut->lazyMake('foo', 'methodOne');
+        $f = $sut->callback('foo', 'methodOne');
 
         $f();
 
@@ -917,7 +917,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->singleton('Eight', 'ClassEight');
-        $f = $sut->lazyMake('Eight', 'methodOne');
+        $f = $sut->callback('Eight', 'methodOne');
 
         $f();
 
@@ -934,7 +934,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->singleton('ClassEight', 'ClassEightExtension');
-        $f = $sut->lazyMake('ClassEight', 'methodOne');
+        $f = $sut->callback('ClassEight', 'methodOne');
 
         $f();
 
@@ -951,7 +951,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->singleton('foo', 'ClassEight');
-        $f = $sut->lazyMake('foo', 'methodOne');
+        $f = $sut->callback('foo', 'methodOne');
 
         $f();
 
@@ -968,7 +968,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         $sut->bind('foo', 'ClassEight');
-        $f = $sut->lazyMake('foo', 'methodFour');
+        $f = $sut->callback('foo', 'methodFour');
 
         $f('foo', 23);
         $this->assertEquals(array('foo', 23), ClassEight::$calledWith);
@@ -984,7 +984,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
         $sut->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
 
-        $f = $sut->lazyMake('Four', 'methodOne');
+        $f = $sut->callback('Four', 'methodOne');
         $this->assertEquals(26, $f(3));
     }
 
@@ -999,7 +999,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut->singletonDecorators('Four',
             array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
 
-        $f = $sut->lazyMake('Four', 'methodOne');
+        $f = $sut->callback('Four', 'methodOne');
         $this->assertEquals(26, $f(3));
         $this->assertSame($sut->make('Four'), $sut->make('Four'));
     }
@@ -1012,7 +1012,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
     {
         $sut = new tad_DI52_Container();
 
-        $f = $sut->lazyMake('FourBase', 'methodThree');
+        $f = $sut->callback('FourBase', 'methodThree');
 
         $this->assertEquals(26, $f(3));
     }
@@ -1027,7 +1027,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
         $this->setExpectedException('RuntimeException');
 
-        $sut->lazyMake('foo', 23);
+        $sut->callback('foo', 23);
     }
 
     /**
@@ -1058,7 +1058,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut->bind('Two', 'ClassTwo');
         $sut->when('ClassTwoOne')->needs('ClassOne')->give('ExtendingClassOneOne');
 
-        $f = $sut->lazyMake('ClassTwoOne', 'getOne');
+        $f = $sut->callback('ClassTwoOne', 'getOne');
 
         $this->assertInstanceOf('ExtendingClassOneOne', $f());
     }
@@ -1076,7 +1076,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut->singleton('two.one', 'ClassTwoOne');
         $sut->when('two.one')->needs('ClassOne')->give('ExtendingClassOneOne');
 
-        $f = $sut->lazyMake('two.one', 'getOne');
+        $f = $sut->callback('two.one', 'getOne');
 
         $this->assertInstanceOf('ExtendingClassOneOne', $f());
         $this->assertSame($f(), $f());
@@ -1091,7 +1091,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $sut = new tad_DI52_Container();
 
         ClassNine::reset();
-        $f = $sut->lazyMake('ClassNine', 'methodOne');
+        $f = $sut->callback('ClassNine', 'methodOne');
 
         global $nine;
         $this->assertEmpty($nine);

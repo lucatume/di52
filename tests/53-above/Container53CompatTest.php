@@ -438,7 +438,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
             return $container->make('FourBase');
         });
 
-        $f = $sut->lazyMake('foo', 'methodThree');
+        $f = $sut->callback('foo', 'methodThree');
 
         $this->assertEquals(28, $f(5));
     }
