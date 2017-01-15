@@ -1,10 +1,16 @@
 <?php
 
 class tad_DI52_Container implements ArrayAccess {
+
+	/**
+	 * @var boolean
+	 */
+	protected $useClosures;
+
 	/**
 	 * @var array
 	 */
-	public $callbacks = array();
+	protected $callbacks = array();
 
 	/**
 	 * @var array
@@ -99,10 +105,6 @@ class tad_DI52_Container implements ArrayAccess {
 	public function __construct() {
 		$this->id = uniqid();
 		$GLOBALS['__container_' . $this->id] = $this;
-//        $this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
-		//        if ($this->useClosures) {
-		//            include_once __DIR__ . '/closures.php';
-		//        }
 	}
 
 	/**
@@ -679,6 +681,11 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @return mixed The called method return value.
 	 */
 	public function callback($classOrInterface, $method) {
+		if (null === $this->useClosures) {
+			$this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
+			include __DIR__ . '/closures.php';
+		}
+
 		if (!is_string($method)) {
 			throw new RuntimeException('Lazy make method must be a string');
 		}
