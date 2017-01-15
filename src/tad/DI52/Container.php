@@ -431,11 +431,13 @@ class tad_DI52_Container implements ArrayAccess {
 			$provider->register();
 		} else {
 			$provided = $provider->provides();
-			$this->bindings = array_merge($this->bindings, array_combine($provided, $provided));
+
 			$count = count($provided);
 			if ($count === 0) {
 				throw new RuntimeException("Service provider '{$serviceProviderClass}' is marked as deferred but is not providing any implementation.");
 			}
+
+			$this->bindings = array_merge($this->bindings, array_combine($provided, $provided));
 			$this->deferred = array_merge($this->deferred,
 				array_combine($provided, array_fill(0, $count, $provider)));
 		}
