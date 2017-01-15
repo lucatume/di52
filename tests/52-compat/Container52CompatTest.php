@@ -473,11 +473,13 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_not_call_register_method_on_deferred_provider_on_registration()
     {
+        DeferredProviderTwo::reset();
+
         $sut = new tad_DI52_Container();
 
         $sut->register('DeferredProviderTwo');
 
-        $this->assertFalse($sut->isBound('One'));
+        $this->assertEmpty(DeferredProviderTwo::wasRegistered());
     }
 
     /**
@@ -499,15 +501,17 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_register_deferred_provider_when_trying_to_resolve_provided_class()
     {
+        DeferredProviderTwo::reset();
+
         $sut = new tad_DI52_Container();
 
         $sut->register('DeferredProviderTwo');
 
-        $this->assertFalse($sut->isBound('One'));
+        $this->assertFalse(DeferredProviderTwo::wasRegistered());
 
         $sut->make('One');
 
-        $this->assertTrue($sut->isBound('One'));
+        $this->assertTrue(DeferredProviderTwo::wasRegistered());
     }
 
     /**
@@ -1099,5 +1103,20 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertEquals('called', $nine);
+    }
+
+    /**
+     * @test
+     * it should mark a deferred implementation as bound before registering the service provider
+     */
+    public function it_should_mark_a_deferred_implementation_as_bound_before_registering_the_service_provider()
+    {
+        DeferredProviderTwo::reset();
+
+        $sut = new tad_DI52_Container();
+
+        $sut->register('DeferredProviderTwo');
+
+        $this->assertTrue($sut->isBound('One'));
     }
 }

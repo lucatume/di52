@@ -29,7 +29,18 @@ class DeferredProviderOne extends tad_DI52_ServiceProvider
 class DeferredProviderTwo extends tad_DI52_ServiceProvider
 {
 
+    protected static $wasRegistered = false;
     protected $deferred = true;
+
+    public static function wasRegistered()
+    {
+        return self::$wasRegistered;
+    }
+
+    public static function reset()
+    {
+        self::$wasRegistered = false;
+    }
 
     public function provides()
     {
@@ -43,6 +54,7 @@ class DeferredProviderTwo extends tad_DI52_ServiceProvider
     public function register()
     {
         $this->container->bind('One', 'ClassOne');
+        self::$wasRegistered = true;
     }
 
 }
