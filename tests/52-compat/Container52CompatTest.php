@@ -770,41 +770,6 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 
 	/**
 	 * @test
-	 * it should allow binding a chain of decorators to multiple aliases
-	 */
-	public function it_should_allow_binding_a_chain_of_decorators_to_multiple_aliases() {
-		$this->markTestSkipped();
-		$sut = new tad_DI52_Container();
-
-		$sut->bindDecorators(array('Four', 'foo'),
-			array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
-
-		$this->assertInstanceOf('Four', $sut->make('Four'));
-		$this->assertNotSame($sut->make('Four'), $sut->make('Four'));
-		$this->assertInstanceOf('Four', $sut->make('foo'));
-		$this->assertNotSame($sut->make('foo'), $sut->make('foo'));
-	}
-
-	/**
-	 * @test
-	 * it should allow binding a chain of decorators to multiple aliases as a singleton
-	 */
-	public function it_should_allow_binding_a_chain_of_decorators_to_multiple_aliases_as_a_singleton() {
-		$this->markTestSkipped();
-		$sut = new tad_DI52_Container();
-
-		$sut->singletonDecorators(array('Four', 'foo'),
-			array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
-
-		$this->assertInstanceOf('Four', $sut->make('Four'));
-		$this->assertSame($sut->make('Four'), $sut->make('Four'));
-		$this->assertInstanceOf('Four', $sut->make('foo'));
-		$this->assertSame($sut->make('foo'), $sut->make('foo'));
-		$this->assertSame($sut->make('Four'), $sut->make('foo'));
-	}
-
-	/**
-	 * @test
 	 * it should allow lazy building an interface binding
 	 */
 	public function it_should_allow_lazy_building_an_interface_binding() {
