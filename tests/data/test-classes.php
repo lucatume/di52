@@ -45,10 +45,24 @@ class ClassOneOne implements One
 
 class ClassOneTwo implements One
 {
-    public function __construct($foo = 'bar')
+	/**
+	 * @var string
+	 */
+	private $foo;
+
+	public function __construct($foo = 'bar')
     {
 
-    }
+		$this->foo = $foo;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFoo()
+	{
+		return $this->foo;
+	}
 }
 
 class ClassOneThree
