@@ -23,7 +23,7 @@ interface tad_DI52_ContainerInterface
     /**
      * Binds an interface or class to an implementation.
      *
-     * @param string|array $classOrInterface An alias or an array of implementation aliases
+     * @param string $classOrInterface An alias or an array of implementation aliases
      * @param mixed $implementation
      * @param array $afterBuildMethods
      */

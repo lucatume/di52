@@ -53,22 +53,39 @@ class ClassOneTwo implements One
 
 class ClassOneThree
 {
+    public $oneCalled;
+    public $twoCalled;
+
     public function methodOne()
     {
-
+        $this->oneCalled = true;
     }
 
     public function methodTwo()
     {
-
+        $this->twoCalled = true;
     }
 }
 
 class ClassTwo implements Two
 {
+    /**
+     * @var One
+     */
+    private $one;
+
     public function __construct(One $one)
     {
 
+        $this->one = $one;
+    }
+
+    /**
+     * @return One
+     */
+    public function getOne()
+    {
+        return $this->one;
     }
 }
 
@@ -336,11 +353,13 @@ class ClassEightExtension extends ClassEight
 {
 }
 
-class ClassNine{
+class ClassNine
+{
     public function __construct()
     {
-        
+
     }
+
     public static function reset()
     {
         unset($GLOBALS['nine']);
@@ -348,6 +367,100 @@ class ClassNine{
 
     public function methodOne()
     {
-       $GLOBALS['nine']  = 'called';
-    }    
+        $GLOBALS['nine'] = 'called';
+    }
+}
+
+class ClassTen
+{
+    public static $builtTimes = 0;
+    private $varOne;
+    private $varTwo;
+    private $varThree;
+
+    public static function reset()
+    {
+        self::$builtTimes = 0;
+    }
+
+    public function __construct($varOne, $varTwo, $varThree)
+    {
+        self::$builtTimes++;
+        $this->varOne = $varOne;
+        $this->varTwo = $varTwo;
+        $this->varThree = $varThree;
+    }
+
+    public function getVarOne()
+    {
+        return $this->varOne;
+    }
+
+    public function getVarTwo()
+    {
+        return $this->varTwo;
+    }
+
+    public function getVarThree()
+    {
+        return $this->varThree;
+    }
+}
+
+class ClassEleven
+{
+    public static $builtTimes = 0;
+    private $varOne;
+    private $varTwo;
+    private $varThree;
+
+    public static function reset()
+    {
+        self::$builtTimes = 0;
+    }
+
+    public function __construct(One $varOne, ClassTwo $varTwo, $varThree)
+    {
+        self::$builtTimes++;
+        $this->varOne = $varOne;
+        $this->varTwo = $varTwo;
+        $this->varThree = $varThree;
+    }
+
+    public function getVarOne()
+    {
+        return $this->varOne;
+    }
+
+    public function getVarTwo()
+    {
+        return $this->varTwo;
+    }
+
+    public function getVarThree()
+    {
+        return $this->varThree;
+    }
+}
+
+class ClassTwelve
+{
+    public static $builtTimes = 0;
+    private $varOne;
+
+    public static function reset()
+    {
+        self::$builtTimes = 0;
+    }
+
+    public function __construct(One $varOne)
+    {
+        self::$builtTimes++;
+        $this->varOne = $varOne;
+    }
+
+    public function getVarOne()
+    {
+        return $this->varOne;
+    }
 }
