@@ -869,7 +869,7 @@ class tad_DI52_Container implements ArrayAccess
                 \$vars = \$c->__instanceCallbackArgs['{$instanceId}'];
                 \$constructor = \$r->getConstructor();
                 if (null === \$constructor) {
-                    return new {$classOrInterface};
+                    return \$c->make('{$classOrInterface}');
                 }
                 \$args = array();
                 foreach (\$vars as \$var) {

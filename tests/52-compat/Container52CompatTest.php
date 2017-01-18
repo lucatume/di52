@@ -1210,4 +1210,36 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('sudo-foo', $sut->make('One')->getFoo());
 		$this->assertSame($sut->make('One'), $sut->make('One'));
 	}
+
+	/**
+	 * @test
+	 * it should build the instance with the container if not specifying arguments
+	 */
+	public function it_should_build_the_instance_with_the_container_if_not_specifying_arguments()
+	{
+		$sut = new tad_DI52_Container();
+
+		$sut->bind('One', 'ClassOneTwo');
+		$f = $sut->instance('One');
+
+		$this->assertInstanceOf('ClassOneTwo', $f());
+		$this->assertEquals('bar', $f()->getFoo());
+		$this->assertNotSame($f(), $f());
+	}
+
+	/**
+	 * @test
+	 * it should use container binding settings when instancing
+	 */
+	public function it_should_use_container_binding_settings_when_instancing()
+	{
+		$sut = new tad_DI52_Container();
+
+		$sut->singleton('One', 'ClassOneTwo');
+		$f = $sut->instance('One');
+
+		$this->assertInstanceOf('ClassOneTwo', $f());
+		$this->assertEquals('bar', $f()->getFoo());
+		$this->assertSame($f(), $f());
+	}
 }
