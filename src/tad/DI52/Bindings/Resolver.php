@@ -261,7 +261,7 @@ class tad_DI52_Bindings_Resolver implements tad_DI52_Bindings_ResolverInterface
 
         if ($isSingleton) {
             if (empty($index)) {
-                $index = microtime();
+				$index = md5($classOrInterface . $implementation_object->getId());
                 $this->singletonImplementations[$index] = $implementation;
                 $this->singletonImplementationObjects[$index] = $implementation_object;
             }
