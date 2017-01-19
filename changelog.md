@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.4.4] - 2017-01-19
 ### Fixed
-- an issue where singleton resolution would result in circular reference on some Windows version (thanks @bordoni)
+- an issue where singleton resolution would result in circular reference on some Windows versions (thanks @bordoni)
 
 ## [1.4.3] - 2016-10-18
 ### Changed
