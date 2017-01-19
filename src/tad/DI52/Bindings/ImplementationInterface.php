@@ -21,9 +21,4 @@ interface tad_DI52_Bindings_ImplementationInterface
      * @return mixed
      */
     public function getImplementation();
-
-	/**
-	 * @return string Returns the implementation id
-	 */
-	public function getId();
 }

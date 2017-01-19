@@ -32,7 +32,6 @@ abstract class tad_DI52_Bindings_AbstractImplementation
 		$this->implementation = $implementation;
 		$this->container = $container;
 		$this->resolver = $resolver;
-		$this->id = uniqid() . rand(1, 9999);
 	}
 
 	/**
@@ -41,13 +40,5 @@ abstract class tad_DI52_Bindings_AbstractImplementation
 	public function getImplementation()
 	{
 		return $this->implementation;
-	}
-
-	/**
-	 * @return string Returns the implementation id
-	 */
-	public function getId()
-	{
-		return $this->id;
 	}
 }
