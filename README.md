@@ -183,7 +183,7 @@ $three = $container->make('ClassThree');
 Keep that in mind while reading the following paragraphs.
 
 ## Storing variables
-In its most basid use case the container can store variables:
+In its most basic use case the container can store variables:
 
 ```php
 $container = new tad_DI52_Container();
