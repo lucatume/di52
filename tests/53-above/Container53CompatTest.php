@@ -690,4 +690,29 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('bar', $f()->getFoo());
 		$this->assertSame($f(), $f());
 	}
+
+	/**
+	 * @test
+	 * it should allow re-binding closuress
+	 */
+	public function it_should_allow_re_binding_closuress()
+	{
+		$sut = new tad_DI52_Container();
+
+		$sut->bind('One', function () {
+			return new ClassOneOne();
+		});
+
+		$firstInstance = $sut->make('ClassTwo');
+
+		$this->assertInstanceOf('ClassOneOne', $firstInstance->getOne());
+
+		$sut->bind('One', function () {
+			return new ClassOne();
+		});
+
+		$secondInstance = $sut->make('ClassTwo');
+
+		$this->assertInstanceOf('ClassOne', $secondInstance->getOne());
+	}
 }

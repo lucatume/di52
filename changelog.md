@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2017-01-23
+### Fixed
+- an issue where re-binding implementations could lead to built objects still using previous bindings
+
 ## [2.0.0] - 2017-01-21
 ### Added
 - `instance` and `callback` methods

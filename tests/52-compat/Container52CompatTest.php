@@ -1263,4 +1263,25 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 
 		$this->assertInstanceOf('ClassOne', $secondInstance->getOne());
 	}
+
+	/**
+	 * @test
+	 * it should allow re-binding objects
+	 */
+	public function it_should_allow_re_binding_objects()
+	{
+		$sut = new tad_DI52_Container();
+
+		$sut->bind('One', new ClassOneOne());
+
+		$firstInstance = $sut->make('ClassTwo');
+
+		$this->assertInstanceOf('ClassOneOne', $firstInstance->getOne());
+
+		$sut->bind('One', new ClassOne());
+
+		$secondInstance = $sut->make('ClassTwo');
+
+		$this->assertInstanceOf('ClassOne', $secondInstance->getOne());
+	}
 }
