@@ -114,6 +114,11 @@ class tad_DI52_Container implements ArrayAccess
 	public $__instanceCallbackArgs = array();
 
 	/**
+	 * @var array
+	 */
+	protected $dependants = array();
+
+	/**
 	 * tad_DI52_Container constructor.
 	 */
 	public function __construct()
@@ -132,8 +137,8 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @see tad_DI52_Container::protect()
 	 *
-	 * @param string $key   The alias the container will use to reference the variable.
-	 * @param mixed  $value The variable value.
+	 * @param string $key The alias the container will use to reference the variable.
+	 * @param mixed $value The variable value.
 	 */
 	public function setVar($key, $value)
 	{
@@ -157,8 +162,8 @@ class tad_DI52_Container implements ArrayAccess
 	 * @see   tad_DI52_Container::protect()
 	 * @see   tad_DI52_Container::singleton()
 	 *
-	 * @param string $key   The alias the container will use to reference the variable.
-	 * @param mixed  $value The variable value.
+	 * @param string $key The alias the container will use to reference the variable.
+	 * @param mixed $value The variable value.
 	 *
 	 * @return void
 	 * @since 5.0.0
@@ -435,7 +440,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @see tad_DI52_Container::tagged()
 	 *
-	 * @param array  $implementationsArray
+	 * @param array $implementationsArray
 	 * @param string $tag
 	 */
 	public function tag(array $implementationsArray, $tag)
@@ -585,9 +590,9 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * The base decorated object must be the last element of the array.
 	 *
-	 * @param string $classOrInterface  The class, interface or slug the decorator chain should be bound to.
-	 * @param array  $decorators        An array of implementations that decorate an object.
-	 * @param array  $afterBuildMethods An array of methods that should be called on the instance after it has been
+	 * @param string $classOrInterface The class, interface or slug the decorator chain should be bound to.
+	 * @param array $decorators An array of implementations that decorate an object.
+	 * @param array $afterBuildMethods An array of methods that should be called on the instance after it has been
 	 *                                  built; the methods should not require any argument.
 	 */
 	public function singletonDecorators($classOrInterface, $decorators, array $afterBuildMethods = null)
@@ -602,9 +607,9 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * The base decorated object must be the last element of the array.
 	 *
-	 * @param string $classOrInterface  The class, interface or slug the decorator chain should be bound to.
-	 * @param array  $decorators        An array of implementations that decorate an object.
-	 * @param array  $afterBuildMethods An array of methods that should be called on the instance after it has been
+	 * @param string $classOrInterface The class, interface or slug the decorator chain should be bound to.
+	 * @param array $decorators An array of implementations that decorate an object.
+	 * @param array $afterBuildMethods An array of methods that should be called on the instance after it has been
 	 *                                  built; the methods should not require any argument.
 	 */
 	public function bindDecorators($classOrInterface, array $decorators, array $afterBuildMethods = null)
@@ -731,17 +736,33 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * Existing implementations are replaced.
 	 *
-	 * @param string $classOrInterface  A class or interface fully qualified name or a string slug.
-	 * @param mixed  $implementation    The implementation that should be bound to the alias(es); can be a class name,
+	 * @param string $classOrInterface A class or interface fully qualified name or a string slug.
+	 * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name,
 	 *                                  an object or a closure.
-	 * @param array  $afterBuildMethods An array of methods that should be called on the built implementation after
+	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
 	public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
 	{
 		$this->bindings[$classOrInterface] = $classOrInterface;
 
-		unset($this->strings[$classOrInterface], $this->singletons[$classOrInterface], $this->objects[$classOrInterface], $this->callables[$classOrInterface], $this->chains[$classOrInterface]);
+		unset($this->strings[$classOrInterface],
+			$this->singletons[$classOrInterface],
+			$this->objects[$classOrInterface],
+			$this->callables[$classOrInterface],
+			$this->chains[$classOrInterface],
+			$this->parameterReflections[$classOrInterface]
+		);
+
+		if (isset($this->dependants[$classOrInterface])) {
+			foreach ($this->dependants[$classOrInterface] as $dependant) {
+				unset($this->parameterReflections[$dependant]);
+			}
+		}
+
+		if (is_string($implementation)) {
+			unset($this->parameterReflections[$implementation]);
+		}
 
 		if (is_object($implementation)) {
 			if (is_callable($implementation)) {
@@ -763,10 +784,10 @@ class tad_DI52_Container implements ArrayAccess
 	/**
 	 * Binds an interface a class or a string slug to an implementation and will always return the same instance.
 	 *
-	 * @param string $classOrInterface  A class or interface fully qualified name or a string slug.
-	 * @param mixed  $implementation    The implementation that should be bound to the alias(es); can be a class name,
+	 * @param string $classOrInterface A class or interface fully qualified name or a string slug.
+	 * @param mixed $implementation The implementation that should be bound to the alias(es); can be a class name,
 	 *                                  an object or a closure.
-	 * @param array  $afterBuildMethods An array of methods that should be called on the built implementation after
+	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
 	public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
@@ -789,7 +810,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of
 	 *                                       the two type of values.
-	 * @param string       $method           The method that should be called on the resolved implementation with the
+	 * @param string $method The method that should be called on the resolved implementation with the
 	 *                                       specified array arguments.
 	 *
 	 * @return mixed The called method return value.
@@ -833,6 +854,12 @@ class tad_DI52_Container implements ArrayAccess
 
 		$parameterClass = $parameter->getClass()->getName();
 
+		if (!isset($this->dependants[$parameterClass])) {
+			$this->dependants[$parameterClass] = array($this->resolving);
+		} else {
+			$this->dependants[$parameterClass][] = $this->resolving;
+		}
+
 		return isset($this->contexts[$parameterClass][$this->resolving]) ?
 			$this->offsetGet($this->contexts[$parameterClass][$this->resolving])
 			: $this->offsetGet($parameterClass);
@@ -845,7 +872,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * The callable will be a closure on PHP 5.3+ or a lambda function on PHP 5.2.
 	 *
 	 * @param  string $classOrInterface The fully qualified name of a class or an interface.
-	 * @param  array  $args             An array of arguments that should be used to build the instancee;
+	 * @param  array $args An array of arguments that should be used to build the instancee;
 	 *                                  note that any argument will be resolved using the container itself and bindings
 	 *                                  will apply.
 	 *

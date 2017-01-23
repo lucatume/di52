@@ -1242,4 +1242,25 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('bar', $f()->getFoo());
 		$this->assertSame($f(), $f());
 	}
+
+	/**
+	 * @test
+	 * it should fetch correct objects when re-binding
+	 */
+	public function it_should_fetch_correct_objects_when_re_binding()
+	{
+		$sut = new tad_DI52_Container();
+
+		$sut->bind('One', 'ClassOneOne');
+
+		$firstInstance = $sut->make('ClassTwo');
+
+		$this->assertInstanceOf('ClassOneOne', $firstInstance->getOne());
+
+		$sut->bind('One', 'ClassOne');
+
+		$secondInstance = $sut->make('ClassTwo');
+
+		$this->assertInstanceOf('ClassOne', $secondInstance->getOne());
+	}
 }
