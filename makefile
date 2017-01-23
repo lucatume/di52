@@ -10,5 +10,10 @@ benchmark:
 	php test1-5_runner.php; \
 	ls -p -t ./results/test1-5_results-*.html | head -1 | xargs open;
 
+benchmark6:
+	cd $(benchmarksFolder); \
+	php test6_runner.php; \
+	ls -p -t ./results/test6_results-*.html | head -1 | xargs open;
+
 cover:
 	vendor/bin/phpunit-php52 --coverage-html ./tests/coverage tests
