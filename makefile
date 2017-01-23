@@ -17,3 +17,4 @@ benchmark6:
 
 cover:
 	vendor/bin/phpunit-php52 --coverage-html ./tests/coverage tests
+	open ./tests/coverage/index.html
