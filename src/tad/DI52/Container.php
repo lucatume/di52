@@ -249,11 +249,6 @@ class tad_DI52_Container implements ArrayAccess
 			return call_user_func($this->callables[$offset], $this);
 		}
 
-		if (isset($this->singletons[$offset])) {
-			$this->objects[$offset] = call_user_func($this->singletons[$offset]);
-			return $this->objects[$offset];
-		}
-
 		if (class_exists($offset)) {
 			return $this->resolve($offset);
 		}
@@ -293,13 +288,7 @@ class tad_DI52_Container implements ArrayAccess
 		}
 
 		if (isset($this->singletons[$classOrInterface])) {
-			if ($this->singletons[$classOrInterface] instanceof tad_DI52_BindGroup) {
-				foreach ($this->singletons[$classOrInterface] as $key) {
-					$this->objects[$key] = $resolved;
-				}
-			} else {
-				$this->objects[$classOrInterface] = $resolved;
-			}
+			$this->objects[$classOrInterface] = $resolved;
 		}
 
 		return $resolved;
@@ -334,11 +323,7 @@ class tad_DI52_Container implements ArrayAccess
 					throw new RuntimeException("'{$classOrInterface}' is not a bound alias or an existing class.");
 				}
 			} else {
-				if (is_object($this->strings[$classOrInterface]) && !is_callable($this->strings[$classOrInterface])) {
-					$instance = $this->strings[$classOrInterface];
-				} elseif (is_callable($this->strings[$classOrInterface])) {
-					$instance = $this->buildFromCallable($classOrInterface);
-				} elseif (isset($this->chains[$classOrInterface])) {
+				if (isset($this->chains[$classOrInterface])) {
 					$instance = $this->buildFromChain($classOrInterface);
 				} else {
 					$instance = $this->build($this->strings[$classOrInterface]);
@@ -357,8 +342,10 @@ class tad_DI52_Container implements ArrayAccess
 		} catch (Exception $e) {
 			preg_match('/Error while making/', $e->getMessage(), $matches);
 			if (count($matches)) {
+				// @codeCoverageIgnoreStart
 				$divider = "\n\t => ";
 				$prefix = ' ';
+				// @codeCoverageIgnoreEnd
 			} else {
 				$divider = ':';
 				$prefix = 'Error while making ';
@@ -394,17 +381,6 @@ class tad_DI52_Container implements ArrayAccess
 			$this->reflections[$implementation]->newInstanceArgs($this->parameterReflections[$implementation])
 			: new $implementation;
 
-		return $instance;
-	}
-
-	/**
-	 * @param $classOrInterface
-	 *
-	 * @return mixed
-	 */
-	protected function buildFromCallable($classOrInterface)
-	{
-		$instance = call_user_func($this->strings[$classOrInterface], $this);
 		return $instance;
 	}
 
@@ -647,7 +623,15 @@ class tad_DI52_Container implements ArrayAccess
 			$this->callables[$offset],
 			$this->contexts[$offset],
 			$this->tags[$offset],
-			$this->chains[$offset]);
+			$this->chains[$offset],
+			$this->parameterReflections[$offset]
+		);
+
+		if (isset($this->dependants[$offset])) {
+			foreach ($this->dependants[$offset] as $dependant) {
+				unset($this->parameterReflections[$dependant]);
+			}
+		}
 	}
 
 	/**
@@ -744,34 +728,22 @@ class tad_DI52_Container implements ArrayAccess
 	 */
 	public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
 	{
+		$this->offsetUnset($classOrInterface);
+
 		$this->bindings[$classOrInterface] = $classOrInterface;
-
-		unset($this->strings[$classOrInterface],
-			$this->singletons[$classOrInterface],
-			$this->objects[$classOrInterface],
-			$this->callables[$classOrInterface],
-			$this->chains[$classOrInterface],
-			$this->parameterReflections[$classOrInterface]
-		);
-
-		if (isset($this->dependants[$classOrInterface])) {
-			foreach ($this->dependants[$classOrInterface] as $dependant) {
-				unset($this->parameterReflections[$dependant]);
-			}
-		}
 
 		if (is_string($implementation)) {
 			unset($this->parameterReflections[$implementation]);
 		}
 
+		if (is_callable($implementation)) {
+			$this->callables[$classOrInterface] = $implementation;
+			return;
+		}
+
 		if (is_object($implementation)) {
-			if (is_callable($implementation)) {
-				$this->callables[$classOrInterface] = $implementation;
-				return;
-			} else {
-				$this->objects[$classOrInterface] = $implementation;
-				return;
-			}
+			$this->objects[$classOrInterface] = $implementation;
+			return;
 		}
 
 		$this->strings[$classOrInterface] = $implementation;
@@ -794,14 +766,7 @@ class tad_DI52_Container implements ArrayAccess
 	{
 		$this->bind($classOrInterface, $implementation, $afterBuildMethods);
 
-		if (is_array($classOrInterface)) {
-			$group = new tad_DI52_BindGroup($classOrInterface);
-			foreach ($classOrInterface as $key) {
-				$this->singletons[$key] = $group;
-			}
-		} else {
-			$this->singletons[$classOrInterface] = $classOrInterface;
-		}
+		$this->singletons[$classOrInterface] = $classOrInterface;
 	}
 
 	/**
@@ -820,20 +785,18 @@ class tad_DI52_Container implements ArrayAccess
 		$this->initClosuresSupport();
 
 		if (!is_string($method)) {
-			throw new RuntimeException('Lazy make method must be a string');
-		}
-
-		if (isset($this->callbacks[$classOrInterface . '::' . $method])) {
-			return $this->callbacks[$classOrInterface . '::' . $method];
+			throw new RuntimeException('Callback method must be a string');
 		}
 
 		if ($this->useClosures) {
 			$f = di52_callbackClosure($this, $classOrInterface, $method);
 		} else {
+			// @codeCoverageIgnoreStart
 			$f = create_function(
 				'',
 				'$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);'
 			);
+			// @codeCoverageIgnoreEnd
 		}
 
 		$this->callbacks[$classOrInterface . '::' . $method] = $f;
@@ -890,6 +853,7 @@ class tad_DI52_Container implements ArrayAccess
 			if ($this->useClosures) {
 				$f = di52_instanceClosure($this, $classOrInterface, $args);
 			} else {
+				// @codeCoverageIgnoreStart
 				$body = "global \$__container_{$this->id};
                 \$c = \$__container_{$this->id};
                 \$r = new ReflectionClass('{$classOrInterface}');
@@ -909,6 +873,7 @@ class tad_DI52_Container implements ArrayAccess
                 return \$r->newInstanceArgs(\$args);";
 
 				$f = create_function('', $body);
+				// @codeCoverageIgnoreEnd
 			}
 
 			$this->instanceCallbacks[$instanceId] = $f;
