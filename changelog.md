@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- support for built objects in `instance` and `callback` methods
 
 ## [2.0.1] - 2017-01-23
 ### Fixed
