@@ -121,7 +121,7 @@ class tad_DI52_Container implements ArrayAccess
 	/**
 	 * tad_DI52_Container constructor.
 	 */
-	public function __construct()
+	public function __construct( )
 	{
 		$this->id = uniqid();
 		$GLOBALS['__container_' . $this->id] = $this;
@@ -269,6 +269,10 @@ class tad_DI52_Container implements ArrayAccess
 	 */
 	public function make($classOrInterface)
 	{
+		if (is_object($classOrInterface)) {
+			return $classOrInterface;
+		}
+
 		if (!isset($this->bindings[$classOrInterface])) {
 			try {
 				return $this->build($classOrInterface, true);
@@ -797,6 +801,10 @@ class tad_DI52_Container implements ArrayAccess
 				'$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);'
 			);
 			// @codeCoverageIgnoreEnd
+		}
+
+		if (is_object($classOrInterface)) {
+			$classOrInterface = get_class($classOrInterface);
 		}
 
 		$this->callbacks[$classOrInterface . '::' . $method] = $f;
