@@ -30,6 +30,10 @@ function di52_callbackClosure(tad_DI52_Container $container, $classOrInterface, 
 function di52_instanceClosure(tad_DI52_Container $container, $classOrInterface, array $vars = array())
 {
 	return function () use ($container, $classOrInterface, $vars) {
+		if (is_object($classOrInterface)) {
+			return $classOrInterface;
+		}
+
 		$r = new ReflectionClass($classOrInterface);
 		$constructor = $r->getConstructor();
 		if (null === $constructor) {

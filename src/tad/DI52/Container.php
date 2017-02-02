@@ -1,7 +1,6 @@
 <?php
 
-class tad_DI52_Container implements ArrayAccess
-{
+class tad_DI52_Container implements ArrayAccess {
 
 	/**
 	 * @var boolean
@@ -121,8 +120,7 @@ class tad_DI52_Container implements ArrayAccess
 	/**
 	 * tad_DI52_Container constructor.
 	 */
-	public function __construct( )
-	{
+	public function __construct() {
 		$this->id = uniqid();
 		$GLOBALS['__container_' . $this->id] = $this;
 	}
@@ -140,8 +138,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @param string $key The alias the container will use to reference the variable.
 	 * @param mixed $value The variable value.
 	 */
-	public function setVar($key, $value)
-	{
+	public function setVar($key, $value) {
 		$this->offsetSet($key, $value);
 	}
 
@@ -168,8 +165,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @return void
 	 * @since 5.0.0
 	 */
-	public function offsetSet($offset, $value)
-	{
+	public function offsetSet($offset, $value) {
 		if ($value instanceof tad_DI52_ProtectedValue) {
 			$this->protected[$offset] = true;
 			$value = $value->getValue();
@@ -206,8 +202,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return mixed The variable value or the resolved binding.
 	 */
-	public function getVar($key)
-	{
+	public function getVar($key) {
 		try {
 			return $this->offsetGet($key);
 		} catch (RuntimeException $e) {
@@ -223,8 +218,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	public function offsetGet($offset)
-	{
+	public function offsetGet($offset) {
 		if (is_object($offset)) {
 			return is_callable($offset) ? call_user_func($offset, $this) : $offset;
 		}
@@ -267,8 +261,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	public function make($classOrInterface)
-	{
+	public function make($classOrInterface) {
 		if (is_object($classOrInterface)) {
 			return $classOrInterface;
 		}
@@ -308,8 +301,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return array|mixed
 	 */
-	protected function resolve($classOrInterface)
-	{
+	protected function resolve($classOrInterface) {
 		$original = $this->resolving;
 		$this->resolving = $classOrInterface;
 
@@ -366,8 +358,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	protected function build($implementation, $resolving = false)
-	{
+	protected function build($implementation, $resolving = false) {
 		$this->resolving = $resolving ? $implementation : $this->resolving;
 		if (!isset($this->reflections[$implementation])) {
 			$this->reflections[$implementation] = new ReflectionClass($implementation);
@@ -393,8 +384,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return mixed
 	 */
-	protected function buildFromChain($classOrInterface)
-	{
+	protected function buildFromChain($classOrInterface) {
 		$chainElements = $this->chains[$classOrInterface];
 		unset($this->chains[$classOrInterface]);
 
@@ -423,8 +413,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @param array $implementationsArray
 	 * @param string $tag
 	 */
-	public function tag(array $implementationsArray, $tag)
-	{
+	public function tag(array $implementationsArray, $tag) {
 		$this->tags[$tag] = $implementationsArray;
 	}
 
@@ -444,8 +433,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return array An array of resolved bound implementations.
 	 */
-	public function tagged($tag)
-	{
+	public function tagged($tag) {
 		if ($this->hasTag($tag)) {
 			return array_map(array($this, 'offsetGet'), $this->tags[$tag]);
 		}
@@ -462,8 +450,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return bool
 	 */
-	public function hasTag($tag)
-	{
+	public function hasTag($tag) {
 		return isset($this->tags[$tag]);
 	}
 
@@ -487,8 +474,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @param string $serviceProviderClass
 	 */
-	public function register($serviceProviderClass)
-	{
+	public function register($serviceProviderClass) {
 		/** @var tad_DI52_ServiceProviderInterface $provider */
 		$provider = new $serviceProviderClass($this);
 		if (!$provider->isDeferred()) {
@@ -520,8 +506,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @see tad_DI52_ServiceProviderInterface::boot()
 	 */
-	public function boot()
-	{
+	public function boot() {
 		if (!empty($this->bootable)) {
 			foreach ($this->bootable as $provider) {
 				/** @var tad_DI52_ServiceProviderInterface $provider */
@@ -537,8 +522,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return bool
 	 */
-	public function isBound($classOrInterface)
-	{
+	public function isBound($classOrInterface) {
 		return $this->offsetExists($classOrInterface);
 	}
 
@@ -559,8 +543,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * The return value will be casted to boolean if non-boolean was returned.
 	 * @since 5.0.0
 	 */
-	public function offsetExists($offset)
-	{
+	public function offsetExists($offset) {
 		return isset($this->bindings[$offset]);
 	}
 
@@ -575,8 +558,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @param array $afterBuildMethods An array of methods that should be called on the instance after it has been
 	 *                                  built; the methods should not require any argument.
 	 */
-	public function singletonDecorators($classOrInterface, $decorators, array $afterBuildMethods = null)
-	{
+	public function singletonDecorators($classOrInterface, $decorators, array $afterBuildMethods = null) {
 		$this->bindDecorators($classOrInterface, $decorators, $afterBuildMethods);
 		$this->singletons[$classOrInterface] = $classOrInterface;
 	}
@@ -592,8 +574,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @param array $afterBuildMethods An array of methods that should be called on the instance after it has been
 	 *                                  built; the methods should not require any argument.
 	 */
-	public function bindDecorators($classOrInterface, array $decorators, array $afterBuildMethods = null)
-	{
+	public function bindDecorators($classOrInterface, array $decorators, array $afterBuildMethods = null) {
 		$this->bindings[$classOrInterface] = $classOrInterface;
 		$this->strings[$classOrInterface] = $decorators;
 		$this->chains[$classOrInterface] = $decorators;
@@ -616,8 +597,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @return void
 	 * @since 5.0.0
 	 */
-	public function offsetUnset($offset)
-	{
+	public function offsetUnset($offset) {
 		unset(
 			$this->strings[$offset],
 			$this->singletons[$offset],
@@ -654,8 +634,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return tad_DI52_Container
 	 */
-	public function when($class)
-	{
+	public function when($class) {
 		$this->bindingFor = $class;
 
 		return $this;
@@ -677,8 +656,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return tad_DI52_Container
 	 */
-	public function needs($classOrInterface)
-	{
+	public function needs($classOrInterface) {
 		$this->neededImplementation = $classOrInterface;
 		return $this;
 	}
@@ -697,8 +675,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @param mixed $implementation The implementation specified
 	 */
-	public function give($implementation)
-	{
+	public function give($implementation) {
 		$this->bindings[$this->bindingFor] = $this->bindingFor;
 
 		$this->contexts[$this->neededImplementation] =
@@ -714,8 +691,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @param mixed $value
 	 */
-	public function protect($value)
-	{
+	public function protect($value) {
 		return new tad_DI52_ProtectedValue($value);
 	}
 
@@ -730,8 +706,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
-	public function bind($classOrInterface, $implementation, array $afterBuildMethods = null)
-	{
+	public function bind($classOrInterface, $implementation, array $afterBuildMethods = null) {
 		$this->offsetUnset($classOrInterface);
 
 		$this->bindings[$classOrInterface] = $classOrInterface;
@@ -766,8 +741,7 @@ class tad_DI52_Container implements ArrayAccess
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
-	public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null)
-	{
+	public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null) {
 		$this->bind($classOrInterface, $implementation, $afterBuildMethods);
 
 		$this->singletons[$classOrInterface] = $classOrInterface;
@@ -784,8 +758,7 @@ class tad_DI52_Container implements ArrayAccess
 	 *
 	 * @return mixed The called method return value.
 	 */
-	public function callback($classOrInterface, $method)
-	{
+	public function callback($classOrInterface, $method) {
 		$this->initClosuresSupport();
 
 		if (!is_string($method)) {
@@ -795,10 +768,18 @@ class tad_DI52_Container implements ArrayAccess
 		if ($this->useClosures) {
 			$f = di52_callbackClosure($this, $classOrInterface, $method);
 		} else {
+			$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
 			// @codeCoverageIgnoreStart
+			if (is_object($classOrInterface)) {
+				$objectId = uniqid(md5($classOrInterfaceName), true);
+				$this->bind($objectId, $classOrInterface);
+				$body = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $objectId . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
+			} else {
+				$body = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
+			}
 			$f = create_function(
 				'',
-				'$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);'
+				$body
 			);
 			// @codeCoverageIgnoreEnd
 		}
@@ -812,8 +793,7 @@ class tad_DI52_Container implements ArrayAccess
 		return $f;
 	}
 
-	protected function getParameter(ReflectionParameter $parameter)
-	{
+	protected function getParameter(ReflectionParameter $parameter) {
 		$class = $parameter->getClass();
 
 		if (null === $class) {
@@ -850,11 +830,12 @@ class tad_DI52_Container implements ArrayAccess
 	 * @return callable  A callable function that will return an instance of the specified class when
 	 *                   called.
 	 */
-	public function instance($classOrInterface, array $args = array())
-	{
+	public function instance($classOrInterface, array $args = array()) {
 		$this->initClosuresSupport();
 
-		$instanceId = md5($classOrInterface . '::' . serialize($args));
+		$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
+
+		$instanceId = md5($classOrInterfaceName . '::' . serialize($args));
 		if (!isset($this->instanceCallbacks[$instanceId])) {
 			$this->__instanceCallbackArgs[$instanceId] = $args;
 
@@ -862,7 +843,13 @@ class tad_DI52_Container implements ArrayAccess
 				$f = di52_instanceClosure($this, $classOrInterface, $args);
 			} else {
 				// @codeCoverageIgnoreStart
-				$body = "global \$__container_{$this->id};
+				if (is_object($classOrInterface)) {
+					$objectId = uniqid(md5($classOrInterfaceName), true);
+					$this->bind($objectId, $classOrInterface);
+					$body = "global \$__container_{$this->id};
+					\$c = \$__container_{$this->id}; return \$c->make('{$objectId}'); ";
+				} else {
+					$body = "global \$__container_{$this->id};
                 \$c = \$__container_{$this->id};
                 \$r = new ReflectionClass('{$classOrInterface}');
                 \$vars = \$c->__instanceCallbackArgs['{$instanceId}'];
@@ -879,6 +866,7 @@ class tad_DI52_Container implements ArrayAccess
                     }
                 }
                 return \$r->newInstanceArgs(\$args);";
+				}
 
 				$f = create_function('', $body);
 				// @codeCoverageIgnoreEnd
@@ -893,8 +881,7 @@ class tad_DI52_Container implements ArrayAccess
 	/**
 	 * Initializes the closure support on PHP 5.3+.
 	 */
-	protected function initClosuresSupport()
-	{
+	protected function initClosuresSupport() {
 		if (null === $this->useClosures) {
 			$this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
 			if ($this->useClosures) {

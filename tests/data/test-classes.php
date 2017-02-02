@@ -162,6 +162,10 @@ class ClassFour
     {
         return $n + 23;
     }
+	public function methodTwo()
+	{
+		return 23;
+	}
 }
 
 class FourBase implements Four

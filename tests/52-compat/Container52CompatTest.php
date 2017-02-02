@@ -1,10 +1,8 @@
 <?php
 
-class Container52CompatTest extends PHPUnit_Framework_TestCase
-{
+class Container52CompatTest extends PHPUnit_Framework_TestCase {
 
-	public function boundVariables()
-	{
+	public function boundVariables() {
 		return array(
 			array('bar'),
 			array(23),
@@ -13,8 +11,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 		);
 	}
 
-	protected function setUp()
-	{
+	protected function setUp() {
 		ClassEight::reset();
 	}
 
@@ -23,8 +20,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * it should allow setting a var on the container
 	 * @dataProvider boundVariables
 	 */
-	public function it_should_allow_setting_a_var_on_the_container($value)
-	{
+	public function it_should_allow_setting_a_var_on_the_container($value) {
 		$sut = new tad_DI52_Container();
 
 		$sut->setVar('foo', $value);
@@ -37,8 +33,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * it should allow setting a var on the container with ArrayAccess API
 	 * @dataProvider boundVariables
 	 */
-	public function it_should_allow_setting_a_var_on_the_container_with_array_access_api($value)
-	{
+	public function it_should_allow_setting_a_var_on_the_container_with_array_access_api($value) {
 		$sut = new tad_DI52_Container();
 
 		$sut['foo'] = $value;
@@ -50,8 +45,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should return null when trying to get non existing var
 	 */
-	public function it_should_return_null_when_trying_to_get_non_existing_var()
-	{
+	public function it_should_return_null_when_trying_to_get_non_existing_var() {
 		$sut = new tad_DI52_Container();
 
 		$this->assertNull($sut->getVar('foo'));
@@ -61,8 +55,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should return throw when using ArrayAccess API to get non set var
 	 */
-	public function it_should_return_throw_when_using_array_access_api_to_get_non_set_var()
-	{
+	public function it_should_return_throw_when_using_array_access_api_to_get_non_set_var() {
 		$sut = new tad_DI52_Container();
 
 		$this->setExpectedException('RuntimeException');
@@ -74,8 +67,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an implementation with no constructor to an interface
 	 */
-	public function it_should_allow_binding_an_implementation_with_no_constructor_to_an_interface()
-	{
+	public function it_should_allow_binding_an_implementation_with_no_constructor_to_an_interface() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -87,8 +79,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should return a different instance of a bound interface implementation on each build
 	 */
-	public function it_should_return_a_different_instance_of_a_bound_interface_implementation_on_each_build()
-	{
+	public function it_should_return_a_different_instance_of_a_bound_interface_implementation_on_each_build() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -100,8 +91,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an implementation with constructor to an interface
 	 */
-	public function it_should_allow_binding_an_implementation_with_constructor_to_an_interface()
-	{
+	public function it_should_allow_binding_an_implementation_with_constructor_to_an_interface() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOneOne');
@@ -113,8 +103,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an implementation with constructor arguments
 	 */
-	public function it_should_allow_binding_an_implementation_with_constructor_arguments()
-	{
+	public function it_should_allow_binding_an_implementation_with_constructor_arguments() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOneTwo');
@@ -126,8 +115,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an implementation to a string slug
 	 */
-	public function it_should_allow_binding_an_implementation_to_a_string_slug()
-	{
+	public function it_should_allow_binding_an_implementation_to_a_string_slug() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('foo', 'ClassOneTwo');
@@ -139,8 +127,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an implementation to a class
 	 */
-	public function it_should_allow_binding_an_implementation_to_a_class()
-	{
+	public function it_should_allow_binding_an_implementation_to_a_class() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('ClassOne', 'ClassOneOne');
@@ -152,8 +139,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve unbound class with no constructor
 	 */
-	public function it_should_resolve_unbound_class_with_no_constructor()
-	{
+	public function it_should_resolve_unbound_class_with_no_constructor() {
 		$sut = new tad_DI52_Container();
 
 		$this->assertInstanceOf('ClassOne', $sut->make('ClassOne'));
@@ -163,8 +149,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve an unbound class with a defaulted scalar dependency
 	 */
-	public function it_should_resolve_an_unbound_class_with_a_defaulted_scalar_dependency()
-	{
+	public function it_should_resolve_an_unbound_class_with_a_defaulted_scalar_dependency() {
 		$sut = new tad_DI52_Container();
 
 		$this->assertInstanceOf('ClassOneTwo', $sut->make('ClassOneTwo'));
@@ -174,8 +159,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should throw if trying to resolve class with unbound interface dependency
 	 */
-	public function it_should_throw_if_trying_to_resolve_class_with_unbound_interface_dependency()
-	{
+	public function it_should_throw_if_trying_to_resolve_class_with_unbound_interface_dependency() {
 		$this->setExpectedException('RuntimeException');
 
 		$sut = new tad_DI52_Container();
@@ -187,8 +171,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve an unbound class with an interface dependency
 	 */
-	public function it_should_resolve_an_unbound_class_with_an_interface_dependency()
-	{
+	public function it_should_resolve_an_unbound_class_with_an_interface_dependency() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -200,8 +183,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve an unbound class with a class dependency
 	 */
-	public function it_should_resolve_an_unbound_class_with_a_class_dependency()
-	{
+	public function it_should_resolve_an_unbound_class_with_a_class_dependency() {
 		$sut = new tad_DI52_Container();
 
 		$this->assertInstanceOf('ClassTwoOne', $sut->make('ClassTwoOne'));
@@ -211,8 +193,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve an unbound class with plus one interface dependencies
 	 */
-	public function it_should_resolve_an_unbound_class_with_plus_one_interface_dependencies()
-	{
+	public function it_should_resolve_an_unbound_class_with_plus_one_interface_dependencies() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -225,8 +206,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve an unbound class with plus one class dependencies
 	 */
-	public function it_should_resolve_an_unbound_class_with_plus_one_class_dependencies()
-	{
+	public function it_should_resolve_an_unbound_class_with_plus_one_class_dependencies() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -238,8 +218,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve an unbound class with plus one interface and class dependencies
 	 */
-	public function it_should_resolve_an_unbound_class_with_plus_one_interface_and_class_dependencies()
-	{
+	public function it_should_resolve_an_unbound_class_with_plus_one_interface_and_class_dependencies() {
 		$sut = new tad_DI52_Container();
 
 		$this->assertInstanceOf('ClassThreeTwo', $sut->make('ClassThreeTwo'));
@@ -249,8 +228,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should throw if trying to resolve class with non type-hinted dependency without default
 	 */
-	public function it_should_throw_if_trying_to_resolve_class_with_non_type_hinted_dependency_without_default()
-	{
+	public function it_should_throw_if_trying_to_resolve_class_with_non_type_hinted_dependency_without_default() {
 		$sut = new tad_DI52_Container();
 
 		$this->setExpectedException('RuntimeException');
@@ -262,8 +240,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a class to an interface as a singleton
 	 */
-	public function it_should_allow_binding_a_class_to_an_interface_as_a_singleton()
-	{
+	public function it_should_allow_binding_a_class_to_an_interface_as_a_singleton() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('One', 'ClassOne');
@@ -276,8 +253,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a class to a class as a singleton
 	 */
-	public function it_should_allow_binding_a_class_to_a_class_as_a_singleton()
-	{
+	public function it_should_allow_binding_a_class_to_a_class_as_a_singleton() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('ClassOne', 'ClassOneOne');
@@ -290,8 +266,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a class to a string slug as a singleton
 	 */
-	public function it_should_allow_binding_a_class_to_a_string_slug_as_a_singleton()
-	{
+	public function it_should_allow_binding_a_class_to_a_string_slug_as_a_singleton() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('one.foo', 'ClassOne');
@@ -300,8 +275,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 		$this->assertSame($sut->make('one.foo'), $sut->make('one.foo'));
 	}
 
-	public function implementationKeysAndValues()
-	{
+	public function implementationKeysAndValues() {
 		return array(
 			array('One', 'ClassOne'),
 			array('ClassOne', 'ClassOneOne'),
@@ -313,8 +287,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * it should bind an implementation as singleton when using ArrayAccess API
 	 * @dataProvider implementationKeysAndValues
 	 */
-	public function it_should_bind_an_implementation_as_singleton_when_using_array_access_api($key, $value)
-	{
+	public function it_should_bind_an_implementation_as_singleton_when_using_array_access_api($key, $value) {
 		$sut = new tad_DI52_Container();
 
 		$sut[$key] = $value;
@@ -327,8 +300,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a decorator chain to an interface
 	 */
-	public function it_should_allow_binding_a_decorator_chain_to_an_interface()
-	{
+	public function it_should_allow_binding_a_decorator_chain_to_an_interface() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
@@ -341,8 +313,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow specifying after build methods to call on a decorator chain base
 	 */
-	public function it_should_allow_specifying_after_build_methods_to_call_on_a_decorator_chain_base()
-	{
+	public function it_should_allow_specifying_after_build_methods_to_call_on_a_decorator_chain_base() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'),
@@ -361,8 +332,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a chain as a singleton to an interface
 	 */
-	public function it_should_allow_binding_a_chain_as_a_singleton_to_an_interface()
-	{
+	public function it_should_allow_binding_a_chain_as_a_singleton_to_an_interface() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singletonDecorators('Four',
@@ -376,8 +346,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a complex chain to an interface
 	 */
-	public function it_should_allow_binding_a_complex_chain_to_an_interface()
-	{
+	public function it_should_allow_binding_a_complex_chain_to_an_interface() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('Four', 'FourTwo');
@@ -394,8 +363,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding a complex chain as a singleton to an interface
 	 */
-	public function it_should_allow_binding_a_complex_chain_as_a_singleton_to_an_interface()
-	{
+	public function it_should_allow_binding_a_complex_chain_as_a_singleton_to_an_interface() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('Four', 'FourTwo');
@@ -413,8 +381,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow tagging and resolving tagged classes
 	 */
-	public function it_should_allow_tagging_and_resolving_tagged_classes()
-	{
+	public function it_should_allow_tagging_and_resolving_tagged_classes() {
 		$sut = new tad_DI52_Container();
 
 		$sut->tag(array('ClassOne', 'ClassOneOne', 'ClassOneTwo'), 'foo');
@@ -429,8 +396,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should throw if trying to resolve non existing tag
 	 */
-	public function it_should_throw_if_trying_to_resolve_non_existing_tag()
-	{
+	public function it_should_throw_if_trying_to_resolve_non_existing_tag() {
 		$sut = new tad_DI52_Container();
 
 		$this->setExpectedException('RuntimeException');
@@ -442,8 +408,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow tagging mixed values
 	 */
-	public function it_should_allow_tagging_mixed_values()
-	{
+	public function it_should_allow_tagging_mixed_values() {
 		$sut = new tad_DI52_Container();
 
 		$sut->tag(array('ClassOne', new ClassOneOne(), 'ClassOneTwo'), 'foo');
@@ -458,8 +423,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should call register method on on deferred service providers when registering
 	 */
-	public function it_should_call_register_method_on_on_deferred_service_providers_when_registering()
-	{
+	public function it_should_call_register_method_on_on_deferred_service_providers_when_registering() {
 		$sut = new tad_DI52_Container();
 
 		$sut->register('ProviderOne');
@@ -471,8 +435,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should not call register method on deferred provider on registration
 	 */
-	public function it_should_not_call_register_method_on_deferred_provider_on_registration()
-	{
+	public function it_should_not_call_register_method_on_deferred_provider_on_registration() {
 		DeferredProviderTwo::reset();
 
 		$sut = new tad_DI52_Container();
@@ -486,8 +449,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should throw if deferred provider is not providing anything
 	 */
-	public function it_should_throw_if_deferred_provider_is_not_providing_anything()
-	{
+	public function it_should_throw_if_deferred_provider_is_not_providing_anything() {
 		$sut = new tad_DI52_Container();
 
 		$this->setExpectedException('RuntimeException');
@@ -499,8 +461,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should register deferred provider when trying to resolve provided class
 	 */
-	public function it_should_register_deferred_provider_when_trying_to_resolve_provided_class()
-	{
+	public function it_should_register_deferred_provider_when_trying_to_resolve_provided_class() {
 		DeferredProviderTwo::reset();
 
 		$sut = new tad_DI52_Container();
@@ -518,8 +479,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should call boot method on providers when booting the container
 	 */
-	public function it_should_call_boot_method_on_providers_when_booting_the_container()
-	{
+	public function it_should_call_boot_method_on_providers_when_booting_the_container() {
 		$sut = new tad_DI52_Container();
 
 		$sut->register('ProviderThree');
@@ -535,8 +495,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should call after build methods on implementations
 	 */
-	public function it_should_call_after_build_methods_on_implementations()
-	{
+	public function it_should_call_after_build_methods_on_implementations() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOneThree', array('methodOne', 'methodTwo'));
@@ -550,8 +509,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should bind an object implementation as a singleton even when using bind
 	 */
-	public function it_should_bind_an_object_implementation_as_a_singleton_even_when_using_bind()
-	{
+	public function it_should_bind_an_object_implementation_as_a_singleton_even_when_using_bind() {
 		$sut = new tad_DI52_Container();
 
 		$object = new stdClass();
@@ -566,8 +524,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an object to an interface as a singleton and resolving it using bind
 	 */
-	public function it_should_allow_binding_an_object_to_an_interface_as_a_singleton_and_resolving_it_using_bind()
-	{
+	public function it_should_allow_binding_an_object_to_an_interface_as_a_singleton_and_resolving_it_using_bind() {
 		$sut = new tad_DI52_Container();
 
 		$object = new ClassOne();
@@ -583,8 +540,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an object to an interface as a singleton and resolving it
 	 */
-	public function it_should_allow_binding_an_object_to_an_interface_as_a_singleton_and_resolving_it()
-	{
+	public function it_should_allow_binding_an_object_to_an_interface_as_a_singleton_and_resolving_it() {
 		$sut = new tad_DI52_Container();
 
 		$object = new ClassOne();
@@ -600,8 +556,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should support contextual binding of interfaces
 	 */
-	public function it_should_support_contextual_binding_of_interfaces()
-	{
+	public function it_should_support_contextual_binding_of_interfaces() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -623,8 +578,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should support contextual binding of classes
 	 */
-	public function it_should_support_contextual_binding_of_classes()
-	{
+	public function it_should_support_contextual_binding_of_classes() {
 		$sut = new tad_DI52_Container();
 
 		$sut->when('ClassSixOne')
@@ -644,8 +598,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should throw when trying to make non existing class
 	 */
-	public function it_should_throw_when_trying_to_make_non_existing_class()
-	{
+	public function it_should_throw_when_trying_to_make_non_existing_class() {
 		$sut = new tad_DI52_Container();
 
 		$this->setExpectedException('RuntimeException');
@@ -657,8 +610,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should replace a binding when re-binding
 	 */
-	public function it_should_replace_a_binding_when_re_binding()
-	{
+	public function it_should_replace_a_binding_when_re_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -674,8 +626,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should replace a singleton bind when re-binding a singleton binding
 	 */
-	public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding()
-	{
+	public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('One', 'ClassOne');
@@ -692,8 +643,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should replace bind with singleton if re-binding as singleton
 	 */
-	public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton()
-	{
+	public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('One', 'ClassOne');
@@ -711,8 +661,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should replace singleton with simple bind if re-binding as non singleton
 	 */
-	public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton()
-	{
+	public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('One', 'ClassOne');
@@ -730,8 +679,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow tagging non concrete implementations
 	 */
-	public function it_should_allow_tagging_non_concrete_implementations()
-	{
+	public function it_should_allow_tagging_non_concrete_implementations() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('foo', 'ClassOne');
@@ -751,8 +699,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy building an interface binding
 	 */
-	public function it_should_allow_lazy_building_an_interface_binding()
-	{
+	public function it_should_allow_lazy_building_an_interface_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('Eight', 'ClassEight');
@@ -768,8 +715,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy building an class binding
 	 */
-	public function it_should_allow_lazy_building_an_class_binding()
-	{
+	public function it_should_allow_lazy_building_an_class_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('ClassEight', 'ClassEightExtension');
@@ -785,8 +731,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy building an slug binding
 	 */
-	public function it_should_allow_lazy_building_an_slug_binding()
-	{
+	public function it_should_allow_lazy_building_an_slug_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('foo', 'ClassEight');
@@ -802,8 +747,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy binding a singleton interface binding
 	 */
-	public function it_should_allow_lazy_binding_a_singleton_interface_binding()
-	{
+	public function it_should_allow_lazy_binding_a_singleton_interface_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('Eight', 'ClassEight');
@@ -819,8 +763,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy binding a singleton class binding
 	 */
-	public function it_should_allow_lazy_binding_a_singleton_class_binding()
-	{
+	public function it_should_allow_lazy_binding_a_singleton_class_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('ClassEight', 'ClassEightExtension');
@@ -836,8 +779,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy binding a singleton slug binding
 	 */
-	public function it_should_allow_lazy_binding_a_singleton_slug_binding()
-	{
+	public function it_should_allow_lazy_binding_a_singleton_slug_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('foo', 'ClassEight');
@@ -853,8 +795,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should pass the calling arguments to the lazy made instance
 	 */
-	public function it_should_pass_the_calling_arguments_to_the_lazy_made_instance()
-	{
+	public function it_should_pass_the_calling_arguments_to_the_lazy_made_instance() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('foo', 'ClassEight');
@@ -868,8 +809,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy making a decorator binding
 	 */
-	public function it_should_allow_lazy_making_a_decorator_binding()
-	{
+	public function it_should_allow_lazy_making_a_decorator_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
@@ -882,8 +822,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy making a decorator singleton binding
 	 */
-	public function it_should_allow_lazy_making_a_decorator_singleton_binding()
-	{
+	public function it_should_allow_lazy_making_a_decorator_singleton_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singletonDecorators('Four',
@@ -898,8 +837,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy making an unbound class
 	 */
-	public function it_should_allow_lazy_making_an_unbound_class()
-	{
+	public function it_should_allow_lazy_making_an_unbound_class() {
 		$sut = new tad_DI52_Container();
 
 		$f = $sut->callback('FourBase', 'methodThree');
@@ -911,8 +849,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should throw if trying to lazy make a non string method
 	 */
-	public function it_should_throw_if_trying_to_lazy_make_a_non_string_method()
-	{
+	public function it_should_throw_if_trying_to_lazy_make_a_non_string_method() {
 		$sut = new tad_DI52_Container();
 
 		$this->setExpectedException('RuntimeException');
@@ -924,8 +861,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should apply contextual binding to unbound classes
 	 */
-	public function it_should_apply_contextual_binding_to_unbound_classes()
-	{
+	public function it_should_apply_contextual_binding_to_unbound_classes() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -940,8 +876,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow lazy making contextually bound interfaces
 	 */
-	public function it_should_allow_lazy_making_contextually_bound_interfaces()
-	{
+	public function it_should_allow_lazy_making_contextually_bound_interfaces() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -957,8 +892,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should return same instance when lazy making contextually bound singleton
 	 */
-	public function it_should_return_same_instance_when_lazy_making_contextually_bound_singleton()
-	{
+	public function it_should_return_same_instance_when_lazy_making_contextually_bound_singleton() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOne');
@@ -976,8 +910,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should not build lazy made object immediately
 	 */
-	public function it_should_not_build_lazy_made_object_immediately()
-	{
+	public function it_should_not_build_lazy_made_object_immediately() {
 		$sut = new tad_DI52_Container();
 
 		ClassNine::reset();
@@ -995,8 +928,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should mark a deferred implementation as bound before registering the service provider
 	 */
-	public function it_should_mark_a_deferred_implementation_as_bound_before_registering_the_service_provider()
-	{
+	public function it_should_mark_a_deferred_implementation_as_bound_before_registering_the_service_provider() {
 		DeferredProviderTwo::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1010,8 +942,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow getting a callback to build an object
 	 */
-	public function it_should_allow_getting_a_callback_to_build_an_object()
-	{
+	public function it_should_allow_getting_a_callback_to_build_an_object() {
 		ClassTen::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1046,8 +977,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow getting a callback to build an object with scalar and object dependencies
 	 */
-	public function it_should_allow_getting_a_callback_to_build_an_object_with_scalar_and_object_dependencies()
-	{
+	public function it_should_allow_getting_a_callback_to_build_an_object_with_scalar_and_object_dependencies() {
 		ClassEleven::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1088,8 +1018,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should instance using bound implementations
 	 */
-	public function it_should_instance_using_bound_implementations()
-	{
+	public function it_should_instance_using_bound_implementations() {
 		ClassTwelve::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1108,8 +1037,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow overriding bound implementations in instance method
 	 */
-	public function it_should_allow_overriding_bound_implementations_in_instance_method()
-	{
+	public function it_should_allow_overriding_bound_implementations_in_instance_method() {
 		ClassTwelve::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1128,8 +1056,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow referring bound slugs in instance method
 	 */
-	public function it_should_allow_referring_bound_slugs_in_instance_method()
-	{
+	public function it_should_allow_referring_bound_slugs_in_instance_method() {
 		ClassTwelve::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1148,8 +1075,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should use bound singletons as singletons in instance methods
 	 */
-	public function it_should_use_bound_singletons_as_singletons_in_instance_methods()
-	{
+	public function it_should_use_bound_singletons_as_singletons_in_instance_methods() {
 		ClassTwelve::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1166,8 +1092,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should resolve bound objects in instance method
 	 */
-	public function it_should_resolve_bound_objects_in_instance_method()
-	{
+	public function it_should_resolve_bound_objects_in_instance_method() {
 		ClassTwelve::reset();
 
 		$sut = new tad_DI52_Container();
@@ -1185,8 +1110,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an instance in the container
 	 */
-	public function it_should_allow_binding_an_instance_in_the_container()
-	{
+	public function it_should_allow_binding_an_instance_in_the_container() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', $sut->instance('ClassOneTwo', array('sudo-foo')));
@@ -1200,8 +1124,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow binding an instance as a singleton in the container
 	 */
-	public function it_should_allow_binding_an_instance_as_a_singleton_in_the_container()
-	{
+	public function it_should_allow_binding_an_instance_as_a_singleton_in_the_container() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('One', $sut->instance('ClassOneTwo', array('sudo-foo')));
@@ -1215,8 +1138,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should build the instance with the container if not specifying arguments
 	 */
-	public function it_should_build_the_instance_with_the_container_if_not_specifying_arguments()
-	{
+	public function it_should_build_the_instance_with_the_container_if_not_specifying_arguments() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOneTwo');
@@ -1231,8 +1153,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should use container binding settings when instancing
 	 */
-	public function it_should_use_container_binding_settings_when_instancing()
-	{
+	public function it_should_use_container_binding_settings_when_instancing() {
 		$sut = new tad_DI52_Container();
 
 		$sut->singleton('One', 'ClassOneTwo');
@@ -1247,8 +1168,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should fetch correct objects when re-binding
 	 */
-	public function it_should_fetch_correct_objects_when_re_binding()
-	{
+	public function it_should_fetch_correct_objects_when_re_binding() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', 'ClassOneOne');
@@ -1268,8 +1188,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 	 * @test
 	 * it should allow re-binding objects
 	 */
-	public function it_should_allow_re_binding_objects()
-	{
+	public function it_should_allow_re_binding_objects() {
 		$sut = new tad_DI52_Container();
 
 		$sut->bind('One', new ClassOneOne());
@@ -1283,5 +1202,31 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase
 		$secondInstance = $sut->make('ClassTwo');
 
 		$this->assertInstanceOf('ClassOne', $secondInstance->getOne());
+	}
+
+	/**
+	 * @test
+	 * it should allow for built objects to passed to instance
+	 */
+	public function it_should_allow_for_built_objects_to_passed_to_instance() {
+		$sut = new tad_DI52_Container();
+
+		$obj = new ClassFour('foo');
+		$instance = $sut->instance($obj);
+
+		$this->assertInstanceOf('ClassFour', $instance());
+	}
+
+	/**
+	 * @test
+	 * it should allow for built objects to be passed in callback
+	 */
+	public function it_should_allow_for_built_objects_to_be_passed_in_callback() {
+		$sut = new tad_DI52_Container();
+
+		$obj = new ClassFour('foo');
+		$callback = $sut->callback($obj, 'methodTwo');
+
+		$this->assertEquals(23, $callback());
 	}
 }
