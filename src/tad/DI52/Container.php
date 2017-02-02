@@ -121,7 +121,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 * tad_DI52_Container constructor.
 	 */
 	public function __construct() {
-		$this->id = uniqid();
+		$this->id = uniqid(rand(1,9999));
 		$GLOBALS['__container_' . $this->id] = $this;
 	}
 
@@ -771,7 +771,7 @@ class tad_DI52_Container implements ArrayAccess {
 			$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
 			// @codeCoverageIgnoreStart
 			if (is_object($classOrInterface)) {
-				$objectId = uniqid(md5($classOrInterfaceName), true);
+				$objectId = uniqid(rand(1,9999) . md5($classOrInterfaceName));
 				$this->bind($objectId, $classOrInterface);
 				$body = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $objectId . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
 			} else {
@@ -844,7 +844,7 @@ class tad_DI52_Container implements ArrayAccess {
 			} else {
 				// @codeCoverageIgnoreStart
 				if (is_object($classOrInterface)) {
-					$objectId = uniqid(md5($classOrInterfaceName), true);
+					$objectId = uniqid(rand(1,9999) . md5($classOrInterfaceName));
 					$this->bind($objectId, $classOrInterface);
 					$body = "global \$__container_{$this->id};
 					\$c = \$__container_{$this->id}; return \$c->make('{$objectId}'); ";
