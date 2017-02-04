@@ -8,15 +8,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_setting_a_closure_var_on_the_container()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$closure = function ($value) {
 			return $value + 1;
 		};
 
-		$sut->setVar('foo', $sut->protect($closure));
+		$container->setVar('foo', $container->protect($closure));
 
-		$this->assertEquals($closure, $sut->getVar('foo'));
+		$this->assertEquals($closure, $container->getVar('foo'));
 	}
 
 	/**
@@ -25,15 +25,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_setting_a_closure_as_a_variable_using_the_array_access_api()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$closure = function ($value) {
 			return $value + 1;
 		};
 
-		$sut['foo'] = $sut->protect($closure);
+		$container['foo'] = $container->protect($closure);
 
-		$this->assertEquals($closure, $sut['foo']);
+		$this->assertEquals($closure, $container['foo']);
 	}
 
 	/**
@@ -42,15 +42,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_a_closure_as_implementation_of_an_interface()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind(
+		$container->bind(
 			'One', function () {
 			return new ClassOne();
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('One'));
+		$this->assertInstanceOf('ClassOne', $container->make('One'));
 	}
 
 	/**
@@ -59,20 +59,20 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_pass_the_container_as_parameter_to_the_closure_implementation()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$passedContainer = null;
 
-		$sut->bind(
+		$container->bind(
 			'One', function ($container) use (&$passedContainer) {
 			$passedContainer = $container;
 			return new ClassOne();
 		}
 		);
 
-		$sut->make('One');
+		$container->make('One');
 
-		$this->assertSame($sut, $passedContainer);
+		$this->assertSame($container, $passedContainer);
 	}
 
 	/**
@@ -81,15 +81,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_a_closure_to_a_string_slug()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind(
+		$container->bind(
 			'foo.bar', function () {
 			return 23;
 		}
 		);
 
-		$this->assertEquals(23, $sut->make('foo.bar'));
+		$this->assertEquals(23, $container->make('foo.bar'));
 	}
 
 	/**
@@ -98,16 +98,16 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_a_closure_to_an_interface_as_a_singletong()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton(
+		$container->singleton(
 			'One', function () {
 			return new ClassOne();
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('One'));
-		$this->assertSame($sut->make('One'), $sut->make('One'));
+		$this->assertInstanceOf('ClassOne', $container->make('One'));
+		$this->assertSame($container->make('One'), $container->make('One'));
 	}
 
 	/**
@@ -116,16 +116,16 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_a_closure_to_a_string_slug_as_a_singleton()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton(
+		$container->singleton(
 			'foo.one', function () {
 			return new ClassOne();
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('foo.one'));
-		$this->assertSame($sut->make('foo.one'), $sut->make('foo.one'));
+		$this->assertInstanceOf('ClassOne', $container->make('foo.one'));
+		$this->assertSame($container->make('foo.one'), $container->make('foo.one'));
 	}
 
 	public function namespacedKeysAndValues()
@@ -149,11 +149,11 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 		$key,
 		$value
 	) {
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind($key, $value);
+		$container->bind($key, $value);
 
-		$this->assertInstanceOf('\\' . ltrim($value, '\\'), $sut->make($key));
+		$this->assertInstanceOf('\\' . ltrim($value, '\\'), $container->make($key));
 	}
 
 	/**
@@ -162,9 +162,9 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_tagging_mixed_values()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->tag(
+		$container->tag(
 			array(
 				'ClassOne',
 				new ClassOneOne(),
@@ -173,7 +173,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 				}
 			), 'foo'
 		);
-		$made = $sut->tagged('foo');
+		$made = $container->tagged('foo');
 
 		$this->assertInstanceOf('ClassOne', $made[0]);
 		$this->assertInstanceOf('ClassOneOne', $made[1]);
@@ -186,9 +186,9 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_contextual_binding_of_closures()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->when('ClassSixOne')
+		$container->when('ClassSixOne')
 			->needs('ClassOne')
 			->give(
 				function ($container) {
@@ -196,7 +196,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 				}
 			);
 
-		$sut->when('ClassSevenOne')
+		$container->when('ClassSevenOne')
 			->needs('ClassOne')
 			->give(
 				function ($container) {
@@ -204,9 +204,9 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 				}
 			);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('ClassOne'));
-		$this->assertInstanceOf('ExtendingClassOneOne', $sut->make('ClassSixOne')->getOne());
-		$this->assertInstanceOf('ExtendingClassOneTwo', $sut->make('ClassSevenOne')->getOne());
+		$this->assertInstanceOf('ClassOne', $container->make('ClassOne'));
+		$this->assertInstanceOf('ExtendingClassOneOne', $container->make('ClassSixOne')->getOne());
+		$this->assertInstanceOf('ExtendingClassOneTwo', $container->make('ClassSevenOne')->getOne());
 	}
 
 	/**
@@ -215,13 +215,13 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_call_a_closure_when_bound_to_an_offset_in_array_access_api()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut['foo'] = function () {
+		$container['foo'] = function () {
 			return 'bar';
 		};
 
-		$this->assertEquals('bar', $sut['foo']);
+		$this->assertEquals('bar', $container['foo']);
 	}
 
 	/**
@@ -230,23 +230,23 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_replace_a_binding_when_re_binding()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind(
+		$container->bind(
 			'One', function ($container) {
 			return $container->make('ClassOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('One'));
+		$this->assertInstanceOf('ClassOne', $container->make('One'));
 
-		$sut->bind(
+		$container->bind(
 			'One', function ($container) {
 			return $container->make('ClassOneOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOneOne', $sut->make('One'));
+		$this->assertInstanceOf('ClassOneOne', $container->make('One'));
 	}
 
 	/**
@@ -255,24 +255,24 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton(
+		$container->singleton(
 			'One', function ($container) {
 			return $container->make('ClassOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('One'));
+		$this->assertInstanceOf('ClassOne', $container->make('One'));
 
-		$sut->bind(
+		$container->bind(
 			'One', function ($container) {
 			return $container->make('ClassOneOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOneOne', $sut->make('One'));
-		$this->assertNotSame($sut->make('One'), $sut->make('One'));
+		$this->assertInstanceOf('ClassOneOne', $container->make('One'));
+		$this->assertNotSame($container->make('One'), $container->make('One'));
 	}
 
 	/**
@@ -281,25 +281,25 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton(
+		$container->singleton(
 			'One', function ($container) {
 			return $container->make('ClassOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('One'));
-		$this->assertSame($sut->make('One'), $sut->make('One'));
+		$this->assertInstanceOf('ClassOne', $container->make('One'));
+		$this->assertSame($container->make('One'), $container->make('One'));
 
-		$sut->singleton(
+		$container->singleton(
 			'One', function ($container) {
 			return $container->make('ClassOneOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOneOne', $sut->make('One'));
-		$this->assertSame($sut->make('One'), $sut->make('One'));
+		$this->assertInstanceOf('ClassOneOne', $container->make('One'));
+		$this->assertSame($container->make('One'), $container->make('One'));
 	}
 
 	/**
@@ -308,25 +308,25 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton(
+		$container->singleton(
 			'One', function ($container) {
 			return $container->make('ClassOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut->make('One'));
-		$this->assertSame($sut->make('One'), $sut->make('One'));
+		$this->assertInstanceOf('ClassOne', $container->make('One'));
+		$this->assertSame($container->make('One'), $container->make('One'));
 
-		$sut->bind(
+		$container->bind(
 			'One', function ($container) {
 			return $container->make('ClassOneOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOneOne', $sut->make('One'));
-		$this->assertNotSame($sut->make('One'), $sut->make('One'));
+		$this->assertInstanceOf('ClassOneOne', $container->make('One'));
+		$this->assertNotSame($container->make('One'), $container->make('One'));
 	}
 
 	/**
@@ -335,15 +335,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_to_lazy_make_a_closure()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind(
+		$container->bind(
 			'foo', function ($container) {
 			return $container->make('FourBase');
 		}
 		);
 
-		$f = $sut->callback('foo', 'methodThree');
+		$f = $container->callback('foo', 'methodThree');
 
 		$this->assertEquals(28, $f(5));
 	}
@@ -356,15 +356,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$one = function ($container) {
 			return $container->make('ClassOne');
 		};
 
-		$sut->bind('One', $one);
+		$container->bind('One', $one);
 
-		$f = $sut->instance('ClassTwelve', array('One'));
+		$f = $container->instance('ClassTwelve', array('One'));
 
 		$this->assertInstanceOf('ClassOne', $f()->getVarOne());
 	}
@@ -377,15 +377,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$one = function ($container) {
 			return $container->make('ClassOne');
 		};
 
-		$sut->singleton('One', $one);
+		$container->singleton('One', $one);
 
-		$f = $sut->instance('ClassTwelve', array('One'));
+		$f = $container->instance('ClassTwelve', array('One'));
 
 		$this->assertInstanceOf('ClassOne', $f()->getVarOne());
 		$this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -399,15 +399,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$one = function ($container) {
 			return $container->make('ClassOne');
 		};
 
-		$sut->bind('foo', $one);
+		$container->bind('foo', $one);
 
-		$f = $sut->instance('ClassTwelve', array('foo'));
+		$f = $container->instance('ClassTwelve', array('foo'));
 
 		$this->assertInstanceOf('ClassOne', $f()->getVarOne());
 		$this->assertNotSame($f()->getVarOne(), $f()->getVarOne());
@@ -421,15 +421,15 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$one = function ($container) {
 			return $container->make('ClassOne');
 		};
 
-		$sut->singleton('foo', $one);
+		$container->singleton('foo', $one);
 
-		$f = $sut->instance('ClassTwelve', array('foo'));
+		$f = $container->instance('ClassTwelve', array('foo'));
 
 		$this->assertInstanceOf('ClassOne', $f()->getVarOne());
 		$this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -441,16 +441,16 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_and_getting_an_object_built_as_a_closure()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind(
+		$container->bind(
 			'One', function ($container) {
 			return $container->make('ClassOne');
 		}
 		);
 
-		$this->assertInstanceOf('ClassOne', $sut['One']);
-		$this->assertNotSame($sut['One'], $sut['One']);
+		$this->assertInstanceOf('ClassOne', $container['One']);
+		$this->assertNotSame($container['One'], $container['One']);
 	}
 
 	/**
@@ -461,9 +461,9 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassTen::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$f = $sut->instance('Acme\ClassTen', array('foo', 'baz', 'bar'));
+		$f = $container->instance('Acme\ClassTen', array('foo', 'baz', 'bar'));
 
 		$this->assertEquals(0, Acme\ClassTen::$builtTimes);
 
@@ -497,12 +497,12 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassEleven::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('Acme\One', 'Acme\ClassOne');
-		$sut->bind('Acme\Two', 'Acme\ClassTwo');
+		$container->bind('Acme\One', 'Acme\ClassOne');
+		$container->bind('Acme\Two', 'Acme\ClassTwo');
 
-		$f = $sut->instance('Acme\ClassEleven', array('Acme\ClassOne', 'Acme\Two', 'bar'));
+		$f = $container->instance('Acme\ClassEleven', array('Acme\ClassOne', 'Acme\Two', 'bar'));
 
 		$this->assertEquals(0, Acme\ClassEleven::$builtTimes);
 
@@ -539,12 +539,12 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('Acme\One', 'Acme\ClassOne');
-		$sut->bind('Acme\ClassOne', 'Acme\ClassOne');
+		$container->bind('Acme\One', 'Acme\ClassOne');
+		$container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
-		$f = $sut->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
+		$f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
 
 		$instance1 = $f();
 
@@ -560,11 +560,11 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('Acme\ClassOne', 'Acme\ClassOne');
+		$container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
-		$f = $sut->instance('Acme\ClassTwelve', array('Acme\ClassOneOne'));
+		$f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOneOne'));
 
 		$instance1 = $f();
 
@@ -580,11 +580,11 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('foo', 'Acme\ClassOne');
+		$container->bind('foo', 'Acme\ClassOne');
 
-		$f = $sut->instance('Acme\ClassTwelve', array('foo'));
+		$f = $container->instance('Acme\ClassTwelve', array('foo'));
 
 		$instance1 = $f();
 
@@ -600,11 +600,11 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton('Acme\ClassOne', 'Acme\ClassOne');
+		$container->singleton('Acme\ClassOne', 'Acme\ClassOne');
 
-		$f = $sut->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
+		$f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
 
 		$this->assertInstanceOf('Acme\ClassOne', $f()->getVarOne());
 		$this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -618,12 +618,12 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	{
 		Acme\ClassTwelve::reset();
 
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
 		$one = new Acme\ClassOne;
-		$sut->singleton('Acme\ClassOne', $one);
+		$container->singleton('Acme\ClassOne', $one);
 
-		$f = $sut->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
+		$f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
 
 		$this->assertInstanceOf('Acme\ClassOne', $f()->getVarOne());
 		$this->assertSame($one, $f()->getVarOne());
@@ -635,13 +635,13 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_an_instance_in_the_container()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('Acme\ClassOne', $sut->instance('Acme\ClassOneTwo', array('sudo-foo')));
+		$container->bind('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', array('sudo-foo')));
 
-		$this->assertInstanceOf('Acme\ClassOneTwo', $sut->make('Acme\ClassOne'));
-		$this->assertEquals('sudo-foo', $sut->make('Acme\ClassOne')->getFoo());
-		$this->assertNotSame($sut->make('Acme\ClassOne'), $sut->make('Acme\ClassOne'));
+		$this->assertInstanceOf('Acme\ClassOneTwo', $container->make('Acme\ClassOne'));
+		$this->assertEquals('sudo-foo', $container->make('Acme\ClassOne')->getFoo());
+		$this->assertNotSame($container->make('Acme\ClassOne'), $container->make('Acme\ClassOne'));
 	}
 
 	/**
@@ -650,13 +650,13 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_binding_an_instance_as_a_singleton_in_the_container()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton('Acme\ClassOne', $sut->instance('Acme\ClassOneTwo', array('sudo-foo')));
+		$container->singleton('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', array('sudo-foo')));
 
-		$this->assertInstanceOf('Acme\ClassOneTwo', $sut->make('Acme\ClassOne'));
-		$this->assertEquals('sudo-foo', $sut->make('Acme\ClassOne')->getFoo());
-		$this->assertSame($sut->make('Acme\ClassOne'), $sut->make('Acme\ClassOne'));
+		$this->assertInstanceOf('Acme\ClassOneTwo', $container->make('Acme\ClassOne'));
+		$this->assertEquals('sudo-foo', $container->make('Acme\ClassOne')->getFoo());
+		$this->assertSame($container->make('Acme\ClassOne'), $container->make('Acme\ClassOne'));
 	}
 
 	/**
@@ -665,10 +665,10 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_build_the_instance_with_the_container_if_not_specifying_arguments()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('Acme\ClassOne', 'Acme\ClassOneTwo');
-		$f = $sut->instance('Acme\ClassOne');
+		$container->bind('Acme\ClassOne', 'Acme\ClassOneTwo');
+		$f = $container->instance('Acme\ClassOne');
 
 		$this->assertInstanceOf('Acme\ClassOneTwo', $f());
 		$this->assertEquals('bar', $f()->getFoo());
@@ -681,10 +681,10 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_use_container_binding_settings_when_instancing()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->singleton('Acme\ClassOne', 'Acme\ClassOneTwo');
-		$f = $sut->instance('Acme\ClassOne');
+		$container->singleton('Acme\ClassOne', 'Acme\ClassOneTwo');
+		$f = $container->instance('Acme\ClassOne');
 
 		$this->assertInstanceOf('Acme\ClassOneTwo', $f());
 		$this->assertEquals('bar', $f()->getFoo());
@@ -697,22 +697,49 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function it_should_allow_re_binding_closuress()
 	{
-		$sut = new tad_DI52_Container();
+		$container = new tad_DI52_Container();
 
-		$sut->bind('One', function () {
+		$container->bind('One', function () {
 			return new ClassOneOne();
 		});
 
-		$firstInstance = $sut->make('ClassTwo');
+		$firstInstance = $container->make('ClassTwo');
 
 		$this->assertInstanceOf('ClassOneOne', $firstInstance->getOne());
 
-		$sut->bind('One', function () {
+		$container->bind('One', function () {
 			return new ClassOne();
 		});
 
-		$secondInstance = $sut->make('ClassTwo');
+		$secondInstance = $container->make('ClassTwo');
 
 		$this->assertInstanceOf('ClassOne', $secondInstance->getOne());
+	}
+	/**
+	 * @test
+	 * it should allow for callback to be fed to instance
+	 */
+	public function it_should_allow_for_callback_to_be_fed_to_instance() {
+		$container = new tad_DI52_Container();
+
+		$callback = $container->callback('Acme\Factory', 'build');
+
+		$instance = $container->instance($callback);
+
+		$this->assertInstanceOf('Acme\ClassOne', $instance());
+	}
+
+	/**
+	 * @test
+	 * it should allow for instance to be fed to callback
+	 */
+	public function it_should_allow_for_instance_to_be_fed_to_callback() {
+		$container = new tad_DI52_Container();
+
+		$instance = $container->instance('Acme\Factory');
+
+		$callback = $container->callback($instance, 'build');
+
+		$this->assertInstanceOf('Acme\ClassOne', $callback());
 	}
 }

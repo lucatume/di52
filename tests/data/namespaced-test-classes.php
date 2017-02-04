@@ -163,3 +163,8 @@ class ClassTwelve
 	}
 }
 
+class Factory {
+	public function build() {
+		return new ClassOne();
+	}
+}

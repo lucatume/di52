@@ -2,8 +2,8 @@ php52 = /Applications/Mamp/bin/php/php5.2.17/bin/php
 benchmarksFolder = /Users/Luca/Repos/php-dependency-injection-benchmarks
 
 test:
-	$(php52) vendor/bin/phpunit-php52
-	vendor/bin/phpunit-php52
+	$(php52) vendor/bin/phpunit-php52 -v
+	vendor/bin/phpunit-php52 -v
 
 benchmark:
 	cd $(benchmarksFolder); \

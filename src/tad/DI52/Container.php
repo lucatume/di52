@@ -121,7 +121,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 * tad_DI52_Container constructor.
 	 */
 	public function __construct() {
-		$this->id = uniqid(rand(1,9999));
+		$this->id = uniqid(rand(1, 9999));
 		$GLOBALS['__container_' . $this->id] = $this;
 	}
 
@@ -751,8 +751,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 * Returns a lambda function suitable to use as a callback; when called the function will build the implementation
 	 * bound to `$classOrInterface` and return the value of a call to `$method` method with the call arguments.
 	 *
-	 * @param string|array $classOrInterface A class or interface fully qualified name, a string slug or an array of
-	 *                                       the two type of values.
+	 * @param string $classOrInterface A class or interface fully qualified name or a string slug.
 	 * @param string $method The method that should be called on the resolved implementation with the
 	 *                                       specified array arguments.
 	 *
@@ -770,17 +769,22 @@ class tad_DI52_Container implements ArrayAccess {
 		} else {
 			$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
 			// @codeCoverageIgnoreStart
-			if (is_object($classOrInterface)) {
-				$objectId = uniqid(rand(1,9999) . md5($classOrInterfaceName));
+			if (is_object($classOrInterface) || is_callable($classOrInterface)) {
+				$objectId = uniqid(rand(1, 9999) . md5($classOrInterfaceName));
 				$this->bind($objectId, $classOrInterface);
-				$body = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $objectId . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
+				$body = '$a = func_get_args();
+					global $__container_' . $this->id . ';
+					$c = $__container_' . $this->id . ';
+					$i = $c->make(\'' . $objectId . '\');
+					return call_user_func_array(array($i, \'' . $method . '\'),$a);';
 			} else {
-				$body = '$a = func_get_args(); global $__container_' . $this->id . '; $c = $__container_' . $this->id . '; $i = $c->make(\'' . $classOrInterface . '\'); return call_user_func_array(array($i, \'' . $method . '\'),$a);';
+				$body = '$a = func_get_args();
+					global $__container_' . $this->id . ';
+					$c = $__container_' . $this->id . ';
+					$i = $c->make(\'' . $classOrInterfaceName . '\');
+					return call_user_func_array(array($i, \'' . $method . '\'),$a);';
 			}
-			$f = create_function(
-				'',
-				$body
-			);
+			$f = create_function('', $body);
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -843,31 +847,31 @@ class tad_DI52_Container implements ArrayAccess {
 				$f = di52_instanceClosure($this, $classOrInterface, $args);
 			} else {
 				// @codeCoverageIgnoreStart
-				if (is_object($classOrInterface)) {
-					$objectId = uniqid(rand(1,9999) . md5($classOrInterfaceName));
+				if (is_object($classOrInterface) || is_callable($classOrInterface)) {
+					$objectId = uniqid(rand(1, 9999) . md5($classOrInterfaceName));
 					$this->bind($objectId, $classOrInterface);
 					$body = "global \$__container_{$this->id};
-					\$c = \$__container_{$this->id}; return \$c->make('{$objectId}'); ";
+					\$c = \$__container_{$this->id};
+					return \$c->make('{$objectId}'); ";
 				} else {
 					$body = "global \$__container_{$this->id};
-                \$c = \$__container_{$this->id};
-                \$r = new ReflectionClass('{$classOrInterface}');
-                \$vars = \$c->__instanceCallbackArgs['{$instanceId}'];
-                \$constructor = \$r->getConstructor();
-                if (null === \$constructor) {
-                    return \$c->make('{$classOrInterface}');
-                }
-                \$args = array();
-                foreach (\$vars as \$var) {
-                    try {
-                        \$args[] = \$c->make(\$var);
-                    } catch (RuntimeException \$e) {
-                        \$args[] = \$var;
-                    }
-                }
-                return \$r->newInstanceArgs(\$args);";
+					\$c = \$__container_{$this->id};
+					\$r = new ReflectionClass('{$classOrInterface}');
+					\$vars = \$c->__instanceCallbackArgs['{$instanceId}'];
+					\$constructor = \$r->getConstructor();
+					if (null === \$constructor) {
+						return \$c->make('{$classOrInterface}');
+					}
+					\$args = array();
+					foreach (\$vars as \$var) {
+						try {
+							\$args[] = \$c->make(\$var);
+						} catch (RuntimeException \$e) {
+							\$args[] = \$var;
+						}
+					}
+					return \$r->newInstanceArgs(\$args);";
 				}
-
 				$f = create_function('', $body);
 				// @codeCoverageIgnoreEnd
 			}

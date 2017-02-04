@@ -482,3 +482,9 @@ class ClassTwelve
         return $this->varOne;
     }
 }
+
+class Factory {
+	public function build() {
+		return new ClassOne();
+	}
+}
