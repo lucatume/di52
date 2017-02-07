@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.3] - 2017-02-07
+### Fixed
+- support for use of `callback` to feed `instance` and viceversa
+
 ## [2.0.2] - 2017-02-02
 ### Fixed
 - support for built objects in `instance` and `callback` methods
@@ -129,7 +133,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/2.0.2...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/2.0.3...HEAD
+[2.0.3]: https://github.com/lucatume/di52/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/lucatume/di52/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/lucatume/di52/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/lucatume/di52/compare/1.4.5...2.0.0
