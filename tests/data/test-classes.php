@@ -396,11 +396,20 @@ class Factory {
 }
 
 class ClassThirteen {
+	public function doSomething() {
+		return 'IDidSomething';
+	}
 }
+
 class ClassFourteen {
 }
+
 class ClassFifteen {
 	public function __construct(One $one, ClassFourteen $fourteen) {
 
+	}
+
+	public function doSomething() {
+		return 'IDidSomething';
 	}
 }

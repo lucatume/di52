@@ -1282,4 +1282,29 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertInstanceOf('ClassFifteen', $instance());
 	}
+
+	/**
+	 * @test
+	 * it should allow registering callback callbacks on class names
+	 */
+	public function it_should_allow_registering_callback_callbacks_on_class_names() {
+		$container = new tad_DI52_Container();
+
+		$callback = $container->callback('ClassThirteen', 'doSomething');
+
+		$this->assertEquals('IDidSomething', $callback());
+	}
+
+	/**
+	 * @test
+	 * it should allow registering callback callbacks on classes with constructor arguments
+	 */
+	public function it_should_allow_registering_callback_callbacks_on_classes_with_constructor_arguments() {
+		$container = new tad_DI52_Container();
+		$container->bind('One', 'ClassOne');
+
+		$callback = $container->callback('ClassFifteen', 'doSomething');
+
+		$this->assertEquals('IDidSomething', $callback());
+	}
 }
