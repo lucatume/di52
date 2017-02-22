@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [2.0.4] - 2017-02-22
 ### Fixed
 - allow unbound classes with `__construct` method requirements to be used in `instance` callbacks
 
@@ -135,7 +137,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/2.0.3...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/2.0.4...HEAD
+[2.0.4]: https://github.com/lucatume/di52/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/lucatume/di52/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/lucatume/di52/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/lucatume/di52/compare/2.0.0...2.0.1
