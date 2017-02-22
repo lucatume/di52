@@ -45,7 +45,7 @@ function di52_instanceClosure(tad_DI52_Container $container, $classOrInterface, 
 
 		$r = new ReflectionClass($classOrInterface);
 		$constructor = $r->getConstructor();
-		if (null === $constructor) {
+		if (null === $constructor || empty($vars)) {
 			return $container->make($classOrInterface);
 		}
 		$args = array();
