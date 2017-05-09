@@ -1307,4 +1307,45 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('IDidSomething', $callback());
 	}
+
+	/**
+	 * It should return an interface argument default value if available and the interface is not bound
+	 *
+	 * @test
+	 */
+	public function it_should_return_an_interface_argument_default_value_if_available_and_the_interface_is_not_bound() {
+		$defaultValue = 'foobar';
+
+		$mockParameter = $this->getMockBuilder('ReflectionParameter')->disableOriginalConstructor()->getMock();
+		$mockParameter->expects($this->once())->method('isDefaultValueAvailable')->will($this->returnValue(TRUE));
+		$mockParameter->expects($this->once())->method('getDefaultValue')->will($this->returnValue($defaultValue));
+		$mockClass = $this->getMockBuilder('ReflectionClass')->disableOriginalConstructor()->getMock();
+		$mockClass->expects($this->once())->method('getName')->will($this->returnValue('SomeInterface'));
+		$mockClass->expects($this->once())->method('isInstantiable')->will($this->returnValue(FALSE));
+		$mockParameter->expects($this->any())->method('getClass')->will($this->returnValue($mockClass));
+
+		$container = new tad_DI52_Container();
+		$value     = $container->_getParameter($mockParameter);
+
+		$this->assertEquals($defaultValue, $value);
+	}
+
+	/**
+	 * It should throw an exception when trying to resolve unbound interface parameter with no default value
+	 *
+	 * @test
+	 */
+	public function it_should_throw_an_exception_when_trying_to_resolve_unbound_interface_parameter_with_no_default_value() {
+		$mockParameter = $this->getMockBuilder('ReflectionParameter')->disableOriginalConstructor()->getMock();
+		$mockParameter->expects($this->once())->method('isDefaultValueAvailable')->will($this->returnValue(false));
+		$mockClass = $this->getMockBuilder('ReflectionClass')->disableOriginalConstructor()->getMock();
+		$mockClass->expects($this->once())->method('getName')->will($this->returnValue('SomeInterface'));
+		$mockClass->expects($this->once())->method('isInstantiable')->will($this->returnValue(false));
+		$mockParameter->expects($this->any())->method('getClass')->will($this->returnValue($mockClass));
+
+		$this->setExpectedException('RuntimeException');
+
+		$container = new tad_DI52_Container();
+		$container->_getParameter($mockParameter);
+	}
 }
