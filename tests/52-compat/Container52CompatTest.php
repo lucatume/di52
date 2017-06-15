@@ -1348,4 +1348,19 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$container = new tad_DI52_Container();
 		$container->_getParameter($mockParameter);
 	}
+
+	/**
+	 * It should build not registered class dependencies anew each time
+	 *
+	 * @test
+	 */
+	public function it_should_build_not_registered_class_dependencies_anew_each_time() {
+		$container = new tad_DI52_Container();
+
+		$d1 = $container->make('Depending');
+		$d2 = $container->make('Depending');
+
+		$this->assertNotSame($d1,$d2);
+		$this->assertNotSame($d1->getDependency(),$d2->getDependency());
+	}
 }
