@@ -13,7 +13,10 @@ if (!function_exists('di52_findFile')) {
 if (!function_exists('di52_autoload')) {
 	function di52_autoload($class)
 	{
-		include di52_findFile($class);
+		$file = di52_findFile($class);
+		if ($file) {
+			include $file;
+		}
 	}
 }
 
