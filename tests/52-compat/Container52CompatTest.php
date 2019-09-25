@@ -1343,7 +1343,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$mockClass->expects($this->once())->method('isInstantiable')->will($this->returnValue(false));
 		$mockParameter->expects($this->any())->method('getClass')->will($this->returnValue($mockClass));
 
-		$this->setExpectedException('RuntimeException');
+		$this->setExpectedException('ReflectionException');
 
 		$container = new tad_DI52_Container();
 		$container->_getParameter($mockParameter);

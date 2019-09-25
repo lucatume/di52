@@ -313,6 +313,10 @@ class tad_DI52_Container implements ArrayAccess {
 				try {
 					$instance = $this->build($classOrInterface);
 				} catch (Exception $e) {
+					if ( $e instanceof ReflectionException ) {
+						throw $e;
+					}
+
 					throw new RuntimeException("'{$classOrInterface}' is not a bound alias or an existing class.");
 				}
 			} else {
@@ -786,7 +790,7 @@ class tad_DI52_Container implements ArrayAccess {
 
 		if (null === $class) {
 			if (!$parameter->isDefaultValueAvailable()) {
-				throw new RuntimeException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
+				throw new ReflectionException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
 			}
 			return $parameter->getDefaultValue();
 		}
@@ -795,7 +799,7 @@ class tad_DI52_Container implements ArrayAccess {
 
 		if (!$this->isBound($parameterClass) && !$parameter->getClass()->isInstantiable()) {
 			if (!$parameter->isDefaultValueAvailable()) {
-				throw new RuntimeException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
+				throw new ReflectionException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
 			}
 			return $parameter->getDefaultValue();
 		}
