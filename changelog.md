@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.0.11] - 2019-09-26
+### Changed
+- improve exception throwing to show original exceptions when the building of a bound class, interface or slug fails
+
 ## [2.0.10] - 2018-10-29
 ### Fixed
 - an issue with array variable handling
@@ -162,7 +166,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/2.0.9...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/2.0.11...HEAD
+[2.0.11]: https://github.com/lucatume/di52/compare/2.0.10...2.0.11
+[2.0.10]: https://github.com/lucatume/di52/compare/2.0.9...2.0.10
 [2.0.9]: https://github.com/lucatume/di52/compare/2.0.8...2.0.9
 [2.0.8]: https://github.com/lucatume/di52/compare/2.0.7...2.0.8
 [2.0.7]: https://github.com/lucatume/di52/compare/2.0.6...2.0.7
