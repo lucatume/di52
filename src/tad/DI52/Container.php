@@ -698,7 +698,11 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
-	public function bind($classOrInterface, $implementation, array $afterBuildMethods = null) {
+	public function bind($classOrInterface, $implementation = null, array $afterBuildMethods = null) {
+		if (is_null($implementation)) {
+			$implementation = $classOrInterface;
+		}
+		
 		$this->offsetUnset($classOrInterface);
 
 		$this->bindings[$classOrInterface] = $classOrInterface;
@@ -729,7 +733,11 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
-	public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null) {
+	public function singleton($classOrInterface, $implementation = null, array $afterBuildMethods = null) {
+		if (is_null($implementation)) {
+			$implementation = $classOrInterface;
+		}
+			
 		$this->bind($classOrInterface, $implementation, $afterBuildMethods);
 
 		$this->singletons[$classOrInterface] = $classOrInterface;
