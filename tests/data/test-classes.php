@@ -427,3 +427,9 @@ class Depending {
 		return $this->dependency;
 	}
 }
+
+abstract class AbstractClass {};
+
+class PrivateConstructor {
+	private function __construct() {}
+}

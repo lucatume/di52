@@ -697,8 +697,19 @@ class tad_DI52_Container implements ArrayAccess {
 	 *                                  an object or a closure.
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
+	 *
+	 * @throws ReflectionException      When given a class name that does not exist.
+	 * @throws InvalidArgumentException When given a class name that can not be instantiated.
 	 */
-	public function bind($classOrInterface, $implementation, array $afterBuildMethods = null) {
+	public function bind($classOrInterface, $implementation = null, array $afterBuildMethods = null) {
+		if (is_null($implementation)) {
+			$reflection = new ReflectionClass($classOrInterface);
+			if (!$reflection->isInstantiable()) {
+				throw new InvalidArgumentException( sprintf('To bind a class in the Container without defining an implementation, the class must be instantiable. %s is not instantiable.', $classOrInterface) );
+			}
+			$implementation = $classOrInterface;
+		}
+
 		$this->offsetUnset($classOrInterface);
 
 		$this->bindings[$classOrInterface] = $classOrInterface;
@@ -729,7 +740,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 */
-	public function singleton($classOrInterface, $implementation, array $afterBuildMethods = null) {
+	public function singleton($classOrInterface, $implementation = null, array $afterBuildMethods = null) {
 		$this->bind($classOrInterface, $implementation, $afterBuildMethods);
 
 		$this->singletons[$classOrInterface] = $classOrInterface;
