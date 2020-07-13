@@ -698,8 +698,8 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @param array $afterBuildMethods An array of methods that should be called on the built implementation after
 	 *                                  resolving it.
 	 *
-	 * @throws ReflectionException      When given a class name that does not exist.
-	 * @throws InvalidArgumentException When given a class name that can not be instantiated.
+	 * @throws ReflectionException      When binding a class that does not exist without defining an implementation.
+	 * @throws InvalidArgumentException When binding a class that cannot be instantiated without defining an implementation.
 	 */
 	public function bind($classOrInterface, $implementation = null, array $afterBuildMethods = null) {
 		if (is_null($implementation)) {
