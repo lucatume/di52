@@ -8,6 +8,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - support for one parameter singletong binding of concrete, instantiatable, classes, thanks @Luc45
 
+## [2.0.12] - 2019-10-14
+### Added
+- add PHPStorm make method auto-completion (thanks @Luc45)
+
 ## [2.0.11] - 2019-09-26
 ### Changed
 - improve exception throwing to show original exceptions when the building of a bound class, interface or slug fails
@@ -171,7 +175,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - the changelog.
 
 [Unreleased]: https://github.com/lucatume/di52/compare/2.1.0...HEAD
-[2.1.0]: https://github.com/lucatume/di52/compare/2.0.11...2.1.0
+[2.1.0]: https://github.com/lucatume/di52/compare/2.0.12...2.1.0
+[2.0.12]: https://github.com/lucatume/di52/compare/2.0.11...2.0.12
 [2.0.11]: https://github.com/lucatume/di52/compare/2.0.10...2.0.11
 [2.0.10]: https://github.com/lucatume/di52/compare/2.0.9...2.0.10
 [2.0.9]: https://github.com/lucatume/di52/compare/2.0.8...2.0.9
