@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [2.1.0] - 2020-07-14
+### Added
+- support for one parameter singletong binding of concrete, instantiatable, classes, thanks @Luc45
+
 ## [2.0.11] - 2019-09-26
 ### Changed
 - improve exception throwing to show original exceptions when the building of a bound class, interface or slug fails
@@ -166,7 +170,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - array resolution support for the Array Access API.
 - the changelog.
 
-[Unreleased]: https://github.com/lucatume/di52/compare/2.0.11...HEAD
+[Unreleased]: https://github.com/lucatume/di52/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/lucatume/di52/compare/2.0.11...2.1.0
 [2.0.11]: https://github.com/lucatume/di52/compare/2.0.10...2.0.11
 [2.0.10]: https://github.com/lucatume/di52/compare/2.0.9...2.0.10
 [2.0.9]: https://github.com/lucatume/di52/compare/2.0.8...2.0.9

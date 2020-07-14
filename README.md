@@ -229,7 +229,7 @@ When using the `bind` method a new instance of the bound implementations will be
 $container = new tad_DI52_Container();
 
 $container->singleton('DBDriverInterface', 'MYSqlDriver');
-$container->singleton('RepositoryInterface', 'MYSQLRepository')
+$container->singleton('RepositoryInterface', 'MYSQLRepository');
 
 $container->make('RepositoryInterface');
 ```
@@ -246,12 +246,12 @@ $container = new tad_DI52_Container();
 // a globally stored instance of the database handling class
 global $db;
 
-$container->bind('DBInterface', $db)
+$container->bind('DBInterface', $db);
 
 // binding an object that's built using a factory 
 $container->bind('RepositoryInterface', RepositoryFactory::make('post'));
 
-if($foo) {
+if($condition) {
     $handler = new HandlerOne();
 } else {
     $handler = new HandlerTwo();
@@ -274,7 +274,7 @@ $container->bind('RepositoryInterface', function(){
 
 // binding an object that's built in some other way
 $container->singleton('HandlerInterface', function(){
-    if($foo) {
+    if($condition) {
         $handler = new HandlerOne();
     } else {
         $handler = new HandlerTwo();
@@ -315,6 +315,25 @@ $container->bind('ClassTwo', 'ModernClassTwo');
 $container->make('LegacyClass');
 ```
 
+### Registering concrete instantiable classes as singleton
+The container knows how to `make` instances of a concrete, instantiatable class, and there might be situations where
+the requirement is to have `make` return the same singleton instance of a class on each call.  
+
+In those situations the binding syntax can be shortened to one parameter in place of two:
+
+```php
+// I want the `ClassOne` instance returned by the container to be the same every time.
+
+// app bootstrap file
+$container = new tad_DI52_Container();
+
+// This is the short syntax to instruct the container to bind `ClassOne` as a singleton.
+// This is the short form of this: $container->singleton(ClassOne::class, ClassOne::class);
+$container->singleton(ClassOne::class);
+
+assert($container->make(ClassOne::class) === $container->make(ClassOne::class));
+```
+
 ## Binding implementations to slugs
 The container was heavily inspired by [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") and offers some features of the PHP 5.3+ DI container as well:
 
@@ -334,7 +353,7 @@ $dbConnection = $container['db.connection'];
 
 // storing a closure as a var
 $container['uniqid'] = $container->protect(function(){
-    return uniqid(rand(1, 99999));
+    return uniqid('id', true);
 });
 
 // storing vars
@@ -345,7 +364,7 @@ $container['db.host'] = 'localhost';
 
 // getting vars
 $dbName = $container['db.name'];
-$dbName = $container['db.user'];
+$dbUser = $container['db.user'];
 $dbPass = $container['db.pass'];
 $dbHost = $container['db.host'];
 ```
