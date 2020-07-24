@@ -315,6 +315,8 @@ class tad_DI52_Container implements ArrayAccess {
 				} catch (Exception $e) {
 					if ( $e instanceof ReflectionException ) {
 						throw $e;
+					} elseif ( $e instanceof RuntimeException ) {
+						throw $e;
 					}
 
 					throw new RuntimeException("'{$classOrInterface}' is not a bound alias or an existing class.");
