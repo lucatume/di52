@@ -763,6 +763,16 @@ class tad_DI52_Container implements ArrayAccess {
 			throw new RuntimeException('Callback method must be a string');
 		}
 
+		$classOrInterfaceName = $classOrInterface;
+
+		if (is_object($classOrInterface)) {
+			// Set the name based on the class name.
+			$classOrInterfaceName = get_class($classOrInterface);
+		} elseif (isset($this->callbacks[$classOrInterfaceName . '::' . $method])) {
+			// Only return the existing callback if $classOrInterface was not an object (so it remains unique).
+			return $this->callbacks[$classOrInterfaceName . '::' . $method];
+		}
+
 		if ($this->useClosures) {
 			$f = di52_callbackClosure($this, $classOrInterface, $method);
 		} else {
@@ -791,7 +801,7 @@ class tad_DI52_Container implements ArrayAccess {
 			$classOrInterface = get_class($classOrInterface);
 		}
 
-		$this->callbacks[$classOrInterface . '::' . $method] = $f;
+		$this->callbacks[$classOrInterfaceName . '::' . $method] = $f;
 
 		return $f;
 	}
