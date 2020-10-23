@@ -750,9 +750,9 @@ class tad_DI52_Container implements ArrayAccess {
 	 * Returns a lambda function suitable to use as a callback; when called the function will build the implementation
 	 * bound to `$classOrInterface` and return the value of a call to `$method` method with the call arguments.
 	 *
-	 * @param string $classOrInterface A class or interface fully qualified name or a string slug.
-	 * @param string $method The method that should be called on the resolved implementation with the
-	 *                                       specified array arguments.
+	 * @param string|object $classOrInterface A class or interface fully qualified name or a string slug.
+	 * @param string        $method           The method that should be called on the resolved implementation with the
+	 *                                        specified array arguments.
 	 *
 	 * @return mixed The called method return value.
 	 */
@@ -763,14 +763,12 @@ class tad_DI52_Container implements ArrayAccess {
 			throw new RuntimeException('Callback method must be a string');
 		}
 
-		$classOrInterfaceName = $classOrInterface;
+		$classOrInterfaceName = is_object($classOrInterface) ? spl_object_hash($classOrInterface) : $classOrInterface;
+		$cacheKey = $classOrInterfaceName . '::' . $method;
 
-		if (is_object($classOrInterface)) {
-			// Set the name based on the class name.
-			$classOrInterfaceName = get_class($classOrInterface);
-		} elseif (isset($this->callbacks[$classOrInterfaceName . '::' . $method])) {
+		if ( isset( $this->callbacks[ $cacheKey ] ) ) {
 			// Only return the existing callback if $classOrInterface was not an object (so it remains unique).
-			return $this->callbacks[$classOrInterfaceName . '::' . $method];
+			return $this->callbacks[ $cacheKey ];
 		}
 
 		if ($this->useClosures) {
@@ -797,11 +795,7 @@ class tad_DI52_Container implements ArrayAccess {
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (is_object($classOrInterface)) {
-			$classOrInterface = get_class($classOrInterface);
-		}
-
-		$this->callbacks[$classOrInterfaceName . '::' . $method] = $f;
+		$this->callbacks[ $cacheKey ] = $f;
 
 		return $f;
 	}
