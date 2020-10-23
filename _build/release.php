@@ -34,7 +34,12 @@ $root = dirname(__DIR__);
 
 require_once $root . '/vendor/autoload.php';
 
-$changelogFile = $root . '/CHANGELOG.md';
+$changelogFile = file_exists($root . '/CHANGELOG.md') ?  $root . '/CHANGELOG.md' : $root . '/changelog.md';
+
+if ( ! file_exists( $changelogFile ) ) {
+	echo "\e[31mChangelog file (CHANGELOG.md, changelog.md) does not exist.\e[0m\n";
+	exit( 1 );
+}
 
 function args()
 {
