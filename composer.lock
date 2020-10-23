@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "21d2d1cfe07d9e4e835907431fc9c87e",
@@ -295,7 +295,7 @@
             "include-path": [
                 ""
             ],
-            "time": "2014-10-02T16:51:34+00:00"
+            "time": "2014-10-02T18:21:59+00:00"
         },
         {
             "name": "phpunit/phpunit-php52",
@@ -303,7 +303,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/garex/phpunit",
-                "reference": "d04728c2cf1208d7f94957efba350e9c5d492f9d"
+                "reference": "96cd6cf307d82a4458f0c0bf8fb695d21b1a6072"
             },
             "require": {
                 "ext-dom": "*",
@@ -343,39 +343,155 @@
                     "xrstf\\Composer52\\Generator::onPostInstallCmd"
                 ]
             },
-            "time": "2015-10-20T11:09:30+00:00"
+            "time": "2019-06-23T16:06:23+00:00"
         },
         {
-            "name": "symfony/yaml",
-            "version": "3.4.x-dev",
+            "name": "symfony/deprecation-contracts",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/yaml.git",
-                "reference": "eaa08afe947cb5affdf2b5fd39e7de92bd96c872"
+                "url": "https://github.com/symfony/deprecation-contracts.git",
+                "reference": "be5a36670fd7ccb6f6e03d9c9bd7345e2a9a8515"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/eaa08afe947cb5affdf2b5fd39e7de92bd96c872",
-                "reference": "eaa08afe947cb5affdf2b5fd39e7de92bd96c872",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/be5a36670fd7ccb6f6e03d9c9bd7345e2a9a8515",
+                "reference": "be5a36670fd7ccb6f6e03d9c9bd7345e2a9a8515",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.5.9|>=7.0.8"
+                "php": ">=7.1"
             },
-            "conflict": {
-                "symfony/console": "<3.4"
+            "type": "library",
+            "extra": {
+                "branch-version": "2.3",
+                "branch-alias": {
+                    "dev-main": "2.3-dev"
+                },
+                "thanks": {
+                    "name": "symfony/contracts",
+                    "url": "https://github.com/symfony/contracts"
+                }
             },
-            "require-dev": {
-                "symfony/console": "~3.4|~4.0"
+            "autoload": {
+                "files": [
+                    "function.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "A generic function and convention to trigger deprecation notices",
+            "homepage": "https://symfony.com",
+            "time": "2020-10-14T17:08:19+00:00"
+        },
+        {
+            "name": "symfony/polyfill-ctype",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-ctype.git",
+                "reference": "325e20642232b66e3f140a76f795b58b50a08787"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/325e20642232b66e3f140a76f795b58b50a08787",
+                "reference": "325e20642232b66e3f140a76f795b58b50a08787",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
             },
             "suggest": {
-                "symfony/console": "For validating YAML files using the lint command"
+                "ext-ctype": "For best performance"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.4-dev"
+                    "dev-main": "1.19-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
                 }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gert de Pagter",
+                    "email": "BackEndTea@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for ctype functions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "ctype",
+                "polyfill",
+                "portable"
+            ],
+            "time": "2020-10-21T09:57:48+00:00"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "5.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "28ab1c87ffd653dc77e84581fed890c65dcafc19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/28ab1c87ffd653dc77e84581fed890c65dcafc19",
+                "reference": "28ab1c87ffd653dc77e84581fed890c65dcafc19",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/deprecation-contracts": "^2.1",
+                "symfony/polyfill-ctype": "~1.8"
+            },
+            "conflict": {
+                "symfony/console": "<4.4"
+            },
+            "require-dev": {
+                "symfony/console": "^4.4|^5.0"
+            },
+            "suggest": {
+                "symfony/console": "For validating YAML files using the lint command"
+            },
+            "bin": [
+                "Resources/bin/yaml-lint"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-version": "5.2"
             },
             "autoload": {
                 "psr-4": {
@@ -401,7 +517,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-09-25T19:23:20+00:00"
+            "time": "2020-10-14T17:08:19+00:00"
         }
     ],
     "aliases": [],
