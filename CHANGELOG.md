@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.1.1] 2020-10-23;
+
 ### Added
 - new build tools to the repository
 ### Changed
