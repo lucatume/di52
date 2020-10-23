@@ -115,11 +115,12 @@ function changelog($changelog)
 	return [ 'notes' => trim( $notes ), 'latestVersion' => $latestVersion ];
 }
 
-function updateChangelog($changelog, $version, callable $args, $date = null)
+function updateChangelog($changelogFile, $version, callable $args, $date = null)
 {
     $date = $date === null ? date('Y-m-d') : $date;
     $changelogVersionLine = sprintf("\n\n## [%s] %s;", $version, $date);
-    $currentContents = file_get_contents($changelog);
+    $changelogFileName = basename($changelogFile);
+    $currentContents = file_get_contents($changelogFile);
     $entryLine = '## [unreleased] Unreleased';
 	if ( strpos( $currentContents, $entryLine ) === false ) {
 		$message = 'Unreleased entry line not found; does the changelog file contain an entry like "' . $entryLine . '"?';
@@ -146,8 +147,8 @@ function updateChangelog($changelog, $version, callable $args, $date = null)
             || confirm("Would you like to proceed?")
         )
     ) {
-        file_put_contents($changelog, $changelogContents);
-        passthru('git commit -m "doc(CHANGELOG.md) update to version ' . $version . '" -- ' . $changelog);
+        file_put_contents($changelogFile, $changelogContents);
+        passthru('git commit -m "doc(' . $changelogFileName . '.md) update to version ' . $version . '" -- ' . $changelogFile);
     }
 }
 
