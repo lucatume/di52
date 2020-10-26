@@ -1,7 +1,7 @@
 <?php
 
 
-class autoloadTest extends PHPUnit_Framework_TestCase
+class autoloadTest extends \PHPUnit\Framework\TestCase
 {
 
 	public function projectClasses()

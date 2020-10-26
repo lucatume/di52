@@ -1,6 +1,6 @@
 <?php
 
-class Container53CompatTest extends \PHPUnit_Framework_TestCase
+class Container53CompatTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * @test
@@ -775,7 +775,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 
 	/** @test */
 	public function it_should_throw_if_binding_string_with_one_parameter() {
-		$this->setExpectedException(ReflectionException::class);
+		$this->expectException(ReflectionException::class);
 
 		$container = new tad_DI52_Container();
 
@@ -784,7 +784,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 
 	/** @test */
 	public function it_should_throw_if_binding_interface_with_one_parameter() {
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 
 		$container = new tad_DI52_Container();
 
@@ -793,7 +793,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 
 	/** @test */
 	public function it_should_throw_if_binding_abstract_with_one_parameter() {
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 
 		$container = new tad_DI52_Container();
 
@@ -802,7 +802,7 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 
 	/** @test */
 	public function it_should_throw_if_binding_private_constructor_with_one_parameter() {
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 
 		$container = new tad_DI52_Container();
 

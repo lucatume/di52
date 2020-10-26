@@ -20,7 +20,7 @@ class TestObject {
 	}
 }
 
-class Container52CompatTest extends PHPUnit_Framework_TestCase {
+class Container52CompatTest extends \PHPUnit\Framework\TestCase {
 
 	public function boundVariables() {
 		return array(
@@ -31,7 +31,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function setUp() {
+	protected function setUp(): void {
 		ClassEight::reset();
 	}
 
@@ -78,7 +78,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	public function it_should_return_throw_when_using_array_access_api_to_get_non_set_var() {
 		$container = new tad_DI52_Container();
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$this->assertNull($container['foo']);
 	}
@@ -180,7 +180,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	 * it should throw if trying to resolve class with unbound interface dependency
 	 */
 	public function it_should_throw_if_trying_to_resolve_class_with_unbound_interface_dependency() {
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$container = new tad_DI52_Container();
 
@@ -251,7 +251,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	public function it_should_throw_if_trying_to_resolve_class_with_non_type_hinted_dependency_without_default() {
 		$container = new tad_DI52_Container();
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$container->make('ClassFour');
 	}
@@ -419,7 +419,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	public function it_should_throw_if_trying_to_resolve_non_existing_tag() {
 		$container = new tad_DI52_Container();
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$container->tagged('foo');
 	}
@@ -472,7 +472,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	public function it_should_throw_if_deferred_provider_is_not_providing_anything() {
 		$container = new tad_DI52_Container();
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$container->register('DeferredProviderOne');
 	}
@@ -621,7 +621,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	public function it_should_throw_when_trying_to_make_non_existing_class() {
 		$container = new tad_DI52_Container();
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$container->make('SomeNonExistingClass');
 	}
@@ -872,7 +872,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	public function it_should_throw_if_trying_to_lazy_make_a_non_string_method() {
 		$container = new tad_DI52_Container();
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException('RuntimeException');
 
 		$container->callback('foo', 23);
 	}
@@ -1363,7 +1363,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$mockClass->expects($this->once())->method('isInstantiable')->will($this->returnValue(false));
 		$mockParameter->expects($this->any())->method('getClass')->will($this->returnValue($mockClass));
 
-		$this->setExpectedException('ReflectionException');
+		$this->expectException('ReflectionException');
 
 		$container = new tad_DI52_Container();
 		$container->_getParameter($mockParameter);
