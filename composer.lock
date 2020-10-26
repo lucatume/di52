@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "354367b1512712a7e0d54ddddd526004",
+    "content-hash": "7794bf8025be95fb38db6c01621de63f",
     "packages": [],
     "packages-dev": [
         {
@@ -501,12 +501,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "d66c113380fb0103d008b674ac764406222baba3"
+                "reference": "ed363c3ce393560a1c300dce0298bbf0f0528b13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/d66c113380fb0103d008b674ac764406222baba3",
-                "reference": "d66c113380fb0103d008b674ac764406222baba3",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ed363c3ce393560a1c300dce0298bbf0f0528b13",
+                "reference": "ed363c3ce393560a1c300dce0298bbf0f0528b13",
                 "shasum": ""
             },
             "require": {
@@ -566,7 +566,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-26T13:02:44+00:00"
+            "time": "2020-10-26T15:46:21+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1053,12 +1053,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "96a2b5bf851229941bab577808ed504567473a8d"
+                "reference": "55f4261989e546dc112258c7a75935a81a7ce382"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/96a2b5bf851229941bab577808ed504567473a8d",
-                "reference": "96a2b5bf851229941bab577808ed504567473a8d",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/55f4261989e546dc112258c7a75935a81a7ce382",
+                "reference": "55f4261989e546dc112258c7a75935a81a7ce382",
                 "shasum": ""
             },
             "require": {
@@ -1115,7 +1115,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-26T12:56:14+00:00"
+            "time": "2020-10-26T15:49:45+00:00"
         },
         {
             "name": "sebastian/complexity",
@@ -1123,12 +1123,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/complexity.git",
-                "reference": "801ae8f31f531893bcd6284cbc8a7128e38aa52a"
+                "reference": "739b35e53379900cc9ac327b2147867b8b6efd88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/complexity/zipball/801ae8f31f531893bcd6284cbc8a7128e38aa52a",
-                "reference": "801ae8f31f531893bcd6284cbc8a7128e38aa52a",
+                "url": "https://api.github.com/repos/sebastianbergmann/complexity/zipball/739b35e53379900cc9ac327b2147867b8b6efd88",
+                "reference": "739b35e53379900cc9ac327b2147867b8b6efd88",
                 "shasum": ""
             },
             "require": {
@@ -1168,7 +1168,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-26T12:57:03+00:00"
+            "time": "2020-10-26T15:52:27+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -1370,12 +1370,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "4a27e5a0950b5e051efafa2209745bba3f4da549"
+                "reference": "a90ccbddffa067b51f574dea6eb25d5680839455"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/4a27e5a0950b5e051efafa2209745bba3f4da549",
-                "reference": "4a27e5a0950b5e051efafa2209745bba3f4da549",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/a90ccbddffa067b51f574dea6eb25d5680839455",
+                "reference": "a90ccbddffa067b51f574dea6eb25d5680839455",
                 "shasum": ""
             },
             "require": {
@@ -1422,7 +1422,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-26T13:00:17+00:00"
+            "time": "2020-10-26T15:55:19+00:00"
         },
         {
             "name": "sebastian/lines-of-code",
@@ -1794,22 +1794,22 @@
         },
         {
             "name": "spatie/phpunit-snapshot-assertions",
-            "version": "dev-master",
+            "version": "4.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/phpunit-snapshot-assertions.git",
-                "reference": "95238b290c8975fbd5326adb52ab64950f004273"
+                "reference": "869122de0d42746f041571137684028a9d2fd3e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/phpunit-snapshot-assertions/zipball/95238b290c8975fbd5326adb52ab64950f004273",
-                "reference": "95238b290c8975fbd5326adb52ab64950f004273",
+                "url": "https://api.github.com/repos/spatie/phpunit-snapshot-assertions/zipball/869122de0d42746f041571137684028a9d2fd3e0",
+                "reference": "869122de0d42746f041571137684028a9d2fd3e0",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-json": "*",
-                "php": "^7.4|^8.0",
+                "php": "^7.4",
                 "phpunit/phpunit": "^8.3|^9.0",
                 "symfony/property-access": "^4.0|^5.0",
                 "symfony/serializer": "^4.0|^5.0",
@@ -1852,7 +1852,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2020-10-12T09:03:42+00:00"
+            "time": "2020-06-01T08:11:06+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -2824,9 +2824,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "spatie/phpunit-snapshot-assertions": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
