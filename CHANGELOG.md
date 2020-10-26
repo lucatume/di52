@@ -2,7 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [unreleased] Unreleased
+
+## [2.1.1] 2020-10-23;
+
+### Added
+- new build tools to the repository
+### Changed
+- refactor `Container::callback` code to re-use callbacks when available (thanks @sc0ttkclark)
+### Fixed
+- fix an issue where the Closure produced by the `callback` method would build the object for static method calls
 
 ## [2.1.0] - 2020-07-14
 ### Added
