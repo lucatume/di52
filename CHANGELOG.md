@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+- PHP 5.3 and 7.4 incompatibility issues
+### Changed
+- moved the builds to GitHub Actions
+
 ## [2.1.1] 2020-10-23;
 
 ### Added
