@@ -19,7 +19,8 @@ function di52_callbackClosure(tad_DI52_Container $container, $classOrInterface, 
 
 	$isStatic = false;
 	try {
-		$isStatic = ( new ReflectionMethod( $classOrInterface, $method ) )->isStatic();
+		$reflectionMethod = new ReflectionMethod($classOrInterface, $method);
+		$isStatic = $reflectionMethod->isStatic();
 	} catch ( ReflectionException $e ) {
 		// no-op
 	}
