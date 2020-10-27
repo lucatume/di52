@@ -24,6 +24,6 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
       - name: Install dependencies
-        run: composer install --prefer-dist
+        run: composer install
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit-php52
