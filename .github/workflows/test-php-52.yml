@@ -1,0 +1,17 @@
+name: PHP 5.2
+on: push
+jobs:
+  test:
+    name: PHPUnit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Composer dependencies
+        run: composer install
+      - name: Pull tommylau/php-5.2
+        run: docker pull tommylau/php-5.2
+      - name: Build custom PHP 5.2 image
+        run: docker build ./_build/containers/php-52 --tag di52/php-52:latest
+      - name: Run PHPUnit tests
+        run: docker run --rm -v ${GITHUB_WORKSPACE}:/project di52/php-52
