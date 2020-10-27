@@ -4,6 +4,7 @@ $autoloadFile = dirname(dirname(__FILE__)) . '/vendor/autoload_52.php';
 if(!is_file($autoloadFile)){
 	$autoloadFile = dirname(dirname(__FILE__)) . '/vendor/autoload.php';
 }
+
 require_once $autoloadFile;
 
 require_once dirname(__FILE__) . '/data/test-classes.php';
