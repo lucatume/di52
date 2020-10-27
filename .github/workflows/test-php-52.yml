@@ -8,7 +8,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install Composer dependencies
-        run: echo ${PWD} && ls -la && composer install
+        run: composer install
       - name: Pull tommylau/php-5.2
         run: docker pull tommylau/php-5.2
       - name: Build custom PHP 5.2 image
