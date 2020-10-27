@@ -1,5 +1,4 @@
 language: php
-
 php:
   - '5.2'
     dist: precise
@@ -14,13 +13,10 @@ php:
   - '7.1'
   - '7.2'
   - '7.3'
-
 before_install:
   - composer update
-
 script:
   - ./vendor/bin/phpunit-php52 --version
   - ./vendor/bin/phpunit-php52
-
 notifications:
-  email: false 
+  email: false
