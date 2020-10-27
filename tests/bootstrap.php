@@ -1,7 +1,7 @@
 <?php
 $autoloadFile = dirname(dirname(__FILE__)) . '/vendor/autoload_52.php';
 
-if(!is_file($autoloadFile)){
+if(!file_exists($autoloadFile)){
 	$autoloadFile = dirname(dirname(__FILE__)) . '/vendor/autoload.php';
 }
 
