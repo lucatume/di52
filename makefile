@@ -2,7 +2,12 @@ php52 = /Applications/Mamp/bin/php/php5.2.17/bin/php
 benchmarksFolder = /Users/Luca/Repos/php-dependency-injection-benchmarks
 
 test:
-	$(php52) vendor/bin/phpunit-php52 -v
+	docker run --rm \
+		-v "${CURDIR}:/project" \
+		--entrypoint /project/vendor/bin/phpunit-php52 \
+		tommylau/php-5.2 \
+		--bootstrap	/project/tests/bootstrap.php \
+		/project/tests/52-compat
 	vendor/bin/phpunit-php52 -v
 
 benchmark:
