@@ -28,6 +28,6 @@ jobs:
       - name: Install dependencies
         run: composer update
       - name: Swap the autoload file
-        run: rm -f vendor/bin/autoload_52.php; cp vendor/bin/autoload.php vendor/bin/autoload_52.php
+        run: rm -f vendor/autoload_52.php; cp vendor/autoload.php vendor/autoload_52.php
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit-php52
