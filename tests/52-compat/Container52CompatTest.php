@@ -3,7 +3,7 @@
 class TestObject {
 	protected $num;
 
-	public function __construct( $num ) {
+	public function __construct( $num = 123 ) {
 		$this->num = $num;
 	}
 
