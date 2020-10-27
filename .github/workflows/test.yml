@@ -27,5 +27,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
       - name: Install dependencies
         run: composer update
+      - name: Swap the autoload file
+        run: rm -f vendor/bin/autoload_52.php; cp vendor/bin/autoload.php vendor/bin/autoload_52.php
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit-php52
