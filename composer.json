@@ -16,6 +16,11 @@
     }
   },
   "minimum-stability": "dev",
+  "config": {
+    "platform": {
+      "php": "5.2.17"
+    }
+  },
   "require": {
     "php": ">=5.2",
     "xrstf/composer-php52": "1.*"
