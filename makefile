@@ -18,3 +18,10 @@ benchmark6:
 cover:
 	vendor/bin/phpunit-php52 --coverage-html ./tests/coverage tests
 	open ./tests/coverage/index.html
+
+lint_53:
+	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/closuresSupport.php
+	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/Container.php
+	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/ContainerInterface.php
+	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/ProtectedValue.php
+	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/ServiceProviderInterface.php
