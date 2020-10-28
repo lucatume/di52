@@ -1445,4 +1445,51 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('static two',$callback3());
 		$this->assertEquals('static two',$callback4());
 	}
+
+	/**
+	 * It should allow running a snapshot test
+	 *
+	 * @test
+	 */
+	public function should_allow_running_a_snapshot_test() {
+		assertMatchesSnapshots('Hello Luca');
+		assertMatchesSnapshots('Hello Me');
+		assertMatchesSnapshots('Hello You');
+	}
+
+	public function numeric_names() {
+		return array(
+			array( 'luca' ),
+			array( 'jane' ),
+		);
+	}
+
+	/**
+	 * It should allow running a snapshot test with numeric data providers
+	 *
+	 * @test
+	 * @dataProvider numeric_names
+	 */
+	public function should_allow_running_a_snapshot_test_with_data_providers( $name ) {
+		assertMatchesSnapshots( "Hello {$name}" );
+		assertMatchesSnapshots( "Hi {$name}" );
+	}
+
+	public function names() {
+		return array(
+			'luca' => array( 'luca' ),
+			'jane' => array( 'jane' ),
+		);
+	}
+
+	/**
+	 * It should allow running a snapshot test with named datasets
+	 *
+	 * @test
+	 * @dataProvider names
+	 */
+	public function should_allow_running_a_snapshot_test_with_named_datasets($name) {
+		assertMatchesSnapshots( "Hello {$name}" );
+		assertMatchesSnapshots( "Hi {$name}" );
+	}
 }
