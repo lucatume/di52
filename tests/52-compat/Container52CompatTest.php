@@ -1537,7 +1537,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function should_throw_correct_exception_when_making_class_with_private_constructor() {
+	public function should_throw_correct_exception_when_making_class_with_private_constructor_as_a_dependency() {
 		$container = new tad_DI52_Container();
 		try {
 			$container->make( Clutch::class );
