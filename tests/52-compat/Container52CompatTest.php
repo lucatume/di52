@@ -3,7 +3,7 @@
 class TestObject {
 	protected $num;
 
-	public function __construct( $num ) {
+	public function __construct( $num = 123 ) {
 		$this->num = $num;
 	}
 
@@ -18,6 +18,16 @@ class TestObject {
 	public static function staticTwo() {
 		return 'static two';
 	}
+
+	public static function staticThree( $param1 ) {
+		return 'static two';
+	}
+}
+
+interface TestInterface{
+	public static function apiMethodOne( $param1 = 23 );
+
+	public function apiMethodTwo( $param1 );
 }
 
 class Container52CompatTest extends PHPUnit_Framework_TestCase {
@@ -1334,20 +1344,14 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function it_should_return_an_interface_argument_default_value_if_available_and_the_interface_is_not_bound() {
-		$defaultValue = 'foobar';
-
-		$mockParameter = $this->getMockBuilder('ReflectionParameter')->disableOriginalConstructor()->getMock();
-		$mockParameter->expects($this->once())->method('isDefaultValueAvailable')->will($this->returnValue(TRUE));
-		$mockParameter->expects($this->once())->method('getDefaultValue')->will($this->returnValue($defaultValue));
-		$mockClass = $this->getMockBuilder('ReflectionClass')->disableOriginalConstructor()->getMock();
-		$mockClass->expects($this->once())->method('getName')->will($this->returnValue('SomeInterface'));
-		$mockClass->expects($this->once())->method('isInstantiable')->will($this->returnValue(FALSE));
-		$mockParameter->expects($this->any())->method('getClass')->will($this->returnValue($mockClass));
+		$reflectionMethod = new ReflectionMethod('TestInterface','apiMethodOne');
+		$params = $reflectionMethod->getParameters();
+		$reflectionParameter = reset($params);
 
 		$container = new tad_DI52_Container();
-		$value     = $container->_getParameter($mockParameter);
+		$value     = $container->_getParameter($reflectionParameter);
 
-		$this->assertEquals($defaultValue, $value);
+		$this->assertEquals(23, $value);
 	}
 
 	/**
@@ -1356,17 +1360,14 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function it_should_throw_an_exception_when_trying_to_resolve_unbound_interface_parameter_with_no_default_value() {
-		$mockParameter = $this->getMockBuilder('ReflectionParameter')->disableOriginalConstructor()->getMock();
-		$mockParameter->expects($this->once())->method('isDefaultValueAvailable')->will($this->returnValue(false));
-		$mockClass = $this->getMockBuilder('ReflectionClass')->disableOriginalConstructor()->getMock();
-		$mockClass->expects($this->once())->method('getName')->will($this->returnValue('SomeInterface'));
-		$mockClass->expects($this->once())->method('isInstantiable')->will($this->returnValue(false));
-		$mockParameter->expects($this->any())->method('getClass')->will($this->returnValue($mockClass));
+		$reflectionMethod = new ReflectionMethod('TestInterface','apiMethodTwo');
+		$params = $reflectionMethod->getParameters();
+		$reflectionParameter = reset($params);
 
 		$this->setExpectedException('ReflectionException');
 
 		$container = new tad_DI52_Container();
-		$container->_getParameter($mockParameter);
+		$container->_getParameter($reflectionParameter);
 	}
 
 	/**
@@ -1443,5 +1444,52 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('static one',$callback2());
 		$this->assertEquals('static two',$callback3());
 		$this->assertEquals('static two',$callback4());
+	}
+
+	/**
+	 * It should allow running a snapshot test
+	 *
+	 * @test
+	 */
+	public function should_allow_running_a_snapshot_test() {
+		assertMatchesSnapshots('Hello Luca');
+		assertMatchesSnapshots('Hello Me');
+		assertMatchesSnapshots('Hello You');
+	}
+
+	public function numeric_names() {
+		return array(
+			array( 'luca' ),
+			array( 'jane' ),
+		);
+	}
+
+	/**
+	 * It should allow running a snapshot test with numeric data providers
+	 *
+	 * @test
+	 * @dataProvider numeric_names
+	 */
+	public function should_allow_running_a_snapshot_test_with_data_providers( $name ) {
+		assertMatchesSnapshots( "Hello {$name}" );
+		assertMatchesSnapshots( "Hi {$name}" );
+	}
+
+	public function names() {
+		return array(
+			'luca' => array( 'luca' ),
+			'jane' => array( 'jane' ),
+		);
+	}
+
+	/**
+	 * It should allow running a snapshot test with named datasets
+	 *
+	 * @test
+	 * @dataProvider names
+	 */
+	public function should_allow_running_a_snapshot_test_with_named_datasets($name) {
+		assertMatchesSnapshots( "Hello {$name}" );
+		assertMatchesSnapshots( "Hi {$name}" );
 	}
 }

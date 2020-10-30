@@ -1,0 +1,33 @@
+name: PHP 5.2+
+on: push
+jobs:
+  test:
+    name: PHPUnit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ["5.3","5.4","5.5","5.6","7.0","7.1","7.2","7.3","7.4"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.php}}
+      - name: Swap composer.json file
+        run: rm composer.json; mv composer-5-3-plus.json composer.json
+      - name: Get Composer cache directory
+        id: composercache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composercache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install dependencies
+        run: composer update
+      - name: Swap the autoload file
+        run: rm -f vendor/autoload_52.php; cp vendor/autoload.php vendor/autoload_52.php
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit-php52

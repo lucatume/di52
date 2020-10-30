@@ -750,11 +750,11 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	public function it_should_allow_to_bind_with_one_parameter() {
 		$container = new tad_DI52_Container();
 
-		$container->bind(ClassFourteen::class);
+		$container->bind('ClassFourteen');
 
-		$instance = $container->make(ClassFourteen::class);
+		$instance = $container->make('ClassFourteen');
 
-		$this->assertInstanceOf(ClassFourteen::class, $instance);
+		$this->assertInstanceOf('ClassFourteen', $instance);
 	}
 
 	/**
@@ -764,18 +764,18 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	public function it_should_allow_to_bind_singleton_with_one_parameter() {
 		$container = new tad_DI52_Container();
 
-		$container->singleton(ClassFourteen::class);
+		$container->singleton('ClassFourteen');
 
-		$instance1 = $container->make(ClassFourteen::class);
-		$instance2 = $container->make(ClassFourteen::class);
+		$instance1 = $container->make('ClassFourteen');
+		$instance2 = $container->make('ClassFourteen');
 
-		$this->assertInstanceOf(ClassFourteen::class, $instance1);
+		$this->assertInstanceOf('ClassFourteen', $instance1);
 		$this->assertEquals($instance1, $instance2);
 	}
 
 	/** @test */
 	public function it_should_throw_if_binding_string_with_one_parameter() {
-		$this->setExpectedException(ReflectionException::class);
+		$this->setExpectedException('ReflectionException');
 
 		$container = new tad_DI52_Container();
 
@@ -784,28 +784,28 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 
 	/** @test */
 	public function it_should_throw_if_binding_interface_with_one_parameter() {
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->setExpectedException('InvalidArgumentException');
 
 		$container = new tad_DI52_Container();
 
-		$container->bind(One::class);
+		$container->bind('One');
 	}
 
 	/** @test */
 	public function it_should_throw_if_binding_abstract_with_one_parameter() {
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->setExpectedException('InvalidArgumentException');
 
 		$container = new tad_DI52_Container();
 
-		$container->bind(AbstractClass::class);
+		$container->bind('AbstractClass');
 	}
 
 	/** @test */
 	public function it_should_throw_if_binding_private_constructor_with_one_parameter() {
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->setExpectedException('InvalidArgumentException');
 
 		$container = new tad_DI52_Container();
 
-		$container->bind(PrivateConstructor::class);
+		$container->bind('PrivateConstructor');
 	}
 }
