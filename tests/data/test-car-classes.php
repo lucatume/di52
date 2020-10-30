@@ -36,6 +36,6 @@ class DriveShaft {
 }
 
 class Clutch {
-    public function __construct(NonExisting2 $c) {
+    public function __construct(PrivateConstructor $c) {
     }
 }
