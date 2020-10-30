@@ -1492,4 +1492,37 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		assertMatchesSnapshots( "Hello {$name}" );
 		assertMatchesSnapshots( "Hi {$name}" );
 	}
+
+    /** @test */
+	public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor() {
+        $container = new tad_DI52_Container();
+		try {
+		    $container->make(Car::class);
+        } catch(Exception $e) {
+		    assertMatchesSnapshots($e->getMessage());
+        }
+	}
+
+    /** @test */
+	public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor_and_nested_dependency_singleton() {
+        $container = new tad_DI52_Container();
+        $container->bind(Car::class);
+        $container->singleton(Engine::class);
+		try {
+		    $container->make(Car::class);
+        } catch(Exception $e) {
+		    assertMatchesSnapshots($e->getMessage());
+        }
+	}
+
+    /** @test */
+	public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor_2() {
+        $container = new tad_DI52_Container();
+        $container->singleton(Engine::class);
+		try {
+		    $container->make(Engine::class);
+        } catch(Exception $e) {
+		    assertMatchesSnapshots($e->getMessage());
+        }
+	}
 }
