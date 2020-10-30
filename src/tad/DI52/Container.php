@@ -296,6 +296,8 @@ class tad_DI52_Container implements ArrayAccess {
 	 *
 	 * @param string $classOrInterface
 	 *
+	 * @throws RuntimeException|ReflectionException
+	 *
 	 * @return array|mixed
 	 */
 	protected function resolve($classOrInterface) {
@@ -342,14 +344,14 @@ class tad_DI52_Container implements ArrayAccess {
 			preg_match('/Error while making/', $e->getMessage(), $matches);
 			if (count($matches)) {
 				// @codeCoverageIgnoreStart
-				$divider = "\n\t => ";
-				$prefix = ' ';
+				$divider = "\n\t =>";
+				$prefix = '';
 				// @codeCoverageIgnoreEnd
 			} else {
 				$divider = ':';
 				$prefix = 'Error while making ';
 			}
-			$message = "{$prefix} '{$classOrInterface}'{$divider} " . $e->getMessage();
+			$message = "{$prefix}'{$classOrInterface}'{$divider} " . $e->getMessage();
 
 			throw new RuntimeException($message);
 		}

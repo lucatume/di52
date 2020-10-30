@@ -1,4 +1,4 @@
-  'Engine'
-	 =>    'UpperEngine'
-	 =>    'CombustionChamber'
-	 =>  Error while making  'Valve': Class NonExisting1 does not exist
+'Engine'
+	 => 'UpperEngine'
+	 => 'CombustionChamber'
+	 => Error while making 'Valve': Class NonExisting1 does not exist
