@@ -8,7 +8,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Download Composer 1.X
-        run: wget https://getcomposer.org/composer-1.phar && chmod +x composer-1.phar
+        run: wget https://getcomposer.org/composer-1.phar
       - name: Install Composer dependencies
         run: php composer-1.phar install
       - name: Pull tommylau/php-5.2
