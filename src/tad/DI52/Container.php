@@ -344,14 +344,14 @@ class tad_DI52_Container implements ArrayAccess {
 			preg_match('/Error while making/', $e->getMessage(), $matches);
 			if (count($matches)) {
 				// @codeCoverageIgnoreStart
-				$divider = "\n\t =>";
-				$prefix = '';
+				$separator = "\n\t =>";
+				$prefix    = '';
 				// @codeCoverageIgnoreEnd
 			} else {
-				$divider = ':';
-				$prefix = 'Error while making ';
+				$separator = ':';
+				$prefix    = 'Error while making ';
 			}
-			$message = "{$prefix}'{$classOrInterface}'{$divider} " . $e->getMessage();
+			$message = "{$prefix}'{$classOrInterface}'{$separator} " . $e->getMessage();
 
 			throw new RuntimeException($message);
 		}
