@@ -1492,4 +1492,67 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		assertMatchesSnapshots( "Hello {$name}" );
 		assertMatchesSnapshots( "Hi {$name}" );
 	}
+
+	/** @test */
+	public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor() {
+		$container = new tad_DI52_Container();
+		try {
+			$container->make( 'Car' );
+		} catch ( Exception $e ) {
+			assertMatchesSnapshots( $e->getMessage() );
+		}
+	}
+
+	/** @test */
+	public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor_and_nested_dependency_singleton() {
+		$container = new tad_DI52_Container();
+		$container->bind( 'Car' );
+		$container->singleton( 'Engine' );
+		try {
+			$container->make( 'Car' );
+		} catch ( Exception $e ) {
+			assertMatchesSnapshots( $e->getMessage() );
+		}
+	}
+
+	/** @test */
+	public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor_2() {
+		$container = new tad_DI52_Container();
+		$container->singleton( 'Engine' );
+		try {
+			$container->make( 'Engine' );
+		} catch ( Exception $e ) {
+			assertMatchesSnapshots( $e->getMessage() );
+		}
+	}
+
+	/** @test */
+	public function should_throw_correct_exception_when_injecting_class_with_private_constructor() {
+		$container = new tad_DI52_Container();
+		try {
+			$container->make( 'LowerEngine' );
+		} catch ( Exception $e ) {
+			assertMatchesSnapshots( $e->getMessage() );
+		}
+	}
+
+	/** @test */
+	public function should_throw_correct_exception_when_making_class_with_private_constructor_as_a_dependency() {
+		$container = new tad_DI52_Container();
+		try {
+			$container->make( 'Clutch' );
+		} catch ( Exception $e ) {
+			assertMatchesSnapshots( $e->getMessage() );
+		}
+	}
+
+	/** @test */
+	public function should_throw_correct_exception_when_making_class_with_invalid_class_as_dependency() {
+		$container = new tad_DI52_Container();
+		try {
+			$container->make( 'Valve' );
+		} catch ( Exception $e ) {
+			assertMatchesSnapshots( $e->getMessage() );
+		}
+	}
 }

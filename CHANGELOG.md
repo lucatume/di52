@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+- Error messages and format in the context of nested `make` resolution (thanks @Luc45)
+
 ## [2.1.2] 2020-10-27;
 
 ### Fixed
