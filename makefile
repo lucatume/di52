@@ -1,14 +1,40 @@
-php52 = /Applications/Mamp/bin/php/php5.2.17/bin/php
 benchmarksFolder = /Users/Luca/Repos/php-dependency-injection-benchmarks
+
+composer_56_update:
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php5.6-composer-v2 update
+.PHONY: composer_56_update
+
+composer_56_install:
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php5.6-composer-v2 install
+.PHONY: composer_56_install
+
+build:
+	docker build \
+		--build-arg XDEBUG_REMOTE_HOST=$${XDEBUG_REMOTE_HOST:-host.docker.internal} \
+		--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
+		_build/containers/dev \
+		--tag lucatume/di52-dev
+.PHONY: build
 
 test:
 	docker run --rm \
-		-v "${CURDIR}:/project" \
-		--entrypoint /project/vendor/bin/phpunit-php52 \
-		tommylau/php-5.2 \
-		--bootstrap	/project/tests/bootstrap.php \
-		/project/tests/52-compat
-	vendor/bin/phpunit-php52 -v
+		-v "${CURDIR}:${CURDIR}" \
+		--entrypoint ${CURDIR}/vendor/bin/phpunit \
+		lucatume/di52-dev \
+		--bootstrap	${CURDIR}/tests/bootstrap.php \
+		${CURDIR}/tests
 
 benchmark:
 	cd $(benchmarksFolder); \

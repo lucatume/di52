@@ -1,6 +1,18 @@
 <?php
+/**
+ * An immutable value in the container.
+ *
+ * @package lucatume\DI52
+ */
 
-class tad_DI52_ProtectedValue
+namespace lucatume\DI52;
+
+/**
+ * Class ProtectedValue
+ *
+ * @package lucatume\DI52
+ */
+class ProtectedValue
 {
 
     /**
@@ -9,7 +21,7 @@ class tad_DI52_ProtectedValue
     protected $value;
 
     /**
-     * tad_DI52_ProtectedValue constructor.
+     * lucatume\DI52\ProtectedValue constructor.
      * @param mixed $value
      */
     public function __construct($value)

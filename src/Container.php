@@ -1,6 +1,24 @@
 <?php
+/**
+ * The Dependency Injection container.
+ *
+ * @package lucatume\DI52
+ */
 
-class tad_DI52_Container implements ArrayAccess {
+namespace lucatume\DI52;
+
+use \RuntimeException;
+use \ReflectionClass;
+use \ReflectionMethod;
+
+/**
+ * Class Container
+ *
+ * @since   TBD
+ *
+ * @package lucatume\DI52
+ */
+class Container implements \ArrayAccess {
 
 	/**
 	 * @var boolean
@@ -10,52 +28,52 @@ class tad_DI52_Container implements ArrayAccess {
 	/**
 	 * @var array
 	 */
-	protected $callbacks = array();
+	protected $callbacks = [];
 
 	/**
 	 * @var array
 	 */
-	protected $protected = array();
+	protected $protected = [];
 
 	/**
 	 * @var array
 	 */
-	protected $strings = array();
+	protected $strings = [];
 
 	/**
 	 * @var array
 	 */
-	protected $objects = array();
+	protected $objects = [];
 
 	/**
 	 * @var array
 	 */
-	protected $callables = array();
+	protected $callables = [];
 
 	/**
 	 * @var array
 	 */
-	protected $singletons = array();
+	protected $singletons = [];
 
 	/**
 	 * @var array
 	 */
-	protected $deferred = array();
+	protected $deferred = [];
 
 	/**
 	 * @var array
 	 */
-	protected $chains = array();
+	protected $chains = [];
 
 	/**
 	 * @var array
 	 */
-	protected $reflections = array();
+	protected $reflections = [];
 
 	/**
 	 * @var array
 	 */
-	protected $afterbuild = array();
+	protected $afterbuild = [];
 
 	/**
 	 * @var string
@@ -65,17 +83,17 @@ class tad_DI52_Container implements ArrayAccess {
 	/**
 	 * @var array
 	 */
-	protected $tags = array();
+	protected $tags = [];
 
 	/**
 	 * @var array
 	 */
-	protected $bootable = array();
+	protected $bootable = [];
 
 	/**
 	 * @var array
 	 */
-	protected $contexts = array();
+	protected $contexts = [];
 
 	/**
 	 * @var string
@@ -95,28 +113,28 @@ class tad_DI52_Container implements ArrayAccess {
 	/**
 	 * @var array
 	 */
-	protected $bindings = array();
+	protected $bindings = [];
 
 	/**
 	 * @var array
 	 */
-	protected $instanceCallbacks = array();
+	protected $instanceCallbacks = [];
 
 	/**
 	 * @var array
 	 */
-	public $__instanceCallbackArgs = array();
+	public $__instanceCallbackArgs = [];
 
 	/**
 	 * @var array
 	 */
-	protected $dependants = array();
+	protected $dependants = [];
 
 	/**
-	 * tad_DI52_Container constructor.
+	 * lucatume\DI52\Container constructor.
 	 */
 	public function __construct() {
-		$this->id = uniqid(rand(1, 9999));
+		$this->id = uniqid( mt_rand(1, 9999), true );
 		$GLOBALS['__container_' . $this->id] = $this;
 	}
 
@@ -128,7 +146,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 *
 	 *        $container->setVar('foo', $container->protect($f));
 	 *
-	 * @see tad_DI52_Container::protect()
+	 * @see Container::protect()
 	 *
 	 * @param string $key The alias the container will use to reference the variable.
 	 * @param mixed $value The variable value.
@@ -151,8 +169,8 @@ class tad_DI52_Container implements ArrayAccess {
 	 *
 	 *        $container['foo'] = $container->protect($f));
 	 *
-	 * @see   tad_DI52_Container::protect()
-	 * @see   tad_DI52_Container::singleton()
+	 * @see   lucatume\DI52\Container::protect()
+	 * @see   lucatume\DI52\Container::singleton()
 	 *
 	 * @param string $key The alias the container will use to reference the variable.
 	 * @param mixed $value The variable value.
@@ -161,7 +179,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @since 5.0.0
 	 */
 	public function offsetSet($offset, $value) {
-		if ($value instanceof tad_DI52_ProtectedValue) {
+		if ($value instanceof lucatume\DI52\ProtectedValue) {
 			$this->protected[$offset] = true;
 			$value = $value->getValue();
 		}
@@ -193,7 +211,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 *
 	 * If the variable is a binding then the binding will be resolved before returning it.
 	 *
-	 * @see tad_DI52_Container::make
+	 * @see lucatume\DI52\Container::make
 	 *
 	 * @param string $key The alias of the variable or binding to fetch.
 	 *
@@ -306,7 +324,7 @@ class tad_DI52_Container implements ArrayAccess {
 
 		try {
 			if (isset($this->deferred[$classOrInterface])) {
-				/** @var tad_DI52_ServiceProviderInterface $provider */
+				/** @var lucatume\DI52\ServiceProviderInterface $provider */
 				$provider = $this->deferred[$classOrInterface];
 				$provider->register();
 			}
@@ -411,7 +429,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 *
 	 *        $container->tag(['Posts', 'Users', 'Comments'], 'endpoints');
 	 *
-	 * @see tad_DI52_Container::tagged()
+	 * @see lucatume\DI52\Container::tagged()
 	 *
 	 * @param array $implementationsArray
 	 * @param string $tag
@@ -430,7 +448,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 *            $endpoint->register();
 	 *        }
 	 *
-	 * @see tad_DI52_Container::tag()
+	 * @see lucatume\DI52\Container::tag()
 	 *
 	 * @param string $tag
 	 *
@@ -447,7 +465,7 @@ class tad_DI52_Container implements ArrayAccess {
 	/**
 	 * Checks whether a tag group exists in the container.
 	 *
-	 * @see tad_DI52_Container::tag()
+	 * @see lucatume\DI52\Container::tag()
 	 *
 	 * @param string $tag
 	 *
@@ -470,15 +488,15 @@ class tad_DI52_Container implements ArrayAccess {
 	 * If a provider overloads the `boot` method that method will be called when the `boot` method is called on the
 	 * container itself.
 	 *
-	 * @see tad_DI52_ServiceProviderInterface::register()
-	 * @see tad_DI52_ServiceProviderInterface::isDeferred()
-	 * @see tad_DI52_ServiceProviderInterface::provides()
-	 * @see tad_DI52_ServiceProviderInterface::boot()
+	 * @see lucatume\DI52\ServiceProviderInterface::register()
+	 * @see lucatume\DI52\ServiceProviderInterface::isDeferred()
+	 * @see lucatume\DI52\ServiceProviderInterface::provides()
+	 * @see lucatume\DI52\ServiceProviderInterface::boot()
 	 *
 	 * @param string $serviceProviderClass
 	 */
 	public function register($serviceProviderClass) {
-		/** @var tad_DI52_ServiceProviderInterface $provider */
+		/** @var lucatume\DI52\ServiceProviderInterface $provider */
 		$provider = new $serviceProviderClass($this);
 		if (!$provider->isDeferred()) {
 			$provider->register();
@@ -507,12 +525,12 @@ class tad_DI52_Container implements ArrayAccess {
 	 * If there are bootable providers (providers overloading the `boot` method) then the `boot` method will be
 	 * called on each bootable provider.
 	 *
-	 * @see tad_DI52_ServiceProviderInterface::boot()
+	 * @see lucatume\DI52\ServiceProviderInterface::boot()
 	 */
 	public function boot() {
 		if (!empty($this->bootable)) {
 			foreach ($this->bootable as $provider) {
-				/** @var tad_DI52_ServiceProviderInterface $provider */
+				/** @var lucatume\DI52\ServiceProviderInterface $provider */
 				$provider->boot();
 			}
 		}
@@ -628,7 +646,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 *          ->needs('LoggerInterface)
 	 *          ->give('RemoteLogger);
 	 *
-	 * @return tad_DI52_Container
+	 * @return lucatume\DI52\Container
 	 */
 	public function when($class) {
 		$this->bindingFor = $class;
@@ -650,7 +668,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 *
 	 * @param string $classOrInterface The class or interface needed by the class.
 	 *
-	 * @return tad_DI52_Container
+	 * @return lucatume\DI52\Container
 	 */
 	public function needs($classOrInterface) {
 		$this->neededImplementation = $classOrInterface;
@@ -688,7 +706,7 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @param mixed $value
 	 */
 	public function protect($value) {
-		return new tad_DI52_ProtectedValue($value);
+		return new ProtectedValue($value);
 	}
 
 	/**
@@ -761,8 +779,6 @@ class tad_DI52_Container implements ArrayAccess {
 	 * @return mixed The called method return value.
 	 */
 	public function callback($classOrInterface, $method) {
-		$this->initClosuresSupport();
-
 		if (!is_string($method)) {
 			throw new RuntimeException('Callback method must be a string');
 		}
@@ -776,27 +792,7 @@ class tad_DI52_Container implements ArrayAccess {
 		}
 
 		if ($this->useClosures) {
-			$f = di52_callbackClosure($this, $classOrInterface, $method);
-		} else {
-			$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
-			// @codeCoverageIgnoreStart
-			if (is_object($classOrInterface) || is_callable($classOrInterface)) {
-				$objectId = uniqid(rand(1, 9999) . md5($classOrInterfaceName));
-				$this->bind($objectId, $classOrInterface);
-				$body = '$a = func_get_args();
-					global $__container_' . $this->id . ';
-					$c = $__container_' . $this->id . ';
-					$i = $c->make(\'' . $objectId . '\');
-					return call_user_func_array(array($i, \'' . $method . '\'),$a);';
-			} else {
-				$body = '$a = func_get_args();
-					global $__container_' . $this->id . ';
-					$c = $__container_' . $this->id . ';
-					$i = $c->make(\'' . $classOrInterfaceName . '\');
-					return call_user_func_array(array($i, \'' . $method . '\'),$a);';
-			}
-			$f = create_function('', $body);
-			// @codeCoverageIgnoreEnd
+			$f = $this->getCallbackClosure($this, $classOrInterface, $method);
 		}
 
 		$this->callbacks[ $cacheKey ] = $f;
@@ -849,8 +845,6 @@ class tad_DI52_Container implements ArrayAccess {
 	 *                   called.
 	 */
 	public function instance($classOrInterface, array $args = array()) {
-		$this->initClosuresSupport();
-
 		$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
 
 		$instanceId = md5($classOrInterfaceName . '::' . serialize($args));
@@ -858,7 +852,7 @@ class tad_DI52_Container implements ArrayAccess {
 			$this->__instanceCallbackArgs[$instanceId] = $args;
 
 			if ($this->useClosures) {
-				$f = di52_instanceClosure($this, $classOrInterface, $args);
+				$f = $this->getInstanceClosure($this, $classOrInterface, $args);
 			} else {
 				// @codeCoverageIgnoreStart
 				if (is_object($classOrInterface) || is_callable($classOrInterface)) {
@@ -897,14 +891,70 @@ class tad_DI52_Container implements ArrayAccess {
 	}
 
 	/**
-	 * Initializes the closure support on PHP 5.3+.
+	 * Builds and returns a closure to be used to lazily make objects on PHP 5.3+, call a method on them and return the
+	 * method value.
+	 *
+	 * @param Container $container
+	 * @param string|object      $classOrInterface
+	 * @param string             $method
+	 *
+	 * @return Closure
 	 */
-	protected function initClosuresSupport() {
-		if (null === $this->useClosures) {
-			$this->useClosures = version_compare(PHP_VERSION, '5.3.0', '>=');
-			if ($this->useClosures) {
-				require_once dirname(__FILE__) . '/closuresSupport.php';
-			}
+	protected function getCallbackClosure(Container $container, $classOrInterface, $method) {
+		if ( is_object( $classOrInterface ) ) {
+			$objectId = uniqid( spl_object_hash( $classOrInterface ), true );
+			$container->bind( $objectId, $classOrInterface );
+		} else {
+			$objectId = $classOrInterface;
 		}
+
+		$isStatic = false;
+		try {
+			$reflectionMethod = new ReflectionMethod($classOrInterface, $method);
+			$isStatic = $reflectionMethod->isStatic();
+		} catch ( ReflectionException $e ) {
+			// no-op
+		}
+
+		return function () use ( $isStatic, $container, $objectId, $method ) {
+			return $isStatic ?
+				call_user_func_array( array( $objectId, $method ), func_get_args() )
+				: call_user_func_array( array( $container->make( $objectId ), $method ), func_get_args() );
+		};
+	}
+
+	/**
+	 * Builds and returns a closure to be used to lazily make objects on PHP 5.3+ and return them.
+	 *
+	 * @param Container $container
+	 * @param                  string $classOrInterface
+	 * @param array $vars
+	 *
+	 * @return Closure
+	 */
+	protected function getInstanceClosure(Container $container, $classOrInterface, array $vars = array()) {
+		return function () use ($container, $classOrInterface, $vars) {
+			if (is_object($classOrInterface)) {
+				if (is_callable($classOrInterface)) {
+					return call_user_func_array($classOrInterface, $vars);
+				}
+				return $classOrInterface;
+			}
+
+			$r = new ReflectionClass($classOrInterface);
+			$constructor = $r->getConstructor();
+			if (null === $constructor || empty($vars)) {
+				return $container->make($classOrInterface);
+			}
+			$args = array();
+			foreach ($vars as $var) {
+				try {
+					$args[] = $container->make($var);
+				} catch (RuntimeException $e) {
+					$args[] = $var;
+				}
+			}
+			return $r->newInstanceArgs($args);
+		};
 	}
 }
