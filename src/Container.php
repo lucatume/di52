@@ -7,6 +7,9 @@
 
 namespace lucatume\DI52;
 
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use \RuntimeException;
 use \ReflectionClass;
 use \ReflectionMethod;
@@ -18,7 +21,7 @@ use \ReflectionMethod;
  *
  * @package lucatume\DI52
  */
-class Container implements \ArrayAccess {
+class Container implements \ArrayAccess, ContainerInterface {
 
 	/**
 	 * @var boolean
@@ -956,5 +959,13 @@ class Container implements \ArrayAccess {
 			}
 			return $r->newInstanceArgs($args);
 		};
+	}
+
+	public function get( $id ) {
+		// TODO: Implement get() method.
+	}
+
+	public function has( $id ) {
+		// TODO: Implement has() method.
 	}
 }
