@@ -964,7 +964,10 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         // TODO: Implement get() method.
     }
-
+        
+    /**
+     * @{inheritDoc}
+     */
     public function has($id)
     {
         // TODO: Implement has() method.
@@ -981,8 +984,8 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         if (PHP_VERSION_ID >= 80000) {
             $class = $parameter->getType() && ! $parameter->getType()->isBuiltin()
-                ? new ReflectionClass($parameter->getType()->getName())
-                : null;
+            ? new ReflectionClass($parameter->getType()->getName()) //@phan-suppress-current-line PhanUndeclaredMethod
+            : null;
         } else {
             $class = $parameter->getClass();
         }
