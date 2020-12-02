@@ -83,3 +83,20 @@ fix:
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/tests ${PWD}/autoload.php
 .PHONY: fix
+
+# Use phpstan container to analyze the source code.
+# Configuration will be read from the phpstan.neon.dist file.
+PHPSTAN_LEVEL?=max
+phpstan:
+	docker run --rm \
+		-v ${PWD}:${PWD} \
+		-u "$$(id -u):$$(id -g)" \
+		phpstan/phpstan analyze -l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/autoload.php
+.PHONY: phpstan
+
+phan:
+	docker run --rm \
+		-v ${PWD}:/mnt/src \
+		-u "$$(id -u):$$(id -g)" \
+		phanphp/phan
+.PHONY: phan
