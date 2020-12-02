@@ -59,3 +59,27 @@ lint:
 			${PWD}/src \
 			${PWD}/autoload.php
 .PHONY: lint
+
+# Use the PHP Code Sniffer container to sniff the relevant source files.
+sniff:
+	docker run --rm \
+        -u "$$(id -u):$$(id -g)" \
+		-v ${PWD}:${PWD} cytopia/phpcs \
+		--colors \
+		-p \
+		-s \
+		--standard=${PWD}/phpcs.xml \
+		${PWD}/src ${PWD}/autoload.php
+.PHONY: sniff
+
+# Use the PHP Code Beautifier container to fix the source and tests code.
+fix:
+	docker run --rm \
+        -u "$$(id -u):$$(id -g)" \
+        -v ${PWD}:${PWD} cytopia/phpcbf \
+		--colors \
+		-p \
+		-s \
+		--standard=${PWD}/phpcs.xml \
+		${PWD}/src ${PWD}/tests ${PWD}/autoload.php
+.PHONY: fix

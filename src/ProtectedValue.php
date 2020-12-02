@@ -37,12 +37,13 @@ class ProtectedValue
         return $this->value;
     }
 
-	/**
-	 * Allows a protected value to be invoked as function to get its value.
-	 *
-	 * @return mixed The protected value.
-	 */
-	public function __invoke(  ) {
-		return $this->getValue();
+    /**
+     * Allows a protected value to be invoked as function to get its value.
+     *
+     * @return mixed The protected value.
+     */
+    public function __invoke()
+    {
+        return $this->getValue();
     }
 }

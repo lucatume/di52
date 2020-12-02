@@ -6,8 +6,8 @@
 
 namespace lucatume\DI52;
 
-if ( function_exists( 'autoloader' ) ) {
-	return;
+if (function_exists('autoloader')) {
+    return;
 }
 
 /**
@@ -17,25 +17,26 @@ if ( function_exists( 'autoloader' ) ) {
  *
  * @return bool Whether the class was located and loaded or not.
  */
-function autoloader( $class ) {
-	if ( strpos( $class, 'tad_DI52_' ) === false ) {
-		return false;
-	}
+function autoloader($class)
+{
+    if (strpos($class, 'tad_DI52_') === false) {
+        return false;
+    }
 
-	$className = str_replace( 'tad_DI52_', '', $class );
-	// This should be handled by Composer, but just in case handle it here too.
-	$path = __DIR__ . '/src/' . $className . '.php';
+    $className = str_replace('tad_DI52_', '', $class);
+    // This should be handled by Composer, but just in case handle it here too.
+    $path = __DIR__ . '/src/' . $className . '.php';
 
-	if ( ! is_file( $path ) ) {
-		return false;
-	}
+    if (! is_file($path)) {
+        return false;
+    }
 
-	/** @noinspection PhpIncludeInspection */
-	require_once $path;
-	$loadedClass = '\\lucatume\\DI52\\' . $className;
-	class_alias( $loadedClass, $class );
+    /** @noinspection PhpIncludeInspection */
+    require_once $path;
+    $loadedClass = '\\lucatume\\DI52\\' . $className;
+    class_alias($loadedClass, $class);
 
-	return true;
+    return true;
 }
 
-spl_autoload_register( 'lucatume\DI52\autoloader' );
+spl_autoload_register('lucatume\DI52\autoloader');

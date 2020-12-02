@@ -1,435 +1,533 @@
 <?php
 
-interface One {
+interface One
+{
 
 }
 
-interface Two {
+interface Two
+{
 
 }
 
-interface Four {
+interface Four
+{
 
 }
 
-interface Five {
+interface Five
+{
 
 }
 
-class ClassOne implements One {
+class ClassOne implements One
+{
 
 }
 
-class ExtendingClassOneOne extends ClassOne {
+class ExtendingClassOneOne extends ClassOne
+{
 
 }
 
-class ExtendingClassOneTwo extends ClassOne {
+class ExtendingClassOneTwo extends ClassOne
+{
 
 }
 
-class ClassOneOne implements One {
-	public function __construct() {
-
-	}
+class ClassOneOne implements One
+{
+    public function __construct()
+    {
+    }
 }
 
-class ClassOneTwo implements One {
-	/**
-	 * @var string
-	 */
-	private $foo;
+class ClassOneTwo implements One
+{
+    /**
+     * @var string
+     */
+    private $foo;
 
-	public function __construct($foo = 'bar') {
+    public function __construct($foo = 'bar')
+    {
 
-		$this->foo = $foo;
-	}
+        $this->foo = $foo;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getFoo() {
-		return $this->foo;
-	}
+    /**
+     * @return string
+     */
+    public function getFoo()
+    {
+        return $this->foo;
+    }
 }
 
-class ClassOneThree {
-	public $oneCalled;
-	public $twoCalled;
+class ClassOneThree
+{
+    public $oneCalled;
+    public $twoCalled;
 
-	public function methodOne() {
-		$this->oneCalled = true;
-	}
+    public function methodOne()
+    {
+        $this->oneCalled = true;
+    }
 
-	public function methodTwo() {
-		$this->twoCalled = true;
-	}
+    public function methodTwo()
+    {
+        $this->twoCalled = true;
+    }
 }
 
-class ClassTwo implements Two {
-	/**
-	 * @var One
-	 */
-	private $one;
+class ClassTwo implements Two
+{
+    /**
+     * @var One
+     */
+    private $one;
 
-	public function __construct(One $one) {
+    public function __construct(One $one)
+    {
 
-		$this->one = $one;
-	}
+        $this->one = $one;
+    }
 
-	/**
-	 * @return One
-	 */
-	public function getOne() {
-		return $this->one;
-	}
+    /**
+     * @return One
+     */
+    public function getOne()
+    {
+        return $this->one;
+    }
 }
 
-class ClassTwoOne implements Two {
-	private $one;
+class ClassTwoOne implements Two
+{
+    private $one;
 
-	public function __construct(ClassOne $one) {
+    public function __construct(ClassOne $one)
+    {
 
-		$this->one = $one;
-	}
+        $this->one = $one;
+    }
 
-	public function getOne() {
-		return $this->one;
-	}
+    public function getOne()
+    {
+        return $this->one;
+    }
 }
 
-class ClassTwoTwo implements Two {
-	public function __construct(One $one) {
-
-	}
+class ClassTwoTwo implements Two
+{
+    public function __construct(One $one)
+    {
+    }
 }
 
-class ClassThree {
-	public function __construct(One $one, Two $two, $three = 3) {
-
-	}
+class ClassThree
+{
+    public function __construct(One $one, Two $two, $three = 3)
+    {
+    }
 }
 
-class ClassThreeOne {
-	public function __construct(One $one, ClassTwo $two, $three = 3) {
-
-	}
+class ClassThreeOne
+{
+    public function __construct(One $one, ClassTwo $two, $three = 3)
+    {
+    }
 }
 
-class ClassThreeTwo {
-	public function __construct(ClassOne $one, ClassOneOne $two, $three = 3) {
-
-	}
+class ClassThreeTwo
+{
+    public function __construct(ClassOne $one, ClassOneOne $two, $three = 3)
+    {
+    }
 }
 
-class ClassFour {
-	public function __construct($some) {
+class ClassFour
+{
+    public function __construct($some)
+    {
+    }
 
-	}
+    public function methodOne($n)
+    {
+        return $n + 23;
+    }
 
-	public function methodOne($n) {
-		return $n + 23;
-	}
-
-	public function methodTwo() {
-		return 23;
-	}
+    public function methodTwo()
+    {
+        return 23;
+    }
 }
 
-class FourBase implements Four {
-	public function __construct() {
+class FourBase implements Four
+{
+    public function __construct()
+    {
+    }
 
-	}
+    public function methodOne()
+    {
+        global $one;
+        $one = __CLASS__;
+    }
 
-	public function methodOne() {
-		global $one;
-		$one = __CLASS__;
-	}
+    public function methodTwo()
+    {
+        global $two;
+        $two = __CLASS__;
+    }
 
-	public function methodTwo() {
-		global $two;
-		$two = __CLASS__;
-	}
-
-	public function methodThree($n) {
-		return $n + 23;
-	}
+    public function methodThree($n)
+    {
+        return $n + 23;
+    }
 }
 
-class FourTwo implements Four {
-
-}
-
-class FourDecoratorOne implements Four {
-	public function __construct(Four $decorated) {
-
-	}
-
-	public function methodOne($n) {
-		return $n + 23;
-	}
-}
-
-class FourDecoratorTwo implements Four {
-	public function __construct(Four $decorated) {
-
-	}
-}
-
-class FourDecoratorThree implements Four {
-	public function __construct(Four $decorated) {
-
-	}
-}
-
-class FiveBase implements Five {
-	public function __construct($foo = 10) {
-	}
-}
-
-class FiveDecoratorOne implements Five {
-	public function __construct(Five $five, Four $four) {
-
-	}
-}
-
-class FiveDecoratorTwo implements Five {
-	public function __construct(Five $five, One $one) {
-
-	}
-}
-
-class FiveDecoratorThree implements Five {
-	public function __construct(Five $five, Two $two) {
-
-	}
-}
-
-class FiveTwo implements Five {
+class FourTwo implements Four
+{
 
 }
 
+class FourDecoratorOne implements Four
+{
+    public function __construct(Four $decorated)
+    {
+    }
 
-class ClassSix {
-	private $one;
-
-	public function __construct(One $one) {
-		$this->one = $one;
-	}
-
-	public function getOne() {
-		return $this->one;
-	}
+    public function methodOne($n)
+    {
+        return $n + 23;
+    }
 }
 
-class ClassSeven {
-	private $one;
-
-	public function __construct(One $one) {
-
-		$this->one = $one;
-	}
-
-	public function getOne() {
-		return $this->one;
-	}
+class FourDecoratorTwo implements Four
+{
+    public function __construct(Four $decorated)
+    {
+    }
 }
 
-class ClassSixOne {
-	private $one;
-
-	public function __construct(ClassOne $one) {
-		$this->one = $one;
-	}
-
-	public function getOne() {
-		return $this->one;
-	}
+class FourDecoratorThree implements Four
+{
+    public function __construct(Four $decorated)
+    {
+    }
 }
 
-class ClassSevenOne {
-	private $one;
-
-	public function __construct(ClassOne $one) {
-
-		$this->one = $one;
-	}
-
-	public function getOne() {
-		return $this->one;
-	}
+class FiveBase implements Five
+{
+    public function __construct($foo = 10)
+    {
+    }
 }
 
-interface Eight {
-	public function methodOne();
-
-	public function methodTwo();
-
-	public function methodThree();
+class FiveDecoratorOne implements Five
+{
+    public function __construct(Five $five, Four $four)
+    {
+    }
 }
 
-class ClassEight implements Eight {
-	public static $called = array();
-	public static $calledWith = array();
-
-	public static function reset() {
-		self::$called = array();
-		self::$calledWith = array();
-	}
-
-	public function methodOne() {
-		self::$called[] = 'methodOne';
-	}
-
-	public function methodTwo() {
-		self::$called[] = 'methodTwo';
-	}
-
-	public function methodThree() {
-		self::$called[] = 'methodThree';
-	}
-
-	public function methodFour() {
-		self::$calledWith = func_get_args();
-	}
+class FiveDecoratorTwo implements Five
+{
+    public function __construct(Five $five, One $one)
+    {
+    }
 }
 
-class ClassEightExtension extends ClassEight {
+class FiveDecoratorThree implements Five
+{
+    public function __construct(Five $five, Two $two)
+    {
+    }
 }
 
-class ClassNine {
-	public function __construct() {
+class FiveTwo implements Five
+{
 
-	}
-
-	public static function reset() {
-		unset($GLOBALS['nine']);
-	}
-
-	public function methodOne() {
-		$GLOBALS['nine'] = 'called';
-	}
 }
 
-class ClassTen {
-	public static $builtTimes = 0;
-	private $varOne;
-	private $varTwo;
-	private $varThree;
 
-	public static function reset() {
-		self::$builtTimes = 0;
-	}
+class ClassSix
+{
+    private $one;
 
-	public function __construct($varOne, $varTwo, $varThree) {
-		self::$builtTimes++;
-		$this->varOne = $varOne;
-		$this->varTwo = $varTwo;
-		$this->varThree = $varThree;
-	}
+    public function __construct(One $one)
+    {
+        $this->one = $one;
+    }
 
-	public function getVarOne() {
-		return $this->varOne;
-	}
-
-	public function getVarTwo() {
-		return $this->varTwo;
-	}
-
-	public function getVarThree() {
-		return $this->varThree;
-	}
+    public function getOne()
+    {
+        return $this->one;
+    }
 }
 
-class ClassEleven {
-	public static $builtTimes = 0;
-	private $varOne;
-	private $varTwo;
-	private $varThree;
+class ClassSeven
+{
+    private $one;
 
-	public static function reset() {
-		self::$builtTimes = 0;
-	}
+    public function __construct(One $one)
+    {
 
-	public function __construct(One $varOne, ClassTwo $varTwo, $varThree) {
-		self::$builtTimes++;
-		$this->varOne = $varOne;
-		$this->varTwo = $varTwo;
-		$this->varThree = $varThree;
-	}
+        $this->one = $one;
+    }
 
-	public function getVarOne() {
-		return $this->varOne;
-	}
-
-	public function getVarTwo() {
-		return $this->varTwo;
-	}
-
-	public function getVarThree() {
-		return $this->varThree;
-	}
+    public function getOne()
+    {
+        return $this->one;
+    }
 }
 
-class ClassTwelve {
-	public static $builtTimes = 0;
-	private $varOne;
+class ClassSixOne
+{
+    private $one;
 
-	public static function reset() {
-		self::$builtTimes = 0;
-	}
+    public function __construct(ClassOne $one)
+    {
+        $this->one = $one;
+    }
 
-	public function __construct(One $varOne) {
-		self::$builtTimes++;
-		$this->varOne = $varOne;
-	}
-
-	public function getVarOne() {
-		return $this->varOne;
-	}
+    public function getOne()
+    {
+        return $this->one;
+    }
 }
 
-class Factory {
-	public function build() {
-		return new ClassOne();
-	}
+class ClassSevenOne
+{
+    private $one;
+
+    public function __construct(ClassOne $one)
+    {
+
+        $this->one = $one;
+    }
+
+    public function getOne()
+    {
+        return $this->one;
+    }
 }
 
-class ClassThirteen {
-	public function doSomething() {
-		return 'IDidSomething';
-	}
+interface Eight
+{
+    public function methodOne();
+
+    public function methodTwo();
+
+    public function methodThree();
 }
 
-class ClassFourteen {
+class ClassEight implements Eight
+{
+    public static $called = array();
+    public static $calledWith = array();
+
+    public static function reset()
+    {
+        self::$called = array();
+        self::$calledWith = array();
+    }
+
+    public function methodOne()
+    {
+        self::$called[] = 'methodOne';
+    }
+
+    public function methodTwo()
+    {
+        self::$called[] = 'methodTwo';
+    }
+
+    public function methodThree()
+    {
+        self::$called[] = 'methodThree';
+    }
+
+    public function methodFour()
+    {
+        self::$calledWith = func_get_args();
+    }
 }
 
-class ClassFifteen {
-	public function __construct(One $one, ClassFourteen $fourteen) {
-
-	}
-
-	public function doSomething() {
-		return 'IDidSomething';
-	}
+class ClassEightExtension extends ClassEight
+{
 }
 
-class Dependency {}
+class ClassNine
+{
+    public function __construct()
+    {
+    }
 
-class Depending {
-	private $dependency;
+    public static function reset()
+    {
+        unset($GLOBALS['nine']);
+    }
 
-	public function __construct( Dependency $dependency ) {
-		$this->dependency = $dependency;
-	}
-
-	public function getDependency() {
-		return $this->dependency;
-	}
+    public function methodOne()
+    {
+        $GLOBALS['nine'] = 'called';
+    }
 }
 
-abstract class AbstractClass {};
+class ClassTen
+{
+    public static $builtTimes = 0;
+    private $varOne;
+    private $varTwo;
+    private $varThree;
 
-class PrivateConstructor {
-	private function __construct() {}
+    public static function reset()
+    {
+        self::$builtTimes = 0;
+    }
+
+    public function __construct($varOne, $varTwo, $varThree)
+    {
+        self::$builtTimes++;
+        $this->varOne = $varOne;
+        $this->varTwo = $varTwo;
+        $this->varThree = $varThree;
+    }
+
+    public function getVarOne()
+    {
+        return $this->varOne;
+    }
+
+    public function getVarTwo()
+    {
+        return $this->varTwo;
+    }
+
+    public function getVarThree()
+    {
+        return $this->varThree;
+    }
+}
+
+class ClassEleven
+{
+    public static $builtTimes = 0;
+    private $varOne;
+    private $varTwo;
+    private $varThree;
+
+    public static function reset()
+    {
+        self::$builtTimes = 0;
+    }
+
+    public function __construct(One $varOne, ClassTwo $varTwo, $varThree)
+    {
+        self::$builtTimes++;
+        $this->varOne = $varOne;
+        $this->varTwo = $varTwo;
+        $this->varThree = $varThree;
+    }
+
+    public function getVarOne()
+    {
+        return $this->varOne;
+    }
+
+    public function getVarTwo()
+    {
+        return $this->varTwo;
+    }
+
+    public function getVarThree()
+    {
+        return $this->varThree;
+    }
+}
+
+class ClassTwelve
+{
+    public static $builtTimes = 0;
+    private $varOne;
+
+    public static function reset()
+    {
+        self::$builtTimes = 0;
+    }
+
+    public function __construct(One $varOne)
+    {
+        self::$builtTimes++;
+        $this->varOne = $varOne;
+    }
+
+    public function getVarOne()
+    {
+        return $this->varOne;
+    }
+}
+
+class Factory
+{
+    public function build()
+    {
+        return new ClassOne();
+    }
+}
+
+class ClassThirteen
+{
+    public function doSomething()
+    {
+        return 'IDidSomething';
+    }
+}
+
+class ClassFourteen
+{
+}
+
+class ClassFifteen
+{
+    public function __construct(One $one, ClassFourteen $fourteen)
+    {
+    }
+
+    public function doSomething()
+    {
+        return 'IDidSomething';
+    }
+}
+
+class Dependency
+{
+}
+
+class Depending
+{
+    private $dependency;
+
+    public function __construct(Dependency $dependency)
+    {
+        $this->dependency = $dependency;
+    }
+
+    public function getDependency()
+    {
+        return $this->dependency;
+    }
+}
+
+abstract class AbstractClass
+{
+};
+
+class PrivateConstructor
+{
+    private function __construct()
+    {
+    }
 }
