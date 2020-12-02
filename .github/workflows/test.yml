@@ -1,8 +1,8 @@
-name: PHP 5.2+
+name: PHPUnit tests
 on: push
 jobs:
   test:
-    name: PHPUnit tests
+    name: PHPUnit on PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Setup PHP
+      - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{matrix.php}}
