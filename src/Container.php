@@ -803,33 +803,32 @@ class Container implements \ArrayAccess, ContainerInterface {
 	}
 
 	public function getParameter(ReflectionParameter $parameter) {
-		$class = $parameter->getClass();
-
-		if (null === $class) {
+		$parameterClass = $this->getParameterClass( $parameter );
+		if ($parameterClass  === null ) {
 			if (!$parameter->isDefaultValueAvailable()) {
 				throw new ReflectionException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
 			}
 			return $parameter->getDefaultValue();
 		}
 
-		$parameterClass = $parameter->getClass()->getName();
+		$parameterClassName = $parameterClass->getName();
 
-		if (!$this->isBound($parameterClass) && !$parameter->getClass()->isInstantiable()) {
+		if (!$this->isBound($parameterClassName) && !$parameterClass->isInstantiable()) {
 			if (!$parameter->isDefaultValueAvailable()) {
 				throw new ReflectionException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
 			}
 			return $parameter->getDefaultValue();
 		}
 
-		if (!isset($this->dependants[$parameterClass])) {
-			$this->dependants[$parameterClass] = array($this->resolving);
+		if (!isset($this->dependants[$parameterClassName])) {
+			$this->dependants[$parameterClassName] = array($this->resolving);
 		} else {
-			$this->dependants[$parameterClass][] = $this->resolving;
+			$this->dependants[$parameterClassName][] = $this->resolving;
 		}
 
-		return isset($this->contexts[$parameterClass][$this->resolving]) ?
-			$this->offsetGet($this->contexts[$parameterClass][$this->resolving])
-			: $this->offsetGet($parameterClass);
+		return isset($this->contexts[$parameterClassName][$this->resolving]) ?
+			$this->offsetGet($this->contexts[$parameterClassName][$this->resolving])
+			: $this->offsetGet($parameterClassName);
 	}
 
 	/**
@@ -933,5 +932,24 @@ class Container implements \ArrayAccess, ContainerInterface {
 
 	public function has( $id ) {
 		// TODO: Implement has() method.
+	}
+
+	/**
+	 * Returns the class of a parameter.
+	 *
+	 * @param ReflectionParameter $parameter The parameter to get the class for.
+	 *
+	 * @return ReflectionClass|null Either the parameter class or `null` if the parameter does not have a class.
+	 */
+	private function getParameterClass( ReflectionParameter $parameter ) {
+			if ( PHP_VERSION_ID >= 80000 ) {
+				$class = $parameter->getType() && ! $parameter->getType()->isBuiltin()
+					? new ReflectionClass( $parameter->getType()->getName() )
+					: null;
+			} else {
+				$class = $parameter->getClass();
+			}
+
+			return $class;
 	}
 }
