@@ -363,7 +363,8 @@ class Container implements \ArrayAccess, ContainerInterface {
 
 			return $instance;
 		} catch (Exception $e) {
-			preg_match('/Error while making/', $e->getMessage(), $matches);
+				$unquotedErrorMessage = str_replace('"','', $e->getMessage());
+			preg_match('/Error while making/', $unquotedErrorMessage, $matches);
 			if (count($matches)) {
 				// @codeCoverageIgnoreStart
 				$separator = "\n\t =>";
@@ -373,7 +374,7 @@ class Container implements \ArrayAccess, ContainerInterface {
 				$separator = ':';
 				$prefix    = 'Error while making ';
 			}
-			$message = "{$prefix}'{$classOrInterface}'{$separator} " . $e->getMessage();
+			$message = "{$prefix}'{$classOrInterface}'{$separator} " . $unquotedErrorMessage;
 
 			throw new RuntimeException($message);
 		}
