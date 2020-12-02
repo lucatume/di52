@@ -7,12 +7,15 @@
 
 namespace lucatume\DI52;
 
-use Psr\Container\ContainerExceptionInterface;
+use Closure;
+use Exception;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use \RuntimeException;
-use \ReflectionClass;
-use \ReflectionMethod;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionMethod;
+use ReflectionParameter;
+use RuntimeException;
 
 /**
  * Class Container
@@ -22,11 +25,6 @@ use \ReflectionMethod;
  * @package lucatume\DI52
  */
 class Container implements \ArrayAccess, ContainerInterface {
-
-	/**
-	 * @var boolean
-	 */
-	protected $useClosures;
 
 	/**
 	 * @var array
@@ -232,7 +230,8 @@ class Container implements \ArrayAccess, ContainerInterface {
 	 * Retrieves a variable or a binding from the database.
 	 *
 	 * If the offset is bound to an implementation then it will be resolved before returning it.
-	 * * @param string $offset
+	 *
+	 * * @param string|object $offset
 	 *
 	 * @return mixed
 	 */
@@ -275,7 +274,7 @@ class Container implements \ArrayAccess, ContainerInterface {
 	 * If the implementation has been bound as singleton using the `singleton` method
 	 * or the ArrayAccess API then the implementation will be resolved just on the first request.
 	 *
-	 * @param string $classOrInterface A fully qualified class or interface name.
+	 * @param string|object $classOrInterface A fully qualified class or interface name or an already built object.
 	 *
 	 * @return mixed
 	 */
@@ -338,7 +337,9 @@ class Container implements \ArrayAccess, ContainerInterface {
 				} catch (Exception $e) {
 					if ( $e instanceof ReflectionException ) {
 						throw $e;
-					} elseif ( $e instanceof RuntimeException ) {
+					}
+
+					if ( $e instanceof RuntimeException ) {
 						throw $e;
 					}
 
@@ -394,7 +395,7 @@ class Container implements \ArrayAccess, ContainerInterface {
 		$classReflection = $this->reflections[$implementation];
 		$constructor = $classReflection->getConstructor();
 		$parameters = empty($constructor) ? array() : $constructor->getParameters();
-		$builtParams = array_map(array($this, '_getParameter'), $parameters);
+		$builtParams = array_map(array($this, 'getParameter' ), $parameters);
 
 		$instance = !empty($builtParams) ?
 			$this->reflections[$implementation]->newInstanceArgs($builtParams)
@@ -794,16 +795,14 @@ class Container implements \ArrayAccess, ContainerInterface {
 			return $this->callbacks[ $cacheKey ];
 		}
 
-		if ($this->useClosures) {
-			$f = $this->getCallbackClosure($this, $classOrInterface, $method);
-		}
+		$f = $this->getCallbackClosure($this, $classOrInterface, $method);
 
 		$this->callbacks[ $cacheKey ] = $f;
 
 		return $f;
 	}
 
-	public function _getParameter(ReflectionParameter $parameter) {
+	public function getParameter(ReflectionParameter $parameter) {
 		$class = $parameter->getClass();
 
 		if (null === $class) {
@@ -851,43 +850,10 @@ class Container implements \ArrayAccess, ContainerInterface {
 		$classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
 
 		$instanceId = md5($classOrInterfaceName . '::' . serialize($args));
-		if (!isset($this->instanceCallbacks[$instanceId])) {
-			$this->__instanceCallbackArgs[$instanceId] = $args;
-
-			if ($this->useClosures) {
-				$f = $this->getInstanceClosure($this, $classOrInterface, $args);
-			} else {
-				// @codeCoverageIgnoreStart
-				if (is_object($classOrInterface) || is_callable($classOrInterface)) {
-					$objectId = uniqid(rand(1, 9999) . md5($classOrInterfaceName));
-					$this->bind($objectId, $classOrInterface);
-					$body = "global \$__container_{$this->id};
-					\$c = \$__container_{$this->id};
-					return \$c->make('{$objectId}'); ";
-				} else {
-					$body = "global \$__container_{$this->id};
-					\$c = \$__container_{$this->id};
-					\$r = new ReflectionClass('{$classOrInterface}');
-					\$vars = \$c->__instanceCallbackArgs['{$instanceId}'];
-					\$constructor = \$r->getConstructor();
-					if (null === \$constructor || empty(\$vars)) {
-						return \$c->make('{$classOrInterface}');
-					}
-					\$args = array();
-					foreach (\$vars as \$var) {
-						try {
-							\$args[] = \$c->make(\$var);
-						} catch (RuntimeException \$e) {
-							\$args[] = \$var;
-						}
-					}
-					return \$r->newInstanceArgs(\$args);";
-				}
-				$f = create_function('', $body);
-				// @codeCoverageIgnoreEnd
-			}
-
-			$this->instanceCallbacks[$instanceId] = $f;
+		if ( ! isset( $this->instanceCallbacks[ $instanceId ] ) ) {
+			$this->__instanceCallbackArgs[ $instanceId ] = $args;
+			$f = $this->getInstanceClosure( $this, $classOrInterface, $args );
+			$this->instanceCallbacks[ $instanceId ] = $f;
 		}
 
 		return $this->instanceCallbacks[$instanceId];

@@ -30,7 +30,7 @@ interface TestInterface{
 	public function apiMethodTwo( $param1 );
 }
 
-class Container52CompatTest extends PHPUnit_Framework_TestCase {
+class PrefixedTest extends PHPUnit_Framework_TestCase {
 
 	public function boundVariables() {
 		return array(
@@ -977,7 +977,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 
 		$container = new tad_DI52_Container();
 
-		$f = $container->instance('ClassTen', array('foo', 'baz', 'bar'));
+		$f = $container->instance('ClassTen', [ 'foo', 'baz', 'bar' ] );
 
 		$this->assertEquals(0, ClassTen::$builtTimes);
 
@@ -1349,7 +1349,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$reflectionParameter = reset($params);
 
 		$container = new tad_DI52_Container();
-		$value     = $container->_getParameter($reflectionParameter);
+		$value     = $container->getParameter($reflectionParameter);
 
 		$this->assertEquals(23, $value);
 	}
@@ -1367,7 +1367,7 @@ class Container52CompatTest extends PHPUnit_Framework_TestCase {
 		$this->setExpectedException('ReflectionException');
 
 		$container = new tad_DI52_Container();
-		$container->_getParameter($reflectionParameter);
+		$container->getParameter($reflectionParameter);
 	}
 
 	/**

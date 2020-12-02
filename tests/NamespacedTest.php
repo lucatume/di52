@@ -1,6 +1,6 @@
 <?php
 
-class Container53CompatTest extends \PHPUnit_Framework_TestCase
+class NamespacedTest extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * @test

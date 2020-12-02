@@ -14,7 +14,12 @@
     }
   },
   "autoload": {
-    "files": ["autoload.php"]
+    "psr-4": {
+      "lucatume\\DI52\\": "src/"
+    },
+    "files": [
+      "autoload.php"
+    ]
   },
   "require": {
     "php": ">=5.6.20",

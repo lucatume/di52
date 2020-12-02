@@ -1,9 +1,9 @@
 <?php
-require_once dirname(dirname(__FILE__)) . '/vendor/autoload.php';
-require_once dirname(__FILE__) . '/data/test-classes.php';
-require_once dirname(__FILE__) . '/data/test-car-classes.php';
-require_once dirname(__FILE__) . '/data/namespaced-test-classes.php';
-require_once dirname(__FILE__) . '/data/test-providers.php';
+require_once dirname( __DIR__ ) . '/vendor/autoload.php';
+require_once __DIR__ . '/data/test-classes.php';
+require_once __DIR__ . '/data/test-car-classes.php';
+require_once __DIR__ . '/data/namespaced-test-classes.php';
+require_once __DIR__ . '/data/test-providers.php';
 
 function assertMatchesSnapshots($actual){
 	foreach ( debug_backtrace( true) as $entry){
@@ -12,7 +12,6 @@ function assertMatchesSnapshots($actual){
 		   && $entry['object'] instanceof PHPUnit_Framework_TestCase
 		) {
 			$testCase   = $entry['class'];
-			/** @var PHPUnit_Framework_TestCase $tc */
 			$tc                 = $entry['object'];
 			$testMethod = $tc->getName(true);
 			$testCaseReflection = new ReflectionClass(get_class($tc));

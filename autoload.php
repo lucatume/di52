@@ -18,37 +18,24 @@ if ( function_exists( 'autoloader' ) ) {
  * @return bool Whether the class was located and loaded or not.
  */
 function autoloader( $class ) {
-	static $loadedClasses;
-
-	if ( count( (array) $loadedClasses ) === 3 ) {
+	if ( strpos( $class, 'tad_DI52_' ) === false ) {
 		return false;
 	}
 
-	$alias = false;
-	if ( strpos( $class, '\\lucatume\\DI52\\' ) !== false ) {
-		$className = str_replace( 'tad_DI52_', '', $class );
-	} elseif ( strpos( $class, 'tad_DI52_' ) !== false ) {
-		$className = str_replace( 'tad_DI52_', '', $class );
-		$alias = true;
-	} else{
-		return false;
-	}
-
+	$className = str_replace( 'tad_DI52_', '', $class );
+	// This should be handled by Composer, but just in case handle it here too.
 	$path = __DIR__ . '/src/' . $className . '.php';
 
-	if ( is_file( $path ) ) {
-		/** @noinspection PhpIncludeInspection */
-		require_once $path;
-		$loadedClass     = '\\lucatume\\DI52\\' . $className;
-		$loadedClasses[] = array_merge( (array) $loadedClasses, [ $loadedClass ] );
-		if ( $alias ) {
-			class_alias( $loadedClass, $class );
-		}
-
-		return true;
+	if ( ! is_file( $path ) ) {
+		return false;
 	}
 
-	return false;
+	/** @noinspection PhpIncludeInspection */
+	require_once $path;
+	$loadedClass = '\\lucatume\\DI52\\' . $className;
+	class_alias( $loadedClass, $class );
+
+	return true;
 }
 
 spl_autoload_register( 'lucatume\DI52\autoloader' );
