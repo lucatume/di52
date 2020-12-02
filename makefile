@@ -1,6 +1,16 @@
-benchmarksFolder = /Users/Luca/Repos/php-dependency-injection-benchmarks
+# Use bash as shell.
+SHELL := /bin/bash
 
-composer_56_update:
+# If you see pwd_unknown showing up, this is why. Re-calibrate your system.
+PWD ?= pwd_unknown
+
+# PROJECT_NAME defaults to name of the current directory.
+PROJECT_NAME = $(notdir $(PWD))
+
+# Suppress `make` own output.
+.SILENT:
+
+composer_update:
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
@@ -8,9 +18,9 @@ composer_56_update:
 	-v "${PWD}:/project" \
 	-t \
 	lucatume/composer:php5.6-composer-v2 update
-.PHONY: composer_56_update
+.PHONY: composer_update
 
-composer_56_install:
+composer_install:
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
@@ -18,7 +28,7 @@ composer_56_install:
 	-v "${PWD}:/project" \
 	-t \
 	lucatume/composer:php5.6-composer-v2 install
-.PHONY: composer_56_install
+.PHONY: composer_install
 
 build_php_versions = '5.6' '7.0' '7.1' '7.2' '7.3' '7.4' '8.0'
 $(build_php_versions): %:
@@ -31,49 +41,21 @@ $(build_php_versions): %:
 
 build: $(build_php_versions)
 
-test_php_versions = php-v5.6 php-v7.0 php-v7.1 php-v7.2 php-v7.3 php-v7.4 php-v8.0
+test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0'
 $(test_php_versions): %:
 	docker run --rm \
-	   -v "${CURDIR}:${CURDIR}" \
-	   --entrypoint ${CURDIR}/vendor/bin/phpunit \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:$@ \
-	   --bootstrap ${CURDIR}/tests/bootstrap.php \
-	   ${CURDIR}/tests
-
-test: $(test_php_versions)
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   ${PWD}/tests
 .PHONY: test
 
-test_8:
-	docker run --rm \
-	   -v "${CURDIR}:${CURDIR}" \
-	   --entrypoint ${CURDIR}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v8.0 \
-	   --bootstrap ${CURDIR}/tests/bootstrap.php \
-	   ${CURDIR}/tests
+test: $(test_php_versions)
 
-benchmark:
-	cd $(benchmarksFolder); \
-	php test1-5_runner.php; \
-	ls -p -t ./results/test1-5_results-*.html | head -1 | xargs open;
-
-benchmark6:
-	cd $(benchmarksFolder); \
-	php test6_runner.php; \
-	ls -p -t ./results/test6_results-*.html | head -1 | xargs open;
-
-cover:
-	vendor/bin/phpunit-php52 --coverage-html ./tests/coverage tests
-	open ./tests/coverage/index.html
-
-lint_52:
-	docker run --rm -v "${CURDIR}:/project" --entrypoint php tommylau/php-5.2 -l /project/src/tad/DI52/Container.php
-	docker run --rm -v "${CURDIR}:/project" --entrypoint php tommylau/php-5.2 -l /project/src/tad/DI52/ContainerInterface.php
-	docker run --rm -v "${CURDIR}:/project" --entrypoint php tommylau/php-5.2 -l /project/src/tad/DI52/ProtectedValue.php
-	docker run --rm -v "${CURDIR}:/project" --entrypoint php tommylau/php-5.2 -l /project/src/tad/DI52/ServiceProviderInterface.php
-
-lint_53:
-	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/closuresSupport.php
-	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/Container.php
-	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/ContainerInterface.php
-	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/ProtectedValue.php
-	docker run --rm -v "${CURDIR}:/project" cespi/php-5.3 php -l /project/src/tad/DI52/ServiceProviderInterface.php
+# Lint the project source files to make sure they are PHP 5.6 compatible.
+lint:
+	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \
+			${PWD}/src \
+			${PWD}/autoload.php
+.PHONY: lint
