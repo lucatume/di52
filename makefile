@@ -53,6 +53,15 @@ $(test_php_versions): %:
 
 test: $(test_php_versions)
 
+dev:
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-5.6 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+
 # Lint the project source files to make sure they are PHP 5.6 compatible.
 lint:
 	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \

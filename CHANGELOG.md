@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+- Add support for a default value in the `lucatume\DI52\Container::getVar(string $key, mixed $default = null) : mixed` method.
+- The `lucatume\DI52\Container::setVar(string $key, mixed $value)` will **not** try to run callables when storing variables on the container using the method. As such, the need to protect the variables when using the `setVar()` method is no more required.
+
 ## [2.1.3] 2020-11-02;
 
 ### Fixed

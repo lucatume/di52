@@ -6,3 +6,9 @@ parameters:
 		- 'autoload.php'
 	scanDirectories:
 		- ../vendor
+	ignoreErrors:
+		# Due to https://github.com/phpstan/phpstan/issues/4078
+		-
+		    message: '#return type with generic class ReflectionClass does not specify its types: T#'
+		    path: ../src
+
