@@ -48,7 +48,7 @@ abstract class ServiceProvider
     /**
      * Returns an array of the class or interfaces bound and provided by the service provider.
      *
-     * @return array
+     * @return array<string> A list of fully-qualified implementations provided by the service provider.
      */
     public function provides()
     {
@@ -58,7 +58,7 @@ abstract class ServiceProvider
     /**
      * Binds and sets up implementations at boot time.
      *
-     * @return void
+     * @return void The method will not return any value.
      */
     public function boot()
     {

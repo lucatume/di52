@@ -1,0 +1,8 @@
+parameters:
+	level: 8
+	paths:
+		- src
+		- tests
+		- 'autoload.php'
+	scanDirectories:
+		- ../vendor

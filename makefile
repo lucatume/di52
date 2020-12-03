@@ -91,7 +91,9 @@ phpstan:
 	docker run --rm \
 		-v ${PWD}:${PWD} \
 		-u "$$(id -u):$$(id -g)" \
-		phpstan/phpstan analyze -l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/autoload.php
+		phpstan/phpstan analyze \
+		-c ${PWD}/_build/phpstan.neon \
+		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/autoload.php
 .PHONY: phpstan
 
 phan:
