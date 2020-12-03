@@ -325,13 +325,13 @@ interface Eight
 
 class ClassEight implements Eight
 {
-    public static $called = array();
-    public static $calledWith = array();
+    public static $called = [];
+    public static $calledWith = [];
 
     public static function reset()
     {
-        self::$called = array();
-        self::$calledWith = array();
+        self::$called = [];
+        self::$calledWith = [];
     }
 
     public function methodOne()

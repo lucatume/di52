@@ -363,7 +363,7 @@ class Container implements \ArrayAccess, ContainerInterface
 
             if (isset($this->afterbuild[$classOrInterface])) {
                 foreach ($this->afterbuild[$classOrInterface] as $method) {
-                    call_user_func(array($instance, $method));
+                    call_user_func( [ $instance, $method ] );
                 }
             }
 
@@ -404,8 +404,8 @@ class Container implements \ArrayAccess, ContainerInterface
         /** @var ReflectionClass $classReflection */
         $classReflection = $this->reflections[$implementation];
         $constructor = $classReflection->getConstructor();
-        $parameters = empty($constructor) ? array() : $constructor->getParameters();
-        $builtParams = array_map(array($this, 'getParameter' ), $parameters);
+        $parameters = empty($constructor) ? [] : $constructor->getParameters();
+        $builtParams = array_map( [ $this, 'getParameter' ], $parameters);
 
         $instance = !empty($builtParams) ?
             $this->reflections[$implementation]->newInstanceArgs($builtParams)
@@ -473,7 +473,7 @@ class Container implements \ArrayAccess, ContainerInterface
     public function tagged($tag)
     {
         if ($this->hasTag($tag)) {
-            return array_map(array($this, 'offsetGet'), $this->tags[$tag]);
+            return array_map( [ $this, 'offsetGet' ], $this->tags[$tag]);
         }
 
         throw new RuntimeException("Nothing has been tagged {$tag}.");
@@ -724,7 +724,7 @@ class Container implements \ArrayAccess, ContainerInterface
 
         $this->contexts[$this->neededImplementation] =
             !empty($this->contexts[$this->neededImplementation]) ?
-                $this->contexts[$this->neededImplementation] : array();
+                $this->contexts[$this->neededImplementation] : [];
         $this->contexts[$this->neededImplementation][$this->bindingFor] = $implementation;
     }
 
@@ -852,7 +852,7 @@ class Container implements \ArrayAccess, ContainerInterface
         }
 
         if (!isset($this->dependants[$parameterClassName])) {
-            $this->dependants[$parameterClassName] = array($this->resolving);
+            $this->dependants[$parameterClassName] = [ $this->resolving ];
         } else {
             $this->dependants[$parameterClassName][] = $this->resolving;
         }
@@ -876,7 +876,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @return callable  A callable function that will return an instance of the specified class when
      *                   called.
      */
-    public function instance($classOrInterface, array $args = array())
+    public function instance($classOrInterface, array $args = [] )
     {
         $classOrInterfaceName = is_object($classOrInterface) ? get_class($classOrInterface) : $classOrInterface;
 
@@ -919,8 +919,8 @@ class Container implements \ArrayAccess, ContainerInterface
 
         return function () use ($isStatic, $container, $objectId, $method) {
             return $isStatic ?
-                call_user_func_array(array( $objectId, $method ), func_get_args())
-                : call_user_func_array(array( $container->make($objectId), $method ), func_get_args());
+                call_user_func_array( [ $objectId, $method ], func_get_args())
+                : call_user_func_array( [ $container->make($objectId), $method ], func_get_args());
         };
     }
 
@@ -933,7 +933,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return Closure
      */
-    protected function getInstanceClosure(Container $container, $classOrInterface, array $vars = array())
+    protected function getInstanceClosure(Container $container, $classOrInterface, array $vars = [] )
     {
         return function () use ($container, $classOrInterface, $vars) {
             if (is_object($classOrInterface)) {
@@ -948,7 +948,7 @@ class Container implements \ArrayAccess, ContainerInterface
             if (null === $constructor || empty($vars)) {
                 return $container->make($classOrInterface);
             }
-            $args = array();
+            $args = [];
             foreach ($vars as $var) {
                 try {
                     $args[] = $container->make($var);
@@ -964,7 +964,7 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         // TODO: Implement get() method.
     }
-        
+
     /**
      * @{inheritDoc}
      */

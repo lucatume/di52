@@ -135,14 +135,14 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
     public function namespacedKeysAndValues()
     {
-        return array(
-            array('Acme\One', 'Acme\ClassOne'),
-            array('\Acme\One', '\Acme\ClassOne'),
-            array('Acme\One', '\Acme\ClassOne'),
-            array('\Acme\One', 'Acme\ClassOne'),
-            array('foo.one', '\Acme\ClassOne'),
-            array('foo.one', 'Acme\ClassOne'),
-        );
+        return [
+            [ 'Acme\One', 'Acme\ClassOne' ],
+            [ '\Acme\One', '\Acme\ClassOne' ],
+            [ 'Acme\One', '\Acme\ClassOne' ],
+            [ '\Acme\One', 'Acme\ClassOne' ],
+            [ 'foo.one', '\Acme\ClassOne' ],
+            [ 'foo.one', 'Acme\ClassOne' ],
+        ];
     }
 
     /**
@@ -170,13 +170,13 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $container = new tad_DI52_Container();
 
         $container->tag(
-            array(
+            [
                 'ClassOne',
                 new ClassOneOne(),
                 function ($container) {
                     return $container->make('ClassOneTwo');
                 }
-            ),
+            ],
             'foo'
         );
         $made = $container->tagged('foo');
@@ -379,7 +379,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('One', $one);
 
-        $f = $container->instance('ClassTwelve', array('One'));
+        $f = $container->instance('ClassTwelve', [ 'One' ] );
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
     }
@@ -400,7 +400,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->singleton('One', $one);
 
-        $f = $container->instance('ClassTwelve', array('One'));
+        $f = $container->instance('ClassTwelve', [ 'One' ] );
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -422,7 +422,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('foo', $one);
 
-        $f = $container->instance('ClassTwelve', array('foo'));
+        $f = $container->instance('ClassTwelve', [ 'foo' ] );
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertNotSame($f()->getVarOne(), $f()->getVarOne());
@@ -444,7 +444,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->singleton('foo', $one);
 
-        $f = $container->instance('ClassTwelve', array('foo'));
+        $f = $container->instance('ClassTwelve', [ 'foo' ] );
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -479,7 +479,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container = new tad_DI52_Container();
 
-        $f = $container->instance('Acme\ClassTen', array('foo', 'baz', 'bar'));
+        $f = $container->instance('Acme\ClassTen', [ 'foo', 'baz', 'bar' ] );
 
         $this->assertEquals(0, Acme\ClassTen::$builtTimes);
 
@@ -518,7 +518,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $container->bind('Acme\One', 'Acme\ClassOne');
         $container->bind('Acme\Two', 'Acme\ClassTwo');
 
-        $f = $container->instance('Acme\ClassEleven', array('Acme\ClassOne', 'Acme\Two', 'bar'));
+        $f = $container->instance('Acme\ClassEleven', [ 'Acme\ClassOne', 'Acme\Two', 'bar' ] );
 
         $this->assertEquals(0, Acme\ClassEleven::$builtTimes);
 
@@ -560,7 +560,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $container->bind('Acme\One', 'Acme\ClassOne');
         $container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ] );
 
         $instance1 = $f();
 
@@ -580,7 +580,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOneOne'));
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOneOne' ] );
 
         $instance1 = $f();
 
@@ -600,7 +600,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('foo', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', array('foo'));
+        $f = $container->instance('Acme\ClassTwelve', [ 'foo' ] );
 
         $instance1 = $f();
 
@@ -620,7 +620,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->singleton('Acme\ClassOne', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ] );
 
         $this->assertInstanceOf('Acme\ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -639,7 +639,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $one = new Acme\ClassOne;
         $container->singleton('Acme\ClassOne', $one);
 
-        $f = $container->instance('Acme\ClassTwelve', array('Acme\ClassOne'));
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ] );
 
         $this->assertInstanceOf('Acme\ClassOne', $f()->getVarOne());
         $this->assertSame($one, $f()->getVarOne());
@@ -653,7 +653,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bind('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', array('sudo-foo')));
+        $container->bind('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ] ));
 
         $this->assertInstanceOf('Acme\ClassOneTwo', $container->make('Acme\ClassOne'));
         $this->assertEquals('sudo-foo', $container->make('Acme\ClassOne')->getFoo());
@@ -668,7 +668,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->singleton('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', array('sudo-foo')));
+        $container->singleton('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ] ));
 
         $this->assertInstanceOf('Acme\ClassOneTwo', $container->make('Acme\ClassOne'));
         $this->assertEquals('sudo-foo', $container->make('Acme\ClassOne')->getFoo());

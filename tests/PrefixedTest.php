@@ -42,12 +42,12 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
     public function boundVariables()
     {
-        return array(
-            array('bar'),
-            array(23),
-            array((object)array('prop' => 'value')),
-            array(''),
-        );
+        return [
+            [ 'bar' ],
+            [ 23 ],
+            [ (object) [ 'prop' => 'value' ] ],
+            [ '' ],
+        ];
     }
 
     protected function setUp()
@@ -339,10 +339,10 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
     public function implementationKeysAndValues()
     {
-        return array(
-            array('One', 'ClassOne'),
-            array('ClassOne', 'ClassOneOne'),
-        );
+        return [
+            [ 'One', 'ClassOne' ],
+            [ 'ClassOne', 'ClassOneOne' ],
+        ];
     }
 
     /**
@@ -368,7 +368,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
+        $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ] );
 
         $this->assertInstanceOf('Four', $container->make('Four'));
         $this->assertNotSame($container->make('Four'), $container->make('Four'));
@@ -384,8 +384,8 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bindDecorators(
             'Four',
-            array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'),
-            array('methodOne', 'methodTwo')
+            [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ],
+            [ 'methodOne', 'methodTwo' ]
         );
 
         $this->assertInstanceOf('Four', $container->make('Four'));
@@ -407,7 +407,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->singletonDecorators(
             'Four',
-            array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase')
+            [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ]
         );
 
         $this->assertInstanceOf('Four', $container->make('Four'));
@@ -426,7 +426,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $container->bind('One', 'ClassOne');
         $container->bind('Two', 'ClassTwo');
 
-        $container->bindDecorators('Five', array('FiveDecoratorOne', 'FiveDecoratorTwo', 'FiveDecoratorThree', 'FiveBase'));
+        $container->bindDecorators('Five', [ 'FiveDecoratorOne', 'FiveDecoratorTwo', 'FiveDecoratorThree', 'FiveBase' ] );
 
         $this->assertInstanceOf('Five', $container->make('Five'));
         $this->assertNotSame($container->make('Five'), $container->make('Five'));
@@ -446,7 +446,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->singletonDecorators(
             'Five',
-            array('FiveDecoratorOne', 'FiveDecoratorTwo', 'FiveDecoratorThree', 'FiveBase')
+            [ 'FiveDecoratorOne', 'FiveDecoratorTwo', 'FiveDecoratorThree', 'FiveBase' ]
         );
 
         $this->assertInstanceOf('Five', $container->make('Five'));
@@ -461,7 +461,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->tag(array('ClassOne', 'ClassOneOne', 'ClassOneTwo'), 'foo');
+        $container->tag( [ 'ClassOne', 'ClassOneOne', 'ClassOneTwo' ], 'foo');
         $made = $container->tagged('foo');
 
         $this->assertInstanceOf('ClassOne', $made[0]);
@@ -490,7 +490,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->tag(array('ClassOne', new ClassOneOne(), 'ClassOneTwo'), 'foo');
+        $container->tag( [ 'ClassOne', new ClassOneOne(), 'ClassOneTwo' ], 'foo');
         $made = $container->tagged('foo');
 
         $this->assertInstanceOf('ClassOne', $made[0]);
@@ -583,7 +583,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bind('One', 'ClassOneThree', array('methodOne', 'methodTwo'));
+        $container->bind('One', 'ClassOneThree', [ 'methodOne', 'methodTwo' ] );
 
         $one = $container->make('One');
         $this->assertTrue($one->oneCalled);
@@ -781,7 +781,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $container->bind('foo', 'ClassOne');
         $container->bind('One', 'ClassOne');
 
-        $container->tag(array('foo', 'One'), 'bar');
+        $container->tag( [ 'foo', 'One' ], 'bar');
 
         $resolved = $container->tagged('bar');
 
@@ -804,7 +804,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $f();
 
-        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
         $this->assertNotSame($container->make('Eight'), $container->make('Eight'));
     }
 
@@ -821,7 +821,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $f();
 
-        $this->assertEquals(array('methodOne'), ClassEightExtension::$called);
+        $this->assertEquals( [ 'methodOne' ], ClassEightExtension::$called);
         $this->assertNotSame($container->make('ClassEight'), $container->make('ClassEight'));
     }
 
@@ -838,7 +838,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $f();
 
-        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
         $this->assertNotSame($container->make('foo'), $container->make('foo'));
     }
 
@@ -856,7 +856,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertSame($container->make('Eight'), $container->make('Eight'));
-        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
     }
 
     /**
@@ -873,7 +873,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertSame($container->make('ClassEight'), $container->make('ClassEight'));
-        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
     }
 
     /**
@@ -890,7 +890,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertSame($container->make('foo'), $container->make('foo'));
-        $this->assertEquals(array('methodOne'), ClassEight::$called);
+        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
     }
 
     /**
@@ -905,7 +905,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f = $container->callback('foo', 'methodFour');
 
         $f('foo', 23);
-        $this->assertEquals(array('foo', 23), ClassEight::$calledWith);
+        $this->assertEquals( [ 'foo', 23 ], ClassEight::$calledWith);
     }
 
     /**
@@ -916,7 +916,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bindDecorators('Four', array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase'));
+        $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ] );
 
         $f = $container->callback('Four', 'methodOne');
         $this->assertEquals(26, $f(3));
@@ -932,7 +932,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->singletonDecorators(
             'Four',
-            array('FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase')
+            [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ]
         );
 
         $f = $container->callback('Four', 'methodOne');
@@ -1101,7 +1101,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $container->bind('One', 'ClassOneTwo');
         $container->bind('Two', 'ClassTwo');
 
-        $f = $container->instance('ClassEleven', array('ClassOne', 'Two', 'bar'));
+        $f = $container->instance('ClassEleven', [ 'ClassOne', 'Two', 'bar' ] );
 
         $this->assertEquals(0, ClassEleven::$builtTimes);
 
@@ -1142,7 +1142,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bind('One', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', array('One'));
+        $f = $container->instance('ClassTwelve', [ 'One' ] );
 
         $instance1 = $f();
 
@@ -1162,7 +1162,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bind('One', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', array('ClassOneOne'));
+        $f = $container->instance('ClassTwelve', [ 'ClassOneOne' ] );
 
         $instance1 = $f();
 
@@ -1182,7 +1182,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bind('foo', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', array('foo'));
+        $f = $container->instance('ClassTwelve', [ 'foo' ] );
 
         $instance1 = $f();
 
@@ -1202,7 +1202,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->singleton('One', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', array('One'));
+        $f = $container->instance('ClassTwelve', [ 'One' ] );
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -1221,7 +1221,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $one = new ClassOne;
         $container->singleton('One', $one);
 
-        $f = $container->instance('ClassTwelve', array('One'));
+        $f = $container->instance('ClassTwelve', [ 'One' ] );
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($one, $f()->getVarOne());
@@ -1235,7 +1235,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bind('One', $container->instance('ClassOneTwo', array('sudo-foo')));
+        $container->bind('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ] ));
 
         $this->assertInstanceOf('ClassOneTwo', $container->make('One'));
         $this->assertEquals('sudo-foo', $container->make('One')->getFoo());
@@ -1250,7 +1250,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->singleton('One', $container->instance('ClassOneTwo', array('sudo-foo')));
+        $container->singleton('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ] ));
 
         $this->assertInstanceOf('ClassOneTwo', $container->make('One'));
         $this->assertEquals('sudo-foo', $container->make('One')->getFoo());
@@ -1571,10 +1571,10 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
     public function numeric_names()
     {
-        return array(
-            array( 'luca' ),
-            array( 'jane' ),
-        );
+        return [
+            [ 'luca' ],
+            [ 'jane' ],
+        ];
     }
 
     /**
@@ -1591,10 +1591,10 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
     public function names()
     {
-        return array(
-            'luca' => array( 'luca' ),
-            'jane' => array( 'jane' ),
-        );
+        return [
+            'luca' => [ 'luca' ],
+            'jane' => [ 'jane' ],
+        ];
     }
 
     /**

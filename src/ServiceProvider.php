@@ -52,11 +52,13 @@ abstract class ServiceProvider
      */
     public function provides()
     {
-        return array();
+        return [];
     }
 
     /**
      * Binds and sets up implementations at boot time.
+     *
+     * @return void
      */
     public function boot()
     {

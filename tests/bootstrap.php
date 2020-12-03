@@ -25,7 +25,7 @@ function assertMatchesSnapshots($actual)
     }
 
     static $counts;
-    $counts = $counts === null ? array() : $counts;
+    $counts = $counts === null ? [] : $counts;
 
     $counts["{$testCase}-{$testMethod}"] = isset($counts["{$testCase}-{$testMethod}"]) ?
         $counts["{$testCase}-{$testMethod}"] + 1

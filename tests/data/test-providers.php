@@ -43,7 +43,7 @@ class DeferredProviderTwo extends tad_DI52_ServiceProvider
 
     public function provides()
     {
-        return array('One');
+        return [ 'One' ];
     }
 
 
