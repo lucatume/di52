@@ -14,5 +14,6 @@ use Psr\Container\ContainerExceptionInterface;
  *
  * @package lucatume\DI52
  */
-class ContainerException extends \Exception implements ContainerExceptionInterface {
+class ContainerException extends \Exception implements ContainerExceptionInterface
+{
 }

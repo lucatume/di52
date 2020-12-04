@@ -1,5 +1,9 @@
 <?php
 
+use lucatume\DI52\ContainerException;
+use lucatume\DI52\NotFoundException;
+use lucatume\DI52\ObservableContainer;
+
 class TestObject
 {
     protected $num;
@@ -102,7 +106,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException(ContainerException::class);
 
         $this->assertNull($container['foo']);
     }
@@ -213,7 +217,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_throw_if_trying_to_resolve_class_with_unbound_interface_dependency()
     {
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException(NotFoundException::class);
 
         $container = new tad_DI52_Container();
 
@@ -290,7 +294,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException(ContainerException::class);
 
         $container->make('ClassFour');
     }
@@ -368,7 +372,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ] );
+        $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ]);
 
         $this->assertInstanceOf('Four', $container->make('Four'));
         $this->assertNotSame($container->make('Four'), $container->make('Four'));
@@ -426,7 +430,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $container->bind('One', 'ClassOne');
         $container->bind('Two', 'ClassTwo');
 
-        $container->bindDecorators('Five', [ 'FiveDecoratorOne', 'FiveDecoratorTwo', 'FiveDecoratorThree', 'FiveBase' ] );
+        $container->bindDecorators('Five', [ 'FiveDecoratorOne', 'FiveDecoratorTwo', 'FiveDecoratorThree', 'FiveBase' ]);
 
         $this->assertInstanceOf('Five', $container->make('Five'));
         $this->assertNotSame($container->make('Five'), $container->make('Five'));
@@ -461,7 +465,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->tag( [ 'ClassOne', 'ClassOneOne', 'ClassOneTwo' ], 'foo');
+        $container->tag([ 'ClassOne', 'ClassOneOne', 'ClassOneTwo' ], 'foo');
         $made = $container->tagged('foo');
 
         $this->assertInstanceOf('ClassOne', $made[0]);
@@ -477,7 +481,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException('RuntimeException');
+        $this->expectException(NotFoundException::class);
 
         $container->tagged('foo');
     }
@@ -490,7 +494,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->tag( [ 'ClassOne', new ClassOneOne(), 'ClassOneTwo' ], 'foo');
+        $container->tag([ 'ClassOne', new ClassOneOne(), 'ClassOneTwo' ], 'foo');
         $made = $container->tagged('foo');
 
         $this->assertInstanceOf('ClassOne', $made[0]);
@@ -534,16 +538,16 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException(ContainerException::class);
 
         $container->register('DeferredProviderOne');
     }
 
     /**
      * @test
-     * it should register deferred provider when trying to resolve provided class
+     * it should call register on deferred provider when trying to resolve provided class
      */
-    public function it_should_register_deferred_provider_when_trying_to_resolve_provided_class()
+    public function it_should_call_register_on_deferred_provider_when_trying_to_resolve_provided_class()
     {
         DeferredProviderTwo::reset();
 
@@ -583,7 +587,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bind('One', 'ClassOneThree', [ 'methodOne', 'methodTwo' ] );
+        $container->bind('One', 'ClassOneThree', [ 'methodOne', 'methodTwo' ]);
 
         $one = $container->make('One');
         $this->assertTrue($one->oneCalled);
@@ -692,7 +696,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException(NotFoundException::class);
 
         $container->make('SomeNonExistingClass');
     }
@@ -781,7 +785,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $container->bind('foo', 'ClassOne');
         $container->bind('One', 'ClassOne');
 
-        $container->tag( [ 'foo', 'One' ], 'bar');
+        $container->tag([ 'foo', 'One' ], 'bar');
 
         $resolved = $container->tagged('bar');
 
@@ -804,7 +808,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $f();
 
-        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
+        $this->assertEquals([ 'methodOne' ], ClassEight::$called);
         $this->assertNotSame($container->make('Eight'), $container->make('Eight'));
     }
 
@@ -821,7 +825,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $f();
 
-        $this->assertEquals( [ 'methodOne' ], ClassEightExtension::$called);
+        $this->assertEquals([ 'methodOne' ], ClassEightExtension::$called);
         $this->assertNotSame($container->make('ClassEight'), $container->make('ClassEight'));
     }
 
@@ -838,7 +842,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $f();
 
-        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
+        $this->assertEquals([ 'methodOne' ], ClassEight::$called);
         $this->assertNotSame($container->make('foo'), $container->make('foo'));
     }
 
@@ -856,7 +860,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertSame($container->make('Eight'), $container->make('Eight'));
-        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
+        $this->assertEquals([ 'methodOne' ], ClassEight::$called);
     }
 
     /**
@@ -873,7 +877,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertSame($container->make('ClassEight'), $container->make('ClassEight'));
-        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
+        $this->assertEquals([ 'methodOne' ], ClassEight::$called);
     }
 
     /**
@@ -890,7 +894,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f();
 
         $this->assertSame($container->make('foo'), $container->make('foo'));
-        $this->assertEquals( [ 'methodOne' ], ClassEight::$called);
+        $this->assertEquals([ 'methodOne' ], ClassEight::$called);
     }
 
     /**
@@ -905,7 +909,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $f = $container->callback('foo', 'methodFour');
 
         $f('foo', 23);
-        $this->assertEquals( [ 'foo', 23 ], ClassEight::$calledWith);
+        $this->assertEquals([ 'foo', 23 ], ClassEight::$calledWith);
     }
 
     /**
@@ -916,7 +920,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ] );
+        $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ]);
 
         $f = $container->callback('Four', 'methodOne');
         $this->assertEquals(26, $f(3));
@@ -961,7 +965,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException('RuntimeException');
+        $this->setExpectedException(ContainerException::class);
 
         $container->callback('foo', 23);
     }
@@ -1101,7 +1105,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $container->bind('One', 'ClassOneTwo');
         $container->bind('Two', 'ClassTwo');
 
-        $f = $container->instance('ClassEleven', [ 'ClassOne', 'Two', 'bar' ] );
+        $f = $container->instance('ClassEleven', [ 'ClassOne', 'Two', 'bar' ]);
 
         $this->assertEquals(0, ClassEleven::$builtTimes);
 
@@ -1142,7 +1146,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bind('One', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', [ 'One' ] );
+        $f = $container->instance('ClassTwelve', [ 'One' ]);
 
         $instance1 = $f();
 
@@ -1162,7 +1166,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bind('One', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', [ 'ClassOneOne' ] );
+        $f = $container->instance('ClassTwelve', [ 'ClassOneOne' ]);
 
         $instance1 = $f();
 
@@ -1182,7 +1186,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->bind('foo', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', [ 'foo' ] );
+        $f = $container->instance('ClassTwelve', [ 'foo' ]);
 
         $instance1 = $f();
 
@@ -1202,7 +1206,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
 
         $container->singleton('One', 'ClassOne');
 
-        $f = $container->instance('ClassTwelve', [ 'One' ] );
+        $f = $container->instance('ClassTwelve', [ 'One' ]);
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -1221,7 +1225,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $one = new ClassOne;
         $container->singleton('One', $one);
 
-        $f = $container->instance('ClassTwelve', [ 'One' ] );
+        $f = $container->instance('ClassTwelve', [ 'One' ]);
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($one, $f()->getVarOne());
@@ -1235,7 +1239,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bind('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ] ));
+        $container->bind('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ]));
 
         $this->assertInstanceOf('ClassOneTwo', $container->make('One'));
         $this->assertEquals('sudo-foo', $container->make('One')->getFoo());
@@ -1250,7 +1254,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->singleton('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ] ));
+        $container->singleton('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ]));
 
         $this->assertInstanceOf('ClassOneTwo', $container->make('One'));
         $this->assertEquals('sudo-foo', $container->make('One')->getFoo());
@@ -1450,12 +1454,11 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_return_an_interface_argument_default_value_if_available_and_the_interface_is_not_bound()
     {
-        $reflectionMethod = new ReflectionMethod('TestInterface', 'apiMethodOne');
-        $params = $reflectionMethod->getParameters();
+        $params = ( new ReflectionMethod('TestInterface', 'apiMethodOne') )->getParameters();
         $reflectionParameter = reset($params);
 
-        $container = new tad_DI52_Container();
-        $value     = $container->getParameter($reflectionParameter);
+        $container = new ObservableContainer();
+        $value = $container->_resolveParameter($reflectionParameter, 'test');
 
         $this->assertEquals(23, $value);
     }
@@ -1471,10 +1474,10 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $params = $reflectionMethod->getParameters();
         $reflectionParameter = reset($params);
 
-        $this->setExpectedException('ReflectionException');
+        $this->setExpectedException(ContainerException::class);
 
-        $container = new tad_DI52_Container();
-        $container->getParameter($reflectionParameter);
+        $container = new ObservableContainer();
+        $container->_resolveParameter($reflectionParameter, 'test');
     }
 
     /**

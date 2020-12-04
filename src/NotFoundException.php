@@ -14,5 +14,6 @@ use Psr\Container\NotFoundExceptionInterface;
  *
  * @package lucatume\DI52
  */
-class NotFoundException extends \Exception implements NotFoundExceptionInterface {
+class NotFoundException extends ContainerException implements NotFoundExceptionInterface
+{
 }

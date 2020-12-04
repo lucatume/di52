@@ -1,14 +1,11 @@
 <?php
 /**
  * Registers the autoload function for the library.
- * The function will take care of redirecting calls to the `tad_DI52_`, non-namespaced, class format to the namespaced classes.
+ * The function will take care of redirecting calls to the `tad_DI52_`, non-namespaced, class format to the namespaced
+ * classes.
  */
 
 namespace lucatume\DI52;
-
-if (function_exists('autoloader')) {
-    return;
-}
 
 /**
  * Locates and load a library class in its namespaced or non-namespaced format.
@@ -17,8 +14,8 @@ if (function_exists('autoloader')) {
  *
  * @return bool Whether the class was located and loaded or not.
  */
-function autoloader($class)
-{
+
+spl_autoload_register(static function ($class) {
     if (strpos($class, 'tad_DI52_') === false) {
         return false;
     }
@@ -37,6 +34,4 @@ function autoloader($class)
     class_alias($loadedClass, $class);
 
     return true;
-}
-
-spl_autoload_register('lucatume\DI52\autoloader');
+});

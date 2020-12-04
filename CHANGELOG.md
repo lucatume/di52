@@ -5,8 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 
 ### Changed
-- Add support for a default value in the `lucatume\DI52\Container::getVar(string $key, mixed $default = null) : mixed` method.
-- The `lucatume\DI52\Container::setVar(string $key, mixed $value)` will **not** try to run callables when storing variables on the container using the method. As such, the need to protect the variables when using the `setVar()` method is no more required.
+- Add support for a default value in the `lucatume\DI52\Container::getVar(string $key, mixed $default = null) :mixed` method.
+- The `lucatume\DI52\Container::setVar(string $key, mixed $value) :void` will **not** try to run callables when storing variables on the container using the method. As such, the need to protect the variables when using the `setVar()` method is no more required.
+- The `lucatume\DI52\Container::tagged(string $tag) :array` method will now return an empty array if nothing was tagged with the tag; it would throw an error in previous versions.
+- Removed the `tad_DI52_ServiceProviderInterface` and `tad_DI52_ContainerInterface` interfaces.
 
 ## [2.1.3] 2020-11-02;
 

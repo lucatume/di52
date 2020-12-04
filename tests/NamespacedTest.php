@@ -1,5 +1,7 @@
 <?php
 
+use lucatume\DI52\ContainerException;
+
 class NamespacedTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -379,7 +381,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('One', $one);
 
-        $f = $container->instance('ClassTwelve', [ 'One' ] );
+        $f = $container->instance('ClassTwelve', [ 'One' ]);
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
     }
@@ -400,7 +402,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->singleton('One', $one);
 
-        $f = $container->instance('ClassTwelve', [ 'One' ] );
+        $f = $container->instance('ClassTwelve', [ 'One' ]);
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -422,7 +424,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('foo', $one);
 
-        $f = $container->instance('ClassTwelve', [ 'foo' ] );
+        $f = $container->instance('ClassTwelve', [ 'foo' ]);
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertNotSame($f()->getVarOne(), $f()->getVarOne());
@@ -444,7 +446,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->singleton('foo', $one);
 
-        $f = $container->instance('ClassTwelve', [ 'foo' ] );
+        $f = $container->instance('ClassTwelve', [ 'foo' ]);
 
         $this->assertInstanceOf('ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -479,7 +481,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container = new tad_DI52_Container();
 
-        $f = $container->instance('Acme\ClassTen', [ 'foo', 'baz', 'bar' ] );
+        $f = $container->instance('Acme\ClassTen', [ 'foo', 'baz', 'bar' ]);
 
         $this->assertEquals(0, Acme\ClassTen::$builtTimes);
 
@@ -518,7 +520,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $container->bind('Acme\One', 'Acme\ClassOne');
         $container->bind('Acme\Two', 'Acme\ClassTwo');
 
-        $f = $container->instance('Acme\ClassEleven', [ 'Acme\ClassOne', 'Acme\Two', 'bar' ] );
+        $f = $container->instance('Acme\ClassEleven', [ 'Acme\ClassOne', 'Acme\Two', 'bar' ]);
 
         $this->assertEquals(0, Acme\ClassEleven::$builtTimes);
 
@@ -560,7 +562,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $container->bind('Acme\One', 'Acme\ClassOne');
         $container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ] );
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ]);
 
         $instance1 = $f();
 
@@ -580,7 +582,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOneOne' ] );
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOneOne' ]);
 
         $instance1 = $f();
 
@@ -600,7 +602,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('foo', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', [ 'foo' ] );
+        $f = $container->instance('Acme\ClassTwelve', [ 'foo' ]);
 
         $instance1 = $f();
 
@@ -620,7 +622,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->singleton('Acme\ClassOne', 'Acme\ClassOne');
 
-        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ] );
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ]);
 
         $this->assertInstanceOf('Acme\ClassOne', $f()->getVarOne());
         $this->assertSame($f()->getVarOne(), $f()->getVarOne());
@@ -639,7 +641,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $one = new Acme\ClassOne;
         $container->singleton('Acme\ClassOne', $one);
 
-        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ] );
+        $f = $container->instance('Acme\ClassTwelve', [ 'Acme\ClassOne' ]);
 
         $this->assertInstanceOf('Acme\ClassOne', $f()->getVarOne());
         $this->assertSame($one, $f()->getVarOne());
@@ -653,7 +655,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->bind('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ] ));
+        $container->bind('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ]));
 
         $this->assertInstanceOf('Acme\ClassOneTwo', $container->make('Acme\ClassOne'));
         $this->assertEquals('sudo-foo', $container->make('Acme\ClassOne')->getFoo());
@@ -668,7 +670,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $container->singleton('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ] ));
+        $container->singleton('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ]));
 
         $this->assertInstanceOf('Acme\ClassOneTwo', $container->make('Acme\ClassOne'));
         $this->assertEquals('sudo-foo', $container->make('Acme\ClassOne')->getFoo());
@@ -796,7 +798,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_string_with_one_parameter()
     {
-        $this->setExpectedException('ReflectionException');
+        $this->setExpectedException(ContainerException::class);
 
         $container = new tad_DI52_Container();
 
@@ -806,7 +808,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_interface_with_one_parameter()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(ContainerException::class);
 
         $container = new tad_DI52_Container();
 
@@ -816,7 +818,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_abstract_with_one_parameter()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(ContainerException::class);
 
         $container = new tad_DI52_Container();
 
@@ -826,7 +828,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_private_constructor_with_one_parameter()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->setExpectedException(ContainerException::class);
 
         $container = new tad_DI52_Container();
 

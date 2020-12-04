@@ -21,12 +21,25 @@ class ProtectedValue
     protected $value;
 
     /**
-     * lucatume\DI52\ProtectedValue constructor.
-     * @param mixed $value
+     * ProtectedValue constructor.
+     *
+     * @param mixed $value The value to protect.
      */
-    public function __construct($value)
+    private function __construct($value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * Builds a protected value from a starting value.
+     *
+     * @param mixed|self $value Either a value to protect, or an already protected value.
+     *
+     * @return ProtectedValue The built protected value.
+     */
+    public static function of($value)
+    {
+        return $value instanceof self ? $value : new self($value);
     }
 
     /**
