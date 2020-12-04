@@ -292,24 +292,13 @@ class Container implements \ArrayAccess, ContainerInterface
     /**
      * Sets a variable on the container using the ArrayAccess API.
      *
-     * When using the container as an array bindings will be bound as singletons; the two functions below are
-     * equivalent:
-     *
-     *        $container->singleton('foo','ClassOne');
-     *        $container['foo'] = 'ClassOne';
-     *
-     * Variables will be evaluated before storing, to protect a variable from the process, e.g. storing a closure, use
-     * the `protect` method:
-     *
-     *        $container['foo'] = $container->protect($f));
+     * When using the container as an array bindings will be bound as singletons.
+     * These are equivalent: `$container->singleton('foo','ClassOne');`, `$container['foo'] = 'ClassOne';`.
      *
      * @param string $offset The alias the container will use to reference the variable.
      * @param mixed  $value  The variable value.
      *
      * @return void This method does not return any value.
-     *
-     * @see   Container::singleton()
-     * @see   Container::protect()
      */
     public function offsetSet($offset, $value)
     {
@@ -357,40 +346,34 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Retrieves a variable or a binding from the database.
+     * Finds an entry of the container by its identifier and returns it.
      *
-     * If the offset is bound to an implementation then it will be resolved before returning it.
+     * @param string $offset Identifier of the entry to look for.
      *
-     * * @param string|object $offset
+     * @return mixed The entry for an id.
      *
-     * @return mixed
+     * @throws ContainerExceptionInterface Error while retrieving the entry.
+     * @throws NotFoundExceptionInterface  No entry was found for **this** identifier.
      */
     public function offsetGet($offset)
     {
-        return $this->get($offset);
+        return $this->make($offset);
     }
 
     /**
-     * Whether a offset exists
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
      *
-     * @since 5.0.0
+     * `$container[$id]` returning true does not mean that `$container[$id]` will not throw an exception.
+     * It does however mean that `$container[$id]` will not throw a `NotFoundExceptionInterface`.
      *
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
+     * @param mixed $offset An offset to check for.
      *
      * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
-     * @link  http://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @see   isBound
-     *
      */
     public function offsetExists($offset)
     {
-        return $this->has($offset);
+        return isset($this->bindings[ $offset ]) || ( is_string($offset) && class_exists($offset) );
     }
 
     /**
@@ -488,7 +471,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param string $tag
      *
      * @return bool
-     * @see lucatume\DI52\Container::tag()
+     * @see Container::tag()
      *
      */
     public function hasTag($tag)
@@ -572,18 +555,6 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Checks whether an interface, class or string slug has been bound in the container.
-     *
-     * @param string $id
-     *
-     * @return bool
-     */
-    public function isBound($id)
-    {
-        return $this->offsetExists($id);
-    }
-
-    /**
      * Binds a class, interface or string slug to a chain of implementations decorating a base
      * object; the chain will be lazily resolved only on the first call.
      *
@@ -630,16 +601,11 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Offset to unset
+     * Unsets a binding or tag in the container.
      *
-     * @link  http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @param mixed $offset The offset to unset.
      *
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     *
-     * @return void
-     * @since 5.0.0
+     * @return void The method does not return any value.
      */
     public function offsetUnset($offset)
     {
@@ -653,14 +619,14 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * Example:
      *
-     *      // any class requesting an implementation of `LoggerInterface` will receive this implementation...
+     *      // Any class requesting an implementation of `LoggerInterface` will receive this implementation ...
      *      $container->singleton('LoggerInterface', 'FilesystemLogger');
-     *      // but if the requesting class is `Worker` return another implementation
+     *      // But if the requesting class is `Worker` return another implementation
      *      $container->when('Worker')
      *          ->needs('LoggerInterface)
      *          ->give('RemoteLogger);
      *
-     * @return lucatume\DI52\Container
+     * @return Container The container instance, to continue the when/needs/give chain.
      */
     public function when($class)
     {
@@ -674,16 +640,16 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * Example:
      *
-     *      // any class requesting an implementation of `LoggerInterface` will receive this implementation...
+     *      // Any class requesting an implementation of `LoggerInterface` will receive this implementation ...
      *      $container->singleton('LoggerInterface', 'FilesystemLogger');
-     *      // but if the requesting class is `Worker` return another implementation
+     *      // But if the requesting class is `Worker` return another implementation.
      *      $container->when('Worker')
      *          ->needs('LoggerInterface)
      *          ->give('RemoteLogger);
      *
      * @param string $id The class or interface needed by the class.
      *
-     * @return lucatume\DI52\Container
+     * @return Container The container instance, to continue the when/needs/give chain.
      */
     public function needs($id)
     {
@@ -936,5 +902,20 @@ class Container implements \ArrayAccess, ContainerInterface
     public function has($id)
     {
         return isset($this->bindings[ $id ]) || ( is_string($id) && class_exists($id) );
+    }
+
+    /**
+     * Returns whether a binding exists in the container or not.
+     *
+     * `isBound($id)` returning `true` means the a call to `bind($id, $implementaion)` or `singleton($id,
+     * $implementation)` (or equivalent ArrayAccess methods) was explicitly made.
+     *
+     * @param string $id The id to check for bindings in the container.
+     *
+     * @return bool Whether an explicit binding for the id exists in the container or not.
+     */
+    public function isBound($id)
+    {
+        return isset($this->bindings[ $id ]);
     }
 }
