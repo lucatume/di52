@@ -19,6 +19,7 @@ tagged with the tag; it would throw an error in previous versions.
 [ ] Make the container implementation compatible with [PSR-11 Container specification](https://www.php-fig.
 org/psr/psr-11/)
 [ ] Move benchmarks to Docker, automate them.
+[ ] Update documentation and examples.
 
 ## [2.1.3] 2020-11-02;
 
