@@ -367,11 +367,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetGet($offset)
     {
-        if (! $this->offsetExists($offset)) {
-            throw new ContainerException("Nothing is bound to the key '{$offset}'");
-        }
-
-        return $this->make($offset);
+        return $this->get($offset);
     }
 
     /**
@@ -394,7 +390,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetExists($offset)
     {
-        return isset($this->bindings[ $offset ]);
+        return $this->has($offset);
     }
 
     /**
