@@ -923,7 +923,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function get($id)
     {
-        // TODO implement get() method.
+        return $this->make($id);
     }
 
     /**
@@ -939,6 +939,6 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function has($id)
     {
-        // TODO implement has() method.
+        return isset($this->bindings[ $id ]) || ( is_string($id) && class_exists($id) );
     }
 }
