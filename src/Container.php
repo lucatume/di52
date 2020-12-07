@@ -28,6 +28,23 @@ class Container implements \ArrayAccess, ContainerInterface
     const CLASS_EXISTS = 0b0001;
     const INTERFACE_EXISTS = 0b0010;
     const TRAIT_EXISTS = 0b00100;
+    /**
+     * Whether unbound classes should be resolved as singletons, by default, or not.
+     *
+     * @var bool
+     */
+    protected $resolveUnboundAsSingletons = false;
+
+    /**
+     * Container constructor.
+     *
+     * @param false $resolveUnboundAsSingletons Whether unbound classes should be resolved as singletons by default,
+     *                                          or not.
+     */
+    public function __construct($resolveUnboundAsSingletons = false)
+    {
+        $this->resolveUnboundAsSingletons = $resolveUnboundAsSingletons;
+    }
 
     /**
      * @var array<ServiceProvider>
@@ -101,16 +118,24 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @since TBD
      *
+     * @param                               $id
      * @param callable|string|array<string> $implementation    The implementation to build the Closure for.
+     * @param bool                          $singleton Whether to build a singleton closure or not.
      * @param array<string>                 $afterBuildMethods A set of methods that should be called on the instance
      *                                                         after it's built and before it's returned.
      * @param array<mixed>                  $buildArgs         An array of arguments to use when building the instance.
      *
      * @return Closure|callable|false Either a closure to build the implementation, or `false` if the implementation is
      *                       not buildable.
+     * @throws ContainerException If there's an issue resolving the id, or its dependencies.
      */
-    private function getMakeClosure($id, $implementation, array $afterBuildMethods = null, ...$buildArgs)
-    {
+    private function getMakeClosure(
+        $id,
+        $implementation,
+        $singleton = false,
+        array $afterBuildMethods = null,
+        ...$buildArgs
+    ) {
         if (is_callable($implementation)) {
             // Ready to run.
             return $implementation;
@@ -125,7 +150,7 @@ class Container implements \ArrayAccess, ContainerInterface
             return ProtectedValue::of($implementation);
         }
 
-        return function () use ($id, $implementation, $buildArgs, $afterBuildMethods) {
+        $closure =  function () use ($id, $implementation, $buildArgs, $afterBuildMethods) {
             $buildArgs = $this->resolveBuildArgs($id, $implementation, ...$buildArgs);
             $instance  = new $implementation(...$buildArgs);
             if (! empty($afterBuildMethods)) {
@@ -136,6 +161,13 @@ class Container implements \ArrayAccess, ContainerInterface
 
             return $instance;
         };
+
+        if ($singleton) {
+            $closure = $this->getCachingClosure($closure);
+            $this->bindings[$id] = $closure;
+        }
+
+        return $closure;
     }
 
     /**
@@ -200,8 +232,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *                             not.
      *
      * @return mixed The value built by the container.
-     * @throws NotFoundException If the target of the make is a string and is not bound to a valid, concrete, class
-     *                           name.
+     * @throws NotFoundException|ContainerException If the target of the make is a string and is not bound.
      */
     private function makeInternally($id, $safely = false)
     {
@@ -218,7 +249,7 @@ class Container implements \ArrayAccess, ContainerInterface
             throw new NotFoundException("Nothing is bound to the '{$id}' id and it's not an existing class.");
         }
 
-        $maker = $isBound ? $this->bindings[ $id ] : $this->getMakeClosure($id, $id);
+        $maker = $isBound ? $this->bindings[ $id ] : $this->getMakeClosure($id, $id, $this->resolveUnboundAsSingletons);
 
         return $maker($this);
     }
@@ -308,7 +339,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetSet($offset, $value)
     {
-        $this->bindings[ $offset ] = $this->getCachingClosure($this->getMakeClosure($offset, $value));
+        $this->bindings[ $offset ] = $this->getMakeClosure($offset, $value, true);
     }
 
     /**
@@ -599,7 +630,7 @@ class Container implements \ArrayAccess, ContainerInterface
         $decorator = array_pop($decorators);
         do {
             $previous          = isset($maker) ? $maker : null;
-            $maker             = $this->getMakeClosure($id, $decorator, (array) $afterBuildMethods, $previous);
+            $maker             = $this->getMakeClosure($id, $decorator, false, (array) $afterBuildMethods, $previous);
             $decorator         = array_pop($decorators);
             $afterBuildMethods = [];
         } while ($decorator !== null);
@@ -737,7 +768,7 @@ class Container implements \ArrayAccess, ContainerInterface
             $implementation = $id;
         }
 
-        $this->bindings[ $id ] = $this->getMakeClosure($id, $implementation, $afterBuildMethods);
+        $this->bindings[ $id ] = $this->getMakeClosure($id, $implementation, false, $afterBuildMethods);
     }
 
     /**
@@ -862,7 +893,7 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         return empty($buildArgs) ?
             $this->getInstanceClosure($id)
-            : $this->getMakeClosure($id, $id, null, ...$buildArgs);
+            : $this->getMakeClosure($id, $id, $this->resolveUnboundAsSingletons, null, ...$buildArgs);
     }
 
     /**

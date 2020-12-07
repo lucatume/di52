@@ -16,8 +16,12 @@ tagged with the tag; it would throw an error in previous versions.
 [x] Removed the `tad_DI52_ServiceProviderInterface` and `tad_DI52_ContainerInterface` interfaces.
 [x] Rewritten the code to fully leverage Closure support.
 [x] Move build tools to Docker.
-[ ] Make the container implementation compatible with [PSR-11 Container specification](https://www.php-fig.
+[x] Make the container implementation compatible with [PSR-11 Container specification](https://www.php-fig.
 org/psr/psr-11/)
+[x] Fix #26 to handle and format files syntax errors while trying to autoload.
+[x] Fix #13 and allow explicit definition of default binding method.
+[ ] phstan
+[ ] phan
 [ ] Move benchmarks to Docker, automate them.
 [ ] Update documentation and examples.
 
