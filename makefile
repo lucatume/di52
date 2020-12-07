@@ -57,7 +57,7 @@ dev:
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-5.6 \
+	   lucatume/di52-dev:php-7.0 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure ${ARGS} \
 	   ${PWD}/tests

@@ -1,0 +1,2 @@
+'DependingOnFatalError'
+	=> Error while making FatalErrorClassThree: syntax error, unexpected 'This' (T_STRING), expecting function (T_FUNCTION).
