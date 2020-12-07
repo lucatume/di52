@@ -2,4 +2,5 @@
 	=> 'Engine'
 	=> 'UpperEngine'
 	=> 'CombustionChamber'
-	=> Error while making 'Valve': class NonExisting1 does not exist.
+	=> 'Valve'
+	=> Error while making 'NonExisting1': nothing is bound to the 'NonExisting1' id and it's not an existing class.

@@ -1,5 +1,8 @@
 <?php
 
-class FatalErrorClassThree {
- This code is not correct.
+class FatalErrorClassThree
+{
+    public function[]{
+        wrong
+    }
 }

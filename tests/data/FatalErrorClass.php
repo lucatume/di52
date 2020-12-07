@@ -1,5 +1,5 @@
 <?php
 
 class FatalErrorClass{
-	I'm poorly coded.
+    I'm poorly coded.
 }

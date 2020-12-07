@@ -6,7 +6,7 @@ require_once __DIR__ . '/data/namespaced-test-classes.php';
 require_once __DIR__ . '/data/test-providers.php';
 require_once __DIR__ . '/data/observable-container.php';
 
-function assertMatchesSnapshots($actual)
+function assertMatchesSnapshots($actual, $prefix = null)
 {
     foreach (debug_backtrace(true) as $entry) {
         if (isset($entry['class'], $entry['function'], $entry['object'])
@@ -32,7 +32,7 @@ function assertMatchesSnapshots($actual)
         $counts["{$testCase}-{$testMethod}"] + 1
         : 1;
     $count = $counts["{$testCase}-{$testMethod}"];
-    $snapshot = $root . "/__snapshots__/{$testCase}-{$testMethod}.snapshot-{$count}";
+    $snapshot = $root . "/__snapshots__/{$testCase}-{$testMethod}.{$prefix}snapshot-{$count}";
 
     if (!is_file($snapshot)) {
         if (! is_dir(dirname($snapshot)) && ! mkdir(

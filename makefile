@@ -59,7 +59,7 @@ dev:
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-7.0 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure ${ARGS} \
+	   --stop-on-failure \
 	   ${PWD}/tests
 
 # Lint the project source files to make sure they are PHP 5.6 compatible.

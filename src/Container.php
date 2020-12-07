@@ -25,6 +25,10 @@ use ReflectionParameter;
  */
 class Container implements \ArrayAccess, ContainerInterface
 {
+    const CLASS_EXISTS = 0b0001;
+    const INTERFACE_EXISTS = 0b0010;
+    const TRAIT_EXISTS = 0b00100;
+
     /**
      * @var array<ServiceProvider>
      */
@@ -117,7 +121,7 @@ class Container implements \ArrayAccess, ContainerInterface
                 return $implementation;
             };
         }
-        if (! ( is_string($implementation) && $this->classExists($implementation) )) {
+        if (! ( is_string($implementation) && $this->classExists($implementation, self::CLASS_EXISTS) )) {
             return ProtectedValue::of($implementation);
         }
 
@@ -201,8 +205,8 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     private function makeInternally($id, $safely = false)
     {
-	    $this->makeLine[] = is_string( $id ) ? "'{$id}'" : "'" . gettype( $id ) . "'";
-	    $isString         = is_string($id);
+        $this->makeLine[] = is_string($id) ? "'{$id}'" : "'" . gettype($id) . "'";
+        $isString         = is_string($id);
 
         if ($isString && isset($this->deferred[ $id ])) {
             $this->deferred[ $id ]->register($this);
@@ -210,7 +214,7 @@ class Container implements \ArrayAccess, ContainerInterface
 
         $isBound = $isString && isset($this->bindings[ $id ]);
 
-        if (! $safely && ! $isBound && $isString && ! $this->classExists($id)) {
+        if (! $safely && ! $isBound && $isString && ! $this->classExists($id, self::CLASS_EXISTS)) {
             throw new NotFoundException("Nothing is bound to the '{$id}' id and it's not an existing class.");
         }
 
@@ -232,67 +236,63 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     protected function resolveParameter(ReflectionParameter $parameter, $id)
     {
-		$parameterClassName = $this->getParameterClassName( $parameter );
+        $parameterClassName = $this->getParameterClassName($parameter);
 
-		if ( $parameterClassName !== null) {
-			if (isset($this->whenNeedsGive[ $id ][ $parameterClassName ])) {
-				$parameterClassName = $this->whenNeedsGive[ $id ][ $parameterClassName ];
-			}
+        if ($parameterClassName !== null) {
+            if (isset($this->whenNeedsGive[ $id ][ $parameterClassName ])) {
+                $parameterClassName = $this->whenNeedsGive[ $id ][ $parameterClassName ];
+            }
 
-			$resolved = $this->makeInternally($parameterClassName);
+            $resolved = $this->makeInternally($parameterClassName);
 
-			if (! is_object($resolved)) {
-				throw new ContainerException(
-					"Parameter '{$parameter->getName()}' could not be " .
-					"resolved to an object of class '{$parameterClassName}':" .
-					" bind '{$parameterClassName}' explicitly."
-				);
-			}
+            if (! is_object($resolved)) {
+                throw new ContainerException(
+                    "Parameter '{$parameter->getName()}' could not be " .
+                    "resolved to an object of class '{$parameterClassName}':" .
+                    " bind '{$parameterClassName}' explicitly."
+                );
+            }
 
-			return $resolved;
-		}
+            return $resolved;
+        }
 
-	    if($parameter->allowsNull()){
-		    return $parameter->getDefaultValue();
-	    }
+        if ($parameter->allowsNull()) {
+            try {
+                return $parameter->getDefaultValue();
+            } catch (ReflectionException $e) {
+                throw new ContainerException($e->getMessage());
+            }
+        }
 
-	    throw new ContainerException("The '{$parameter->getName()}' parameter does not have a default" .
-                                     " value; bind it to a concrete implementation to fix this.");
+        throw new ContainerException("The '{$parameter->getName()}' parameter does not have a default " .
+                                      "value; bind it to a concrete implementation to fix this.");
     }
 
-	/**
-	 * Returns a parameter class name.
-	 *
-	 * @param ReflectionParameter $parameter The parameter to get the class for.
-	 *
-	 * @return string|null Either the parameter class name, or `null` if the parameter does not have a class.
-	 * @throws ContainerException If the parameter class is not defined or its auto-loading triggers an errors;
-	 *                            this might be the case for file that contain syntax errors.
-	 */
+    /**
+     * Returns a parameter class name.
+     *
+     * @param ReflectionParameter $parameter The parameter to get the class for.
+     *
+     * @return string|null Either the parameter class name, or `null` if the parameter does not have a class.
+     * @throws ContainerException If the parameter class is not defined or its auto-loading triggers an errors;
+     *                            this might be the case for file that contain syntax errors.
+     */
     private function getParameterClassName(ReflectionParameter $parameter)
     {
-//        if (PHP_VERSION_ID >= 80000) {
-//            $type = $parameter->getType();
-//
-//            if ($type instanceof \ReflectionNamedType && ! $type->isBuiltin()) {
-//                /** @var class-string $className */
-//                $className = $type->getName();
-//
-//                return new ReflectionClass($className);
-//            }
-//
-//            return null;
-//        }
+        /*
+         * Get the parameter class without triggering autoload; if this was triggered here, then syntax errors would
+         * not be correctly identified.
+         */
+        $parameterClassString = $parameter->__toString();
+        $parameterClass       = preg_replace_callback(
+            '/^.*\\[\\s*<(required|optional)>\\s*([\\\\\\w_-]*).*].*$/i',
+            static function ($m) {
+                return isset($m[2]) ? $m[2] : null;
+            },
+            $parameterClassString
+        );
 
-	    // Get the parameter class without triggering autoload.
-	    $parameterClassString = $parameter->__toString();
-	    $parameterClass       = preg_replace(
-		    '/^.*\\[\\s*<required>\\s*([\\\\\\w_-]*).*].*$/i',
-		    '$1',
-		    $parameterClassString
-	    );
-
-	    return $this->classExists( $parameterClass ) ? $parameterClass : null;
+        return $parameterClass ?: null;
     }
 
     /**
@@ -925,27 +925,35 @@ class Container implements \ArrayAccess, ContainerInterface
         return isset($this->bindings[ $id ]);
     }
 
-	/**
-	 * A wrapper around the `class_exists` function to capture and handle possible fatal errors on PHP 7.0+.
-	 *
-	 * @param string $class The class name to check.
-	 *
-	 * @return bool Whether the class exists or not.
-	 * @throws ContainerException If the class has syntax or other errors preventing it from being loaded.
-	 */
-	protected function classExists( $class ) {
-		if ( PHP_VERSION_ID < 70000 ) {
-			return class_exists( $class ) || interface_exists($class) || trait_exists($class);
-		}
+    /**
+     * A wrapper around the `class_exists` function to capture and handle possible fatal errors on PHP 7.0+.
+     *
+     * @param string $class The class name to check.
+     * @param int $mask A bitmask to select the `x_exists` checks to make; respectively `class_exists`,
+     *                  `interface_exists` and `trait_exists`; by default, checks for all.
+     *
+     * @return bool Whether the class exists or not.
+     * @throws ContainerException If the class has syntax or other errors preventing it from being loaded.
+     */
+    protected function classExists($class, $mask = 0b0111)
+    {
+        if (PHP_VERSION_ID < 70000) {
+            return
+                ( self::CLASS_EXISTS & $mask && class_exists($class) )
+                || ( self::INTERFACE_EXISTS & $mask && interface_exists($class) )
+                || ( self::TRAIT_EXISTS & $mask && trait_exists($class) );
+        }
 
-		// PHP 7.0+ allows handling fatal errors; x_exists will trigger auto-loading, that might result in an error.
-		try {
-			return class_exists( $class ) || interface_exists($class) || trait_exists($class);
-		} catch ( \Throwable $e ) {
-			if ( end( $this->makeLine ) !== "'{$class}'" ) {
-				$this->makeLine[] = $class;
-			}
-			throw new ContainerException( $e->getMessage() );
-		}
-	}
+        // PHP 7.0+ allows handling fatal errors; x_exists will trigger auto-loading, that might result in an error.
+        try {
+            return ( self::CLASS_EXISTS & $mask && class_exists($class) )
+                   || ( self::INTERFACE_EXISTS & $mask && interface_exists($class) )
+                   || ( self::TRAIT_EXISTS & $mask && trait_exists($class) );
+        } catch (\Throwable $e) {
+            if (end($this->makeLine) !== "'{$class}'") {
+                $this->makeLine[] = $class;
+            }
+            throw new ContainerException($e->getMessage());
+        }
+    }
 }

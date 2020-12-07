@@ -106,7 +106,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $this->assertNull($container['foo']);
     }
@@ -217,7 +217,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_throw_if_trying_to_resolve_class_with_unbound_interface_dependency()
     {
-        $this->setExpectedException(NotFoundException::class);
+        $this->expectException(NotFoundException::class);
 
         $container = new tad_DI52_Container();
 
@@ -294,7 +294,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container->make('ClassFour');
     }
@@ -538,7 +538,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container->register('DeferredProviderOne');
     }
@@ -696,7 +696,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException(NotFoundException::class);
+        $this->expectException(NotFoundException::class);
 
         $container->make('SomeNonExistingClass');
     }
@@ -965,7 +965,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     {
         $container = new tad_DI52_Container();
 
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container->callback('foo', 23);
     }
@@ -1474,7 +1474,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         $params = $reflectionMethod->getParameters();
         $reflectionParameter = reset($params);
 
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container = new ObservableContainer();
         $container->_resolveParameter($reflectionParameter, 'test');

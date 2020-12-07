@@ -836,10 +836,11 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function it_should_respect_singletons_with_closures_when_auto_resolving() {
+    public function it_should_respect_singletons_with_closures_when_auto_resolving()
+    {
         $container = new tad_DI52_Container;
 
-        $container->singleton(Dependency::class, function() {
+        $container->singleton(Dependency::class, static function () {
             return new Dependency;
         });
 
@@ -850,7 +851,8 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function it_should_respect_singletons_without_closures_when_auto_resolving() {
+    public function it_should_respect_singletons_without_closures_when_auto_resolving()
+    {
         $container = new tad_DI52_Container;
 
         $container->singleton(Dependency::class, Dependency::class);
