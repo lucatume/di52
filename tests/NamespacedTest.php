@@ -834,4 +834,30 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
         $container->bind('PrivateConstructor');
     }
+
+    /** @test */
+    public function it_should_respect_singletons_with_closures_when_auto_resolving() {
+        $container = new tad_DI52_Container;
+
+        $container->singleton(Dependency::class, function() {
+            return new Dependency;
+        });
+
+        $parent = $container->make(Depending::class);
+        $parent2 = $container->make(Depending::class);
+
+        $this->assertSame($parent->getDependency(), $parent2->getDependency());
+    }
+
+    /** @test */
+    public function it_should_respect_singletons_without_closures_when_auto_resolving() {
+        $container = new tad_DI52_Container;
+
+        $container->singleton(Dependency::class, Dependency::class);
+
+        $parent = $container->make(Depending::class);
+        $parent2 = $container->make(Depending::class);
+
+        $this->assertSame($parent->getDependency(), $parent2->getDependency());
+    }
 }
