@@ -1,16 +1,18 @@
 # Use bash as shell.
 SHELL := /bin/bash
-
 # If you see pwd_unknown showing up, this is why. Re-calibrate your system.
 PWD ?= pwd_unknown
-
 # PROJECT_NAME defaults to name of the current directory.
 PROJECT_NAME = $(notdir $(PWD))
-
 # Suppress `make` own output.
 .SILENT:
+.DEFAULT_GOAL := help
 
-composer_update:
+help: ## Show this help message.
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+.PHONY: help
+
+composer_update: ## Updates the project Composer dependencies using PHP 5.6.
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
@@ -20,7 +22,7 @@ composer_update:
 	lucatume/composer:php5.6-composer-v2 update
 .PHONY: composer_update
 
-composer_install:
+composer_install: ## Installs the project Composer dependencies using PHP 5.6.
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
@@ -39,7 +41,7 @@ $(build_php_versions): %:
 		_build/containers/dev \
 		--tag lucatume/di52-dev:php-v$@
 
-build: $(build_php_versions)
+build: $(build_php_versions) ## Builds the project PHP images.
 
 test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0'
 $(test_php_versions): %:
@@ -49,11 +51,21 @@ $(test_php_versions): %:
 	   lucatume/di52-dev:$@ \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   ${PWD}/tests
+
+test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-test: $(test_php_versions)
+test_56: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-5.6 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: test_56
 
-dev:
+test_70: ## Utility target to run the tests on PHP 7.0.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -61,16 +73,65 @@ dev:
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
+.PHONY: test_70
 
-# Lint the project source files to make sure they are PHP 5.6 compatible.
-lint:
+test_71: ## Utility target to run the tests on PHP 7.1.
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-7.1 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: test_71
+
+test_72: ## Utility target to run the tests on PHP 7.2.
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-7.2 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: test_72
+
+test_73: ## Utility target to run the tests on PHP 7.3.
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-7.3 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: test_73
+
+test_74: ## Utility target to run the tests on PHP 7.4.
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-7.4 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: test_74
+
+test_80: ## Utility target to run the tests on PHP 8.0.
+	docker run --rm \
+	   -v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-dev:php-8.0 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: test_80
+
+code_lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
 	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \
 			${PWD}/src \
 			${PWD}/autoload.php
-.PHONY: lint
+.PHONY: code_lint
 
-# Use the PHP Code Sniffer container to sniff the relevant source files.
-sniff:
+code_sniff: ## Run PHP Code Sniffer on the project source files.
 	docker run --rm \
         -u "$$(id -u):$$(id -g)" \
 		-v ${PWD}:${PWD} cytopia/phpcs \
@@ -79,10 +140,9 @@ sniff:
 		-s \
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/autoload.php
-.PHONY: sniff
+.PHONY: code_sniff
 
-# Use the PHP Code Beautifier container to fix the source and tests code.
-fix:
+code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 	docker run --rm \
         -u "$$(id -u):$$(id -g)" \
         -v ${PWD}:${PWD} cytopia/phpcbf \
@@ -91,12 +151,10 @@ fix:
 		-s \
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/tests ${PWD}/autoload.php
-.PHONY: fix
+.PHONY: code_fix
 
-# Use phpstan container to analyze the source code.
-# Configuration will be read from the phpstan.neon.dist file.
 PHPSTAN_LEVEL?=max
-phpstan:
+phpstan: ## Run phpstan on the project source files.
 	docker run --rm \
 		-v ${PWD}:${PWD} \
 		-u "$$(id -u):$$(id -g)" \
@@ -105,9 +163,12 @@ phpstan:
 		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/autoload.php
 .PHONY: phpstan
 
-phan:
+phan: ## Run phan on the project source files.
 	docker run --rm \
 		-v ${PWD}:/mnt/src \
 		-u "$$(id -u):$$(id -g)" \
 		phanphp/phan
 .PHONY: phan
+
+pre_commit: code_lint code_fix code_sniff test phpstan phan ## Run pre-commit checks: code_lint, code_fix, code_sniff, test, phpstan, phan.
+.PHONY: pre_commit
