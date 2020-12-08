@@ -1,6 +1,7 @@
 <?php
 
 use lucatume\DI52\ContainerException;
+use lucatume\DI52\Container;
 
 class NamespacedTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,7 +11,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_closure_var_on_the_container()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $closure = function ($value) {
             return $value + 1;
@@ -27,7 +28,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_setting_a_closure_as_a_variable_using_the_array_access_api()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $closure = function ($value) {
             return $value + 1;
@@ -44,7 +45,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_closure_as_implementation_of_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind(
             'One',
@@ -62,7 +63,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_pass_the_container_as_parameter_to_the_closure_implementation()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $passedContainer = null;
 
@@ -85,7 +86,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_closure_to_a_string_slug()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind(
             'foo.bar',
@@ -103,7 +104,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_closure_to_an_interface_as_a_singletong()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton(
             'One',
@@ -122,7 +123,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_a_closure_to_a_string_slug_as_a_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton(
             'foo.one',
@@ -156,7 +157,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         $key,
         $value
     ) {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind($key, $value);
 
@@ -169,7 +170,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_tagging_mixed_values()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->tag(
             [
@@ -194,7 +195,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_contextual_binding_of_closures()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->when('ClassSixOne')
             ->needs('ClassOne')
@@ -223,7 +224,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_call_a_closure_when_bound_to_an_offset_in_array_access_api()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container['foo'] = function () {
             return 'bar';
@@ -238,7 +239,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_replace_a_binding_when_re_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind(
             'One',
@@ -265,7 +266,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton(
             'One',
@@ -293,7 +294,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton(
             'One',
@@ -322,7 +323,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton(
             'One',
@@ -351,7 +352,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_to_lazy_make_a_closure()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind(
             'foo',
@@ -373,7 +374,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $one = function ($container) {
             return $container->make('ClassOne');
@@ -394,7 +395,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $one = function ($container) {
             return $container->make('ClassOne');
@@ -416,7 +417,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $one = function ($container) {
             return $container->make('ClassOne');
@@ -438,7 +439,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $one = function ($container) {
             return $container->make('ClassOne');
@@ -458,7 +459,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_and_getting_an_object_built_as_a_closure()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind(
             'One',
@@ -479,7 +480,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassTen::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $f = $container->instance('Acme\ClassTen', [ 'foo', 'baz', 'bar' ]);
 
@@ -515,7 +516,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassEleven::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Acme\One', 'Acme\ClassOne');
         $container->bind('Acme\Two', 'Acme\ClassTwo');
@@ -557,7 +558,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Acme\One', 'Acme\ClassOne');
         $container->bind('Acme\ClassOne', 'Acme\ClassOne');
@@ -578,7 +579,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Acme\ClassOne', 'Acme\ClassOne');
 
@@ -598,7 +599,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('foo', 'Acme\ClassOne');
 
@@ -618,7 +619,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('Acme\ClassOne', 'Acme\ClassOne');
 
@@ -636,7 +637,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         Acme\ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $one = new Acme\ClassOne;
         $container->singleton('Acme\ClassOne', $one);
@@ -653,7 +654,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_an_instance_in_the_container()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ]));
 
@@ -668,7 +669,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_binding_an_instance_as_a_singleton_in_the_container()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('Acme\ClassOne', $container->instance('Acme\ClassOneTwo', [ 'sudo-foo' ]));
 
@@ -683,7 +684,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_build_the_instance_with_the_container_if_not_specifying_arguments()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Acme\ClassOne', 'Acme\ClassOneTwo');
         $f = $container->instance('Acme\ClassOne');
@@ -699,7 +700,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_use_container_binding_settings_when_instancing()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('Acme\ClassOne', 'Acme\ClassOneTwo');
         $f = $container->instance('Acme\ClassOne');
@@ -715,7 +716,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_re_binding_closuress()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', function () {
             return new ClassOneOne();
@@ -739,7 +740,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_for_callback_to_be_fed_to_instance()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $callback = $container->callback('Acme\Factory', 'build');
 
@@ -754,7 +755,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_for_instance_to_be_fed_to_callback()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $instance = $container->instance('Acme\Factory');
 
@@ -769,7 +770,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_to_bind_with_one_parameter()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('ClassFourteen');
 
@@ -784,7 +785,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
      */
     public function it_should_allow_to_bind_singleton_with_one_parameter()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('ClassFourteen');
 
@@ -800,7 +801,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(ContainerException::class);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('not-a-class');
     }
@@ -810,7 +811,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(ContainerException::class);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One');
     }
@@ -820,7 +821,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(ContainerException::class);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('AbstractClass');
     }
@@ -830,7 +831,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(ContainerException::class);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('PrivateConstructor');
     }
@@ -838,7 +839,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_respect_singletons_with_closures_when_auto_resolving()
     {
-        $container = new tad_DI52_Container;
+        $container = new Container;
 
         $container->singleton(Dependency::class, static function () {
             return new Dependency;
@@ -853,7 +854,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_respect_singletons_without_closures_when_auto_resolving()
     {
-        $container = new tad_DI52_Container;
+        $container = new Container;
 
         $container->singleton(Dependency::class, Dependency::class);
 

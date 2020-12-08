@@ -64,4 +64,11 @@ abstract class ServiceProvider
     {
         // no-op
     }
+
+    /**
+     * Registers the service provider bindings.
+     *
+     * @return void The method does not return any value.
+     */
+    abstract public function register();
 }
