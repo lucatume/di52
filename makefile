@@ -65,6 +65,69 @@ test_56: ## Utility target to run the tests on PHP 5.6.
 	   ${PWD}/tests
 .PHONY: test_56
 
+coverage_56: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-5.6 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_56
+
+coverage_70: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-7.0 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_70
+
+coverage_71: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-7.1 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_71
+
+coverage_72: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-7.2 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_72
+
+coverage_73: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-7.3 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_73
+
+coverage_74: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-7.4 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_74
+
+coverage_80: ## Utility target to run the tests on PHP 5.6.
+	docker run --rm \
+		-v "${CURDIR}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+		lucatume/di52-dev:php-8.0 \
+		-c ${PWD}/phpunit.xml \
+	   ${PWD}/tests
+.PHONY: coverage_80
+
 test_70: ## Utility target to run the tests on PHP 7.0.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
