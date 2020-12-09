@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: composer install
       - name: Run phpcs
-        run: make sniff
+        run: make code_sniff
   phpstan:
     name: phpstan
     runs-on: ubuntu-latest
