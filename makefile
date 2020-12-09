@@ -65,21 +65,11 @@ $(test_php_versions): %:
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-test_56: ## Utility target to run the tests on PHP 5.6.
-	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-5.6 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_56
-
 coverage_56: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
 		-v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-5.6 \
+		lucatume/di52-dev:php-v5.6 \
 		-c ${PWD}/phpunit.xml \
 	   ${PWD}/tests
 .PHONY: coverage_56
@@ -87,62 +77,63 @@ coverage_56: ## Utility target to run the tests on PHP 5.6.
 coverage_70: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
 		-v "${CURDIR}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-7.0 \
-		-c ${PWD}/phpunit.xml \
-	   ${PWD}/tests
+		--entrypoint phpdbg \
+		lucatume/di52-dev:php-v7.0 \
+		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
+		${PWD}/tests
 .PHONY: coverage_70
 
 coverage_71: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
 		-v "${CURDIR}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-7.1 \
-		-c ${PWD}/phpunit.xml \
-	   ${PWD}/tests
+		--entrypoint phpdbg \
+		lucatume/di52-dev:php-v7.1 \
+		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
+		${PWD}/tests
 .PHONY: coverage_71
 
 coverage_72: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
 		-v "${CURDIR}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-7.2 \
-		-c ${PWD}/phpunit.xml \
-	   ${PWD}/tests
+		--entrypoint phpdbg \
+		lucatume/di52-dev:php-v7.2 \
+		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
+		${PWD}/tests
 .PHONY: coverage_72
 
 coverage_73: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
 		-v "${CURDIR}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-7.3 \
-		-c ${PWD}/phpunit.xml \
-	   ${PWD}/tests
+		--entrypoint phpdbg \
+		lucatume/di52-dev:php-v7.3 \
+		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
+		${PWD}/tests
 .PHONY: coverage_73
 
 coverage_74: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
 		-v "${CURDIR}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-7.4 \
-		-c ${PWD}/phpunit.xml \
-	   ${PWD}/tests
+		--entrypoint phpdbg \
+		lucatume/di52-dev:php-v7.4 \
+		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
+		${PWD}/tests
 .PHONY: coverage_74
 
-coverage_80: ## Utility target to run the tests on PHP 5.6.
+test_56: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-8.0 \
-		-c ${PWD}/phpunit.xml \
+	   lucatume/di52-dev:php-v5.6 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
 	   ${PWD}/tests
-.PHONY: coverage_80
+.PHONY: test_56
 
 test_70: ## Utility target to run the tests on PHP 7.0.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-7.0 \
+	   lucatume/di52-dev:php-v7.0 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
@@ -152,7 +143,7 @@ test_71: ## Utility target to run the tests on PHP 7.1.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-7.1 \
+	   lucatume/di52-dev:php-v7.1 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
@@ -162,7 +153,7 @@ test_72: ## Utility target to run the tests on PHP 7.2.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-7.2 \
+	   lucatume/di52-dev:php-v7.2 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
@@ -172,7 +163,7 @@ test_73: ## Utility target to run the tests on PHP 7.3.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-7.3 \
+	   lucatume/di52-dev:php-v7.3 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
@@ -182,7 +173,7 @@ test_74: ## Utility target to run the tests on PHP 7.4.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-7.4 \
+	   lucatume/di52-dev:php-v7.4 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
@@ -192,7 +183,7 @@ test_80: ## Utility target to run the tests on PHP 8.0.
 	docker run --rm \
 	   -v "${CURDIR}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-8.0 \
+	   lucatume/di52-dev:php-v8.0 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests

@@ -15,7 +15,6 @@
         </blacklist>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
-            <file>autoload.php</file>
         </whitelist>
     </filter>
     <logging>

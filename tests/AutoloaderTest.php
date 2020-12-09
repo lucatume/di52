@@ -3,7 +3,7 @@ namespace lucatume\DI52;
 
 use PHPUnit\Framework\TestCase;
 
-class autoloadTest extends TestCase
+class AutoloaderTest extends TestCase
 {
 
     public function prefixed_classes_data_provider()
@@ -23,5 +23,29 @@ class autoloadTest extends TestCase
     public function should_correctly_autoload_tad_di_52_prefixed_classes($targetClass, $expected)
     {
         $this->assertTrue(class_exists($targetClass));
+    }
+
+    /**
+     * It should not be able to locate non project class
+     *
+     * @test
+     */
+    public function should_not_be_able_to_locate_non_project_class()
+    {
+        $autoloader = new Autoloader();
+
+        $this->assertNull($autoloader->locateClass('Foo_Baz_Bar'));
+    }
+
+    /**
+     * It should not be able to locate non existing project prefixed class
+     *
+     * @test
+     */
+    public function should_not_be_able_to_locate_non_existing_project_prefixed_class()
+    {
+        $autoloader = new Autoloader();
+
+        $this->assertNull($autoloader->locateClass('tad_DI52_Something'));
     }
 }

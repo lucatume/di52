@@ -20,6 +20,8 @@ tagged with the tag; it would throw an error in previous versions.
 org/psr/psr-11/)
 [x] Fix #26 to handle and format files syntax errors while trying to autoload.
 [x] Fix #13 and allow explicit definition of default binding method.
+[x] Allow getting the registered provider instances using `getProvider` and `get`, `make` or the `ArrayAccess` API.
+[x] Allow getting callbacks for static and instance methods consistently to unhook.
 [ ] phstan
 [ ] phan
 [ ] Move benchmarks to Docker, automate them.
