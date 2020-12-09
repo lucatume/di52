@@ -226,4 +226,13 @@ class ServiceProviderTest extends TestCase
         $this->assertEquals(23, $container['data_1']);
         $this->assertEquals(89, $container['data_2']);
     }
+
+    /**
+     * It should throw if
+     *
+     * @test
+     */
+    public function should_throw_if()
+    {
+    }
 }

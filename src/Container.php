@@ -246,11 +246,6 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $this->makeLine[] = is_string($id) ? "'{$id}'" : "'" . gettype($id) . "'";
         $isString         = is_string($id);
-
-        if ($isString && isset($this->deferred[ $id ])) {
-            $this->deferred[ $id ]->register();
-        }
-
         $isBound = $isString && isset($this->bindings[ $id ]);
 
         if (! $safely && ! $isBound && $isString && ! $this->classExists($id, self::CLASS_EXISTS)) {
@@ -566,12 +561,8 @@ class Container implements \ArrayAccess, ContainerInterface
                 $this->bindings[ $id ] =$this->getDeferredProviderMakeClosure($provider, $id);
             }
         }
-        try {
-            $ref = new ReflectionMethod($provider, 'boot');
-        } catch (ReflectionException $e) {
-            throw new ContainerException($e->getMessage());
-        }
-        $requiresBoot = ( $ref->getDeclaringClass()->getName() === get_class($provider) );
+        $bootMethod   = new ReflectionMethod($provider, 'boot');
+        $requiresBoot = ( $bootMethod->getDeclaringClass()->getName() === get_class($provider) );
         if ($requiresBoot) {
             $this->bootable[] = $provider;
         }
