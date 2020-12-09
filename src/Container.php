@@ -51,7 +51,7 @@ class Container implements \ArrayAccess, ContainerInterface
     protected $deferred = [];
 
     /**
-     * @var array<string,ReflectionClass>
+     * @var array<string,ReflectionClass<object>>
      */
     protected $reflections = [];
 
@@ -558,7 +558,7 @@ class Container implements \ArrayAccess, ContainerInterface
             $provided = $provider->provides();
             $providedBindings = array_combine($provided, $provided);
 
-            if (empty($providedBindings) || $providedBindings === false) {
+            if ($providedBindings === false || count($provided) === 0) {
                 throw new ContainerException(
                     "Service provider '{$serviceProviderClass}' is marked as deferred" .
                     " but is not providing any implementation."

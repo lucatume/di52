@@ -32,6 +32,16 @@ composer_install: ## Installs the project Composer dependencies using PHP 5.6.
 	lucatume/composer:php5.6-composer-v2 install
 .PHONY: composer_install
 
+composer_dump_autoload: ## Regenerates the project Composer autoload files on PHP 5.6.
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php5.6-composer-v2 dump-autoload
+.PHONY: composer_dump_autoload
+
 build_php_versions = '5.6' '7.0' '7.1' '7.2' '7.3' '7.4' '8.0'
 $(build_php_versions): %:
 	docker build \
