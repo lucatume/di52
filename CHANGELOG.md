@@ -22,8 +22,9 @@ org/psr/psr-11/)
 [x] Fix #13 and allow explicit definition of default binding method.
 [x] Allow getting the registered provider instances using `getProvider` and `get`, `make` or the `ArrayAccess` API.
 [x] Allow getting callbacks for static and instance methods consistently to unhook.
-[ ] phstan
-[ ] phan
+[x] phstan
+[x] phan
+[ ] sniff, phpstan and phan in CI
 [ ] Move benchmarks to Docker, automate them.
 [ ] Update documentation and examples.
 
