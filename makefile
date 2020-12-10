@@ -236,3 +236,14 @@ phan: ## Run phan on the project source files.
 
 pre_commit: code_lint code_fix code_sniff test phpstan phan ## Run pre-commit checks: code_lint, code_fix, code_sniff, test, phpstan, phan.
 .PHONY: pre_commit
+
+benchmark_build:
+	rm -rf ${PWD}/_build/benchmark
+	[ -d ${PWD}/_build/benchmark ] || \
+		git clone https://github.com/kocsismate/php-di-container-benchmarks.git _build/benchmark
+	cp ${PWD}/_build/benchmark/.env.dist ${PWD}/_build/benchmark/.env
+.PHONY: benchmark_build
+
+benchmark_run:
+	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
+.PHONY: benchmark_run

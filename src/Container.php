@@ -28,6 +28,14 @@ class Container implements \ArrayAccess, ContainerInterface
     const INTERFACE_EXISTS = 0b0010;
     const TRAIT_EXISTS = 0b00100;
     const CLASS_IS_CONCRETE = 0b01001;
+
+    /**
+     * An array cache to store the results of the class exists checks.
+     *
+     * @var array<string,bool>
+     */
+    protected static $classExistsCache = [];
+
     /**
      * Whether unbound classes should be resolved as singletons, by default, or not.
      *
@@ -184,14 +192,25 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     protected function classExists($class, $mask = 0b0111)
     {
+        $cacheKey = $class . $mask;
+
+        if (isset(static::$classExistsCache[ $cacheKey ])) {
+            return static::$classExistsCache[ $cacheKey ];
+        }
+
         if (PHP_VERSION_ID < 70000) {
-            return $this->checkClassExists($class, $mask); // @codeCoverageIgnore
+            $exists= $this->checkClassExists($class, $mask); // @codeCoverageIgnore
+            static::$classExistsCache[$cacheKey] = $exists;
+            return $exists;
         }
 
         // PHP 7.0+ allows handling fatal errors; x_exists will trigger auto-loading, that might result in an error.
         try {
-            return $this->checkClassExists($class, $mask);
+            $exists = $this->checkClassExists($class, $mask);
+            static::$classExistsCache[$cacheKey] = $exists;
+            return $exists;
         } catch (\Throwable $e) {
+            static::$classExistsCache[$cacheKey] = false;
             throw new ContainerException($e->getMessage());
         }
     }
