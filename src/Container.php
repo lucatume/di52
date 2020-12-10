@@ -37,6 +37,13 @@ class Container implements \ArrayAccess, ContainerInterface
     protected static $classExistsCache = [];
 
     /**
+     * A cache of what methods are static and what are not.
+     *
+     * @var array<string,bool>
+     */
+    protected static $isStaticMethodCache = [];
+
+    /**
      * Whether unbound classes should be resolved as singletons, by default, or not.
      *
      * @var bool
@@ -938,11 +945,17 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     protected function isStaticMethod($object, $method)
     {
-        try {
-            return ( new ReflectionMethod($object, $method) )->isStatic();
-        } catch (ReflectionException $e) {
-            return false;
+        $key = is_string($object) ? $object . '::' . $method : get_class($object) . '::' . $method;
+
+        if (!isset(static::$isStaticMethodCache[$key])) {
+            try {
+                static::$isStaticMethodCache[$key] = ( new ReflectionMethod($object, $method) )->isStatic();
+            } catch (ReflectionException $e) {
+                return false;
+            }
         }
+
+        return static::$isStaticMethodCache[$key];
     }
 
     /**

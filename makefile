@@ -50,13 +50,18 @@ $(build_php_versions): %:
 		--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
 		_build/containers/dev \
 		--tag lucatume/di52-dev:php-v$@
+	docker build \
+		--build-arg PHP_VERSION=$@ \
+		--build-arg XDEBUG_OUTPUT_DIR=${PWD}/_build/profile \
+		_build/containers/profile \
+		--tag lucatume/di52-profile:php-v$@
 
 build: $(build_php_versions) ## Builds the project PHP images.
 
 test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0'
 $(test_php_versions): %:
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:$@ \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -67,7 +72,7 @@ test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions
 
 coverage_56: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+		-v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 		lucatume/di52-dev:php-v5.6 \
 		-c ${PWD}/phpunit.xml \
@@ -76,7 +81,7 @@ coverage_56: ## Utility target to run the tests on PHP 5.6.
 
 coverage_70: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
 		lucatume/di52-dev:php-v7.0 \
 		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
@@ -85,7 +90,7 @@ coverage_70: ## Utility target to run the tests on PHP 5.6.
 
 coverage_71: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
 		lucatume/di52-dev:php-v7.1 \
 		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
@@ -94,7 +99,7 @@ coverage_71: ## Utility target to run the tests on PHP 5.6.
 
 coverage_72: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
 		lucatume/di52-dev:php-v7.2 \
 		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
@@ -103,7 +108,7 @@ coverage_72: ## Utility target to run the tests on PHP 5.6.
 
 coverage_73: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
 		lucatume/di52-dev:php-v7.3 \
 		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
@@ -112,7 +117,7 @@ coverage_73: ## Utility target to run the tests on PHP 5.6.
 
 coverage_74: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-		-v "${CURDIR}:${PWD}" \
+		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
 		lucatume/di52-dev:php-v7.4 \
 		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
@@ -121,7 +126,7 @@ coverage_74: ## Utility target to run the tests on PHP 5.6.
 
 test_56: ## Utility target to run the tests on PHP 5.6.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v5.6 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -131,7 +136,7 @@ test_56: ## Utility target to run the tests on PHP 5.6.
 
 test_70: ## Utility target to run the tests on PHP 7.0.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v7.0 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -141,7 +146,7 @@ test_70: ## Utility target to run the tests on PHP 7.0.
 
 test_71: ## Utility target to run the tests on PHP 7.1.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v7.1 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -151,7 +156,7 @@ test_71: ## Utility target to run the tests on PHP 7.1.
 
 test_72: ## Utility target to run the tests on PHP 7.2.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v7.2 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -161,7 +166,7 @@ test_72: ## Utility target to run the tests on PHP 7.2.
 
 test_73: ## Utility target to run the tests on PHP 7.3.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v7.3 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -171,7 +176,7 @@ test_73: ## Utility target to run the tests on PHP 7.3.
 
 test_74: ## Utility target to run the tests on PHP 7.4.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v7.4 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -181,7 +186,7 @@ test_74: ## Utility target to run the tests on PHP 7.4.
 
 test_80: ## Utility target to run the tests on PHP 8.0.
 	docker run --rm \
-	   -v "${CURDIR}:${PWD}" \
+	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:php-v8.0 \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
@@ -192,7 +197,7 @@ test_80: ## Utility target to run the tests on PHP 8.0.
 code_lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
 	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \
 			${PWD}/src \
-			${PWD}/autoload.php
+			${PWD}/aliases.php
 .PHONY: code_lint
 
 code_sniff: ## Run PHP Code Sniffer on the project source files.
@@ -203,7 +208,7 @@ code_sniff: ## Run PHP Code Sniffer on the project source files.
 		-p \
 		-s \
 		--standard=${PWD}/phpcs.xml \
-		${PWD}/src ${PWD}/autoload.php
+		${PWD}/src ${PWD}/aliases.php
 .PHONY: code_sniff
 
 code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
@@ -214,7 +219,7 @@ code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 		-p \
 		-s \
 		--standard=${PWD}/phpcs.xml \
-		${PWD}/src ${PWD}/tests ${PWD}/autoload.php
+		${PWD}/src ${PWD}/tests ${PWD}/aliases.php
 .PHONY: code_fix
 
 PHPSTAN_LEVEL?=max
@@ -224,7 +229,7 @@ phpstan: ## Run phpstan on the project source files.
 		-u "$$(id -u):$$(id -g)" \
 		phpstan/phpstan analyze \
 		-c ${PWD}/_build/phpstan.neon \
-		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/autoload.php
+		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/aliases.php
 .PHONY: phpstan
 
 phan: ## Run phan on the project source files.
@@ -247,3 +252,13 @@ benchmark_build:
 benchmark_run:
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
 .PHONY: benchmark_run
+
+profile_80:
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   --entrypoint ${PWD}/vendor/bin/phpunit \
+	   lucatume/di52-profile:php-v8.0 \
+	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
+	   ${PWD}/tests
+.PHONY: profile_80
