@@ -276,6 +276,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertInstanceOf('ClassOne', $container->make('One'));
+        $this->assertSame($container->get('One'), $container->make('One'));
 
         $container->bind(
             'One',
@@ -799,7 +800,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_string_with_one_parameter()
     {
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container = new Container();
 
@@ -809,7 +810,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_interface_with_one_parameter()
     {
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container = new Container();
 
@@ -819,7 +820,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_abstract_with_one_parameter()
     {
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container = new Container();
 
@@ -829,7 +830,7 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_throw_if_binding_private_constructor_with_one_parameter()
     {
-        $this->setExpectedException(ContainerException::class);
+        $this->expectException(ContainerException::class);
 
         $container = new Container();
 
