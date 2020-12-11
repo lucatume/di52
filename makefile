@@ -11,7 +11,7 @@ PROJECT_NAME = $(notdir $(PWD))
 # Create a script to support command line arguments for targets.
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
-SUPPORTED_COMMANDS := benchmark_run benchmark_profile coverage composer
+SUPPORTED_COMMANDS := benchmark.profile test.coverage test.run composer
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -19,7 +19,7 @@ ifneq "$(SUPPORTS_MAKE_ARGS)" ""
 endif
 
 help: ## Show this help message.
-	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
 composer: ## Runs a Composer command on PHP 5.6. Example: `make composer update`.
@@ -60,7 +60,7 @@ $(test_php_versions): %:
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-coverage: ## Generate code coverage reports for a PHP version. Example: `make coverage 7.1`.
+test.coverage: ## Generate code coverage reports for a PHP version. Example: `make coverage 7.1`.
 ifeq ( $(TARGET_ARGS),5.6)
 		echo 'Generating coverage for PHP 5.6';
 		docker run --rm \
@@ -78,85 +78,25 @@ else
 			${PWD}/tests
 endif
 	open tests/coverage/index.html
-.PHONY: coverage
+.PHONY: test.coverage
 
-test_56: ## Utility target to run the tests on PHP 5.6 with XDebug support.
+test.run: ## Run the test on the specified PHP version with XDebug support. Example `make test.run 7.2`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v5.6 \
+	   lucatume/di52-dev:php-v$(TARGET_ARGS) \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
-.PHONY: test_56
+.PHONY: test.run
 
-test_70: ## Utility target to run the tests on PHP 7.0 with XDebug support.
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v7.0 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_70
-
-test_71: ## Utility target to run the tests on PHP 7.1 with XDebug support.
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v7.1 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_71
-
-test_72: ## Utility target to run the tests on PHP 7.2 with XDebug support.
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v7.2 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_72
-
-test_73: ## Utility target to run the tests on PHP 7.3 with XDebug support.
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v7.3 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_73
-
-test_74: ## Utility target to run the tests on PHP 7.4 with XDebug support.
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v7.4 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_74
-
-test_80: ## Utility target to run the tests on PHP 8.0 with XDebug support.
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-dev:php-v8.0 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: test_80
-
-code_lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
+code.lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
 	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \
 			${PWD}/src \
 			${PWD}/aliases.php
-.PHONY: code_lint
+.PHONY: code.lint
 
-code_sniff: ## Run PHP Code Sniffer on the project source files.
+code.sniff: ## Run PHP Code Sniffer on the project source files.
 	docker run --rm \
         -u "$$(id -u):$$(id -g)" \
 		-v ${PWD}:${PWD} cytopia/phpcs \
@@ -165,9 +105,9 @@ code_sniff: ## Run PHP Code Sniffer on the project source files.
 		-s \
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/aliases.php
-.PHONY: code_sniff
+.PHONY: code.sniff
 
-code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
+code.fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 	docker run --rm \
         -u "$$(id -u):$$(id -g)" \
         -v ${PWD}:${PWD} cytopia/phpcbf \
@@ -176,7 +116,7 @@ code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 		-s \
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/tests ${PWD}/aliases.php
-.PHONY: code_fix
+.PHONY: code.fix
 
 PHPSTAN_LEVEL?=max
 phpstan: ## Run phpstan on the project source files.
@@ -195,28 +135,29 @@ phan: ## Run phan on the project source files.
 		phanphp/phan
 .PHONY: phan
 
-pre_commit: code_lint code_fix code_sniff test phpstan phan ## Run pre-commit checks: code_lint, code_fix, code_sniff, test, phpstan, phan.
+pre_commit: code.lint code.fix code.sniff test phpstan phan ## Run pre-commit checks: code.lint, code.fix, code.sniff, test, phpstan, phan.
 .PHONY: pre_commit
 
-benchmark_build: ## !!WiP!! Build the benchmark suite.
+benchmark.build: ## !!WiP!! Build the benchmark suite.
 	rm -rf ${PWD}/_build/benchmark
 	[ -d ${PWD}/_build/benchmark ] || \
 		git clone https://github.com/kocsismate/php-di-container-benchmarks.git _build/benchmark
 	cp ${PWD}/_build/benchmark/.env.dist ${PWD}/_build/benchmark/.env
-.PHONY: benchmark_build
+.PHONY: benchmark.build
 
-benchmark_run: ## Runs the benchmark suite in docker.
+benchmark.run: ## Runs the benchmark suite in docker.
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
-.PHONY: benchmark_run
+	open docs/benchmark.html
+.PHONY: benchmark.run
 
-benchmark_debug: ## Run a benchmark test and debug it. Example `make benchmark_debug 3.1`.
+benchmark.debug: ## Run a benchmark test and debug it. Example `make benchmark_debug 3.1`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-dev:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS) \
-.PHONY: benchmark_profile
+.PHONY: benchmark.debug
 
-benchmark_profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
+benchmark.profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
 	rm -rf _build/profile/cachegrind.out*
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
@@ -232,4 +173,4 @@ benchmark_profile: ## Run a benchmark test suite and profiles it. Example `make 
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-profile:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).3 \
-.PHONY: benchmark_profile
+.PHONY: benchmark.profile
