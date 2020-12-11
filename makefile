@@ -6,7 +6,17 @@ PWD ?= pwd_unknown
 PROJECT_NAME = $(notdir $(PWD))
 # Suppress `make` own output.
 .SILENT:
+# Make `help` the default target to make sure it will display when make is called without a target.
 .DEFAULT_GOAL := help
+# Create a script to support command line arguments for targets.
+# The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
+# In the target, use the `$(TARGET_ARGS)` var to get the arguments.
+SUPPORTED_COMMANDS := benchmark_run benchmark_profile
+SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
+ifneq "$(SUPPORTS_MAKE_ARGS)" ""
+  TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(TARGET_ARGS):;@:)
+endif
 
 help: ## Show this help message.
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -70,7 +80,7 @@ $(test_php_versions): %:
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-coverage_56: ## Utility target to run the tests on PHP 5.6.
+coverage_56: ## Run the tests on the specified PHP version and generate code coverage reports.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -79,7 +89,7 @@ coverage_56: ## Utility target to run the tests on PHP 5.6.
 	   ${PWD}/tests
 .PHONY: coverage_56
 
-coverage_70: ## Utility target to run the tests on PHP 5.6.
+coverage_70: ## Utility target to run the tests on PHP 7.0 and generate code coverage reports.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
@@ -88,7 +98,7 @@ coverage_70: ## Utility target to run the tests on PHP 5.6.
 		${PWD}/tests
 .PHONY: coverage_70
 
-coverage_71: ## Utility target to run the tests on PHP 5.6.
+coverage_71: ## Utility target to run the tests on PHP 7.1 and generate code coverage reports.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
@@ -97,7 +107,7 @@ coverage_71: ## Utility target to run the tests on PHP 5.6.
 		${PWD}/tests
 .PHONY: coverage_71
 
-coverage_72: ## Utility target to run the tests on PHP 5.6.
+coverage_72: ## Utility target to run the tests on PHP 7.2 and generate code coverage reports.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
@@ -106,7 +116,7 @@ coverage_72: ## Utility target to run the tests on PHP 5.6.
 		${PWD}/tests
 .PHONY: coverage_72
 
-coverage_73: ## Utility target to run the tests on PHP 5.6.
+coverage_73: ## Utility target to run the tests on PHP 7.3 and generate code coverage reports.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
@@ -115,7 +125,7 @@ coverage_73: ## Utility target to run the tests on PHP 5.6.
 		${PWD}/tests
 .PHONY: coverage_73
 
-coverage_74: ## Utility target to run the tests on PHP 5.6.
+coverage_74: ## Utility target to run the tests on PHP 7.4 and generate code coverage reports.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 		--entrypoint phpdbg \
@@ -124,7 +134,7 @@ coverage_74: ## Utility target to run the tests on PHP 5.6.
 		${PWD}/tests
 .PHONY: coverage_74
 
-test_56: ## Utility target to run the tests on PHP 5.6.
+test_56: ## Utility target to run the tests on PHP 5.6 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -134,7 +144,7 @@ test_56: ## Utility target to run the tests on PHP 5.6.
 	   ${PWD}/tests
 .PHONY: test_56
 
-test_70: ## Utility target to run the tests on PHP 7.0.
+test_70: ## Utility target to run the tests on PHP 7.0 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -144,7 +154,7 @@ test_70: ## Utility target to run the tests on PHP 7.0.
 	   ${PWD}/tests
 .PHONY: test_70
 
-test_71: ## Utility target to run the tests on PHP 7.1.
+test_71: ## Utility target to run the tests on PHP 7.1 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -154,7 +164,7 @@ test_71: ## Utility target to run the tests on PHP 7.1.
 	   ${PWD}/tests
 .PHONY: test_71
 
-test_72: ## Utility target to run the tests on PHP 7.2.
+test_72: ## Utility target to run the tests on PHP 7.2 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -164,7 +174,7 @@ test_72: ## Utility target to run the tests on PHP 7.2.
 	   ${PWD}/tests
 .PHONY: test_72
 
-test_73: ## Utility target to run the tests on PHP 7.3.
+test_73: ## Utility target to run the tests on PHP 7.3 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -174,7 +184,7 @@ test_73: ## Utility target to run the tests on PHP 7.3.
 	   ${PWD}/tests
 .PHONY: test_73
 
-test_74: ## Utility target to run the tests on PHP 7.4.
+test_74: ## Utility target to run the tests on PHP 7.4 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -184,7 +194,7 @@ test_74: ## Utility target to run the tests on PHP 7.4.
 	   ${PWD}/tests
 .PHONY: test_74
 
-test_80: ## Utility target to run the tests on PHP 8.0.
+test_80: ## Utility target to run the tests on PHP 8.0 with XDebug support.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -242,7 +252,7 @@ phan: ## Run phan on the project source files.
 pre_commit: code_lint code_fix code_sniff test phpstan phan ## Run pre-commit checks: code_lint, code_fix, code_sniff, test, phpstan, phan.
 .PHONY: pre_commit
 
-benchmark_build: ## WIP Build the benchmark suite.
+benchmark_build: ## !!WiP!! Build the benchmark suite.
 	rm -rf ${PWD}/_build/benchmark
 	[ -d ${PWD}/_build/benchmark ] || \
 		git clone https://github.com/kocsismate/php-di-container-benchmarks.git _build/benchmark
@@ -253,127 +263,27 @@ benchmark_run: ## Runs the benchmark suite in docker.
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
 .PHONY: benchmark_run
 
-benchmark_debug: ## Utility target to run a benchmark and debug it on PHP 8.0.
+benchmark_debug: ## Run a benchmark test and debug it. Requires arguments; e.g. `3.1`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-dev:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 1.1 \
+	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS) \
 .PHONY: benchmark_profile
 
-benchmark_profile_1: ## Runs all the tests from the suite 1 and profiles them.
+benchmark_profile: ## Run a benchmark test suite and profiles it. Requires arguments; e.g. `3` to run suite 3.
 	rm -rf _build/profile/cachegrind.out*
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 1.1
+	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).1
 	echo ''
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 1.2
+	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).2
 	echo ''
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 1.3 \
-.PHONY: benchmark_profile_1
-
-benchmark_profile_2: ## Runs all the tests from the suite 2 and profiles them.
-	rm -rf _build/profile/cachegrind.out*
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 2.1
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 2.2
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 2.3 \
-.PHONY: benchmark_profile_2
-
-benchmark_profile_3: ## Runs all the tests from the suite 3 and profiles them.
-	rm -rf _build/profile/cachegrind.out*
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 3.1
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 3.2
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 3.3 \
-.PHONY: benchmark_profile_3
-
-benchmark_profile_4: ## Runs all the tests from the suite 4 and profiles them.
-	rm -rf _build/profile/cachegrind.out*
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 4.1
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 4.2
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 4.3 \
-.PHONY: benchmark_profile_4
-
-benchmark_profile_5: ## Runs all the tests from the suite 5 and profiles them.
-	rm -rf _build/profile/cachegrind.out*
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 5.1
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 5.2
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 5.3 \
-.PHONY: benchmark_profile_5
-
-benchmark_profile_6: ## Runs all the tests from the suite 6 and profiles them.
-	rm -rf _build/profile/cachegrind.out*
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 6.1
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 6.2
-	echo ''
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-profile:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php 6.3 \
-.PHONY: benchmark_profile_6
-
-profile_80:
-	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-	   lucatume/di52-profile:php-v8.0 \
-	   --bootstrap ${PWD}/tests/bootstrap.php \
-	   --stop-on-failure \
-	   ${PWD}/tests
-.PHONY: profile_80
+	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).3 \
+.PHONY: benchmark_profile
