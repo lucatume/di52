@@ -11,7 +11,7 @@ PROJECT_NAME = $(notdir $(PWD))
 # Create a script to support command line arguments for targets.
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
-SUPPORTED_COMMANDS := benchmark_run benchmark_profile coverage
+SUPPORTED_COMMANDS := benchmark_run benchmark_profile coverage composer
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -22,35 +22,15 @@ help: ## Show this help message.
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
-composer_update: ## Updates the project Composer dependencies using PHP 5.6.
+composer: ## Runs a Composer command on PHP 5.6. Example: `make composer update`.
 	docker run --rm \
 	--user "$$(id -u):$$(id -g)" \
 	-e FIXUID=1 \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
 	-t \
-	lucatume/composer:php5.6-composer-v2 update
-.PHONY: composer_update
-
-composer_install: ## Installs the project Composer dependencies using PHP 5.6.
-	docker run --rm \
-	--user "$$(id -u):$$(id -g)" \
-	-e FIXUID=1 \
-	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
-	-v "${PWD}:/project" \
-	-t \
-	lucatume/composer:php5.6-composer-v2 install
-.PHONY: composer_install
-
-composer_dump_autoload: ## Regenerates the project Composer autoload files on PHP 5.6.
-	docker run --rm \
-	--user "$$(id -u):$$(id -g)" \
-	-e FIXUID=1 \
-	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
-	-v "${PWD}:/project" \
-	-t \
-	lucatume/composer:php5.6-composer-v2 dump-autoload
-.PHONY: composer_dump_autoload
+	lucatume/composer:php5.6-composer-v2 $(TARGET_ARGS)
+.PHONY: composer
 
 build_php_versions = '5.6' '7.0' '7.1' '7.2' '7.3' '7.4' '8.0'
 $(build_php_versions): %:
@@ -80,7 +60,7 @@ $(test_php_versions): %:
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-coverage: ## Run the tests on the specified PHP version and generate code coverage reports.
+coverage: ## Generate code coverage reports for a PHP version. Example: `make coverage 7.1`.
 ifeq ( $(TARGET_ARGS),5.6)
 		echo 'Generating coverage for PHP 5.6';
 		docker run --rm \
@@ -229,14 +209,14 @@ benchmark_run: ## Runs the benchmark suite in docker.
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
 .PHONY: benchmark_run
 
-benchmark_debug: ## Run a benchmark test and debug it. Requires arguments; e.g. `3.1`.
+benchmark_debug: ## Run a benchmark test and debug it. Example `make benchmark_debug 3.1`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-dev:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS) \
 .PHONY: benchmark_profile
 
-benchmark_profile: ## Run a benchmark test suite and profiles it. Requires arguments; e.g. `3` to run suite 3.
+benchmark_profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
 	rm -rf _build/profile/cachegrind.out*
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
