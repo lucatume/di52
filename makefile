@@ -11,7 +11,7 @@ PROJECT_NAME = $(notdir $(PWD))
 # Create a script to support command line arguments for targets.
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
-SUPPORTED_COMMANDS := benchmark_run benchmark_profile
+SUPPORTED_COMMANDS := benchmark_run benchmark_profile coverage
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -80,59 +80,25 @@ $(test_php_versions): %:
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-coverage_56: ## Run the tests on the specified PHP version and generate code coverage reports.
-	docker run --rm \
-		-v "${PWD}:${PWD}" \
-	   --entrypoint ${PWD}/vendor/bin/phpunit \
-		lucatume/di52-dev:php-v5.6 \
-		-c ${PWD}/phpunit.xml \
-	   ${PWD}/tests
-.PHONY: coverage_56
-
-coverage_70: ## Utility target to run the tests on PHP 7.0 and generate code coverage reports.
-	docker run --rm \
-		-v "${PWD}:${PWD}" \
-		--entrypoint phpdbg \
-		lucatume/di52-dev:php-v7.0 \
-		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
-		${PWD}/tests
-.PHONY: coverage_70
-
-coverage_71: ## Utility target to run the tests on PHP 7.1 and generate code coverage reports.
-	docker run --rm \
-		-v "${PWD}:${PWD}" \
-		--entrypoint phpdbg \
-		lucatume/di52-dev:php-v7.1 \
-		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
-		${PWD}/tests
-.PHONY: coverage_71
-
-coverage_72: ## Utility target to run the tests on PHP 7.2 and generate code coverage reports.
-	docker run --rm \
-		-v "${PWD}:${PWD}" \
-		--entrypoint phpdbg \
-		lucatume/di52-dev:php-v7.2 \
-		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
-		${PWD}/tests
-.PHONY: coverage_72
-
-coverage_73: ## Utility target to run the tests on PHP 7.3 and generate code coverage reports.
-	docker run --rm \
-		-v "${PWD}:${PWD}" \
-		--entrypoint phpdbg \
-		lucatume/di52-dev:php-v7.3 \
-		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
-		${PWD}/tests
-.PHONY: coverage_73
-
-coverage_74: ## Utility target to run the tests on PHP 7.4 and generate code coverage reports.
-	docker run --rm \
-		-v "${PWD}:${PWD}" \
-		--entrypoint phpdbg \
-		lucatume/di52-dev:php-v7.4 \
-		-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
-		${PWD}/tests
-.PHONY: coverage_74
+coverage: ## Run the tests on the specified PHP version and generate code coverage reports.
+ifeq ( $(TARGET_ARGS),5.6)
+		echo 'Generating coverage for PHP 5.6';
+		docker run --rm \
+			-v "${PWD}:${PWD}" \
+		   --entrypoint ${PWD}/vendor/bin/phpunit \
+			lucatume/di52-dev:php-v5.6 -c ${PWD}/phpunit.xml \
+		   ${PWD}/test
+else
+		echo "Generating coverage for PHP $(TARGET_ARGS)";
+		docker run --rm \
+			-v "${PWD}:${PWD}" \
+			--entrypoint phpdbg \
+			lucatume/di52-dev:php-v$(TARGET_ARGS) \
+			-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
+			${PWD}/tests
+endif
+	open tests/coverage/index.html
+.PHONY: coverage
 
 test_56: ## Utility target to run the tests on PHP 5.6 with XDebug support.
 	docker run --rm \
