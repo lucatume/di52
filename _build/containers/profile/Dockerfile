@@ -10,6 +10,7 @@ xdebug.profiler_output_dir='$XDEBUG_OUTPUT_DIR$'\n' \
  >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; fi
 RUN if [ "$(printf %.1s "${PHP_VERSION}")" = "8" ]; then echo $'xdebug.start_with_request=yes\n\
 xdebug.mode=profile\n\
+xdebug.profiler_append=1\n\
 xdebug.output_dir='$XDEBUG_OUTPUT_DIR$'\n' \
  >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; fi
  RUN cat /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && php -v

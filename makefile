@@ -242,16 +242,131 @@ phan: ## Run phan on the project source files.
 pre_commit: code_lint code_fix code_sniff test phpstan phan ## Run pre-commit checks: code_lint, code_fix, code_sniff, test, phpstan, phan.
 .PHONY: pre_commit
 
-benchmark_build:
+benchmark_build: ## WIP Build the benchmark suite.
 	rm -rf ${PWD}/_build/benchmark
 	[ -d ${PWD}/_build/benchmark ] || \
 		git clone https://github.com/kocsismate/php-di-container-benchmarks.git _build/benchmark
 	cp ${PWD}/_build/benchmark/.env.dist ${PWD}/_build/benchmark/.env
 .PHONY: benchmark_build
 
-benchmark_run:
+benchmark_run: ## Runs the benchmark suite in docker.
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
 .PHONY: benchmark_run
+
+benchmark_debug: ## Utility target to run a benchmark and debug it on PHP 8.0.
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-dev:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 1.1 \
+.PHONY: benchmark_profile
+
+benchmark_profile_1: ## Runs all the tests from the suite 1 and profiles them.
+	rm -rf _build/profile/cachegrind.out*
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 1.1
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 1.2
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 1.3 \
+.PHONY: benchmark_profile_1
+
+benchmark_profile_2: ## Runs all the tests from the suite 2 and profiles them.
+	rm -rf _build/profile/cachegrind.out*
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 2.1
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 2.2
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 2.3 \
+.PHONY: benchmark_profile_2
+
+benchmark_profile_3: ## Runs all the tests from the suite 3 and profiles them.
+	rm -rf _build/profile/cachegrind.out*
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 3.1
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 3.2
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 3.3 \
+.PHONY: benchmark_profile_3
+
+benchmark_profile_4: ## Runs all the tests from the suite 4 and profiles them.
+	rm -rf _build/profile/cachegrind.out*
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 4.1
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 4.2
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 4.3 \
+.PHONY: benchmark_profile_4
+
+benchmark_profile_5: ## Runs all the tests from the suite 5 and profiles them.
+	rm -rf _build/profile/cachegrind.out*
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 5.1
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 5.2
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 5.3 \
+.PHONY: benchmark_profile_5
+
+benchmark_profile_6: ## Runs all the tests from the suite 6 and profiles them.
+	rm -rf _build/profile/cachegrind.out*
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 6.1
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 6.2
+	echo ''
+	docker run --rm \
+	   -v "${PWD}:${PWD}" \
+	   lucatume/di52-profile:php-v8.0 \
+	   ${PWD}/_build/run-benchmark.php 6.3 \
+.PHONY: benchmark_profile_6
 
 profile_80:
 	docker run --rm \
