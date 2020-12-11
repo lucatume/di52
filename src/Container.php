@@ -322,11 +322,7 @@ class Container implements \ArrayAccess, ContainerInterface
             throw new NotFoundException("Nothing is bound to the '{$id}' id and it's not an existing class.");
         }
 
-        $maker = $isBound ? $this->bindings[ $id ] : $this->getMakeClosure(
-            $id,
-            $id,
-            $this->resolveUnboundAsSingletons
-        );
+        $maker = $isBound ? $this->bindings[ $id ] : $this->getMakeClosure($id, $id, $this->resolveUnboundAsSingletons);
 
         return $maker($this);
     }
