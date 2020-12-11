@@ -8,4 +8,5 @@ vendor/
 # composer.lock
 
 tests/coverage
+_build/profile/cachegrind*
 
