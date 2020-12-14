@@ -124,13 +124,11 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function setVar($key, $value)
     {
-        $this->bindings[ $key ] = $this->getMakeClosure($key, ProtectedValue::of($value));
+        $this->bindings[$key] = $this->getMakeClosure($key, ProtectedValue::of($value));
     }
 
     /**
      *
-     *
-     * @since TBD
      *
      * @param string                               $id                The id, class or object to build
      *                                                                the callable for.
@@ -145,6 +143,8 @@ class Container implements \ArrayAccess, ContainerInterface
      * @return Closure|callable A closure to build the implementation.
      *
      * @throws ContainerException If there's an issue resolving the id, or its dependencies.
+     * @since TBD
+     *
      */
     private function getMakeClosure(
         $id,
@@ -163,14 +163,14 @@ class Container implements \ArrayAccess, ContainerInterface
                 return $implementation;
             };
         }
-        if (! ( is_string($implementation) && $this->classExists($implementation, self::CLASS_EXISTS) )) {
+        if (!(is_string($implementation) && $this->classExists($implementation, self::CLASS_EXISTS))) {
             return ProtectedValue::of($implementation);
         }
 
         $closure = function () use ($id, $implementation, $buildArgs, $afterBuildMethods) {
             $buildArgs = $this->resolveBuildArgs($id, $implementation, ...$buildArgs);
-            $instance  = new $implementation(...$buildArgs);
-            if (! empty($afterBuildMethods)) {
+            $instance = new $implementation(...$buildArgs);
+            if (!empty($afterBuildMethods)) {
                 foreach ($afterBuildMethods as $method) {
                     $instance->{$method}();
                 }
@@ -180,8 +180,8 @@ class Container implements \ArrayAccess, ContainerInterface
         };
 
         if ($singleton) {
-            $closure               = $this->getCachingClosure($closure, $id);
-            $this->bindings[ $id ] = $closure;
+            $closure = $this->getCachingClosure($closure, $id);
+            $this->bindings[$id] = $closure;
         }
 
         return $closure;
@@ -201,12 +201,12 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $cacheKey = $class . $mask;
 
-        if (isset(static::$classExistsCache[ $cacheKey ])) {
-            return static::$classExistsCache[ $cacheKey ];
+        if (isset(static::$classExistsCache[$cacheKey])) {
+            return static::$classExistsCache[$cacheKey];
         }
 
         if (PHP_VERSION_ID < 70000) {
-            $exists= $this->checkClassExists($class, $mask); // @codeCoverageIgnore
+            $exists = $this->checkClassExists($class, $mask); // @codeCoverageIgnore
             static::$classExistsCache[$cacheKey] = $exists;
             return $exists;
         }
@@ -234,17 +234,17 @@ class Container implements \ArrayAccess, ContainerInterface
     protected function checkClassExists($class, $mask)
     {
         return
-            ( self::CLASS_EXISTS & $mask && (
+            (self::CLASS_EXISTS & $mask && (
                     class_exists($class)
                     && (
-                    ( self::CLASS_IS_CONCRETE & $mask ) ?
-                        ( ! $this->getClassReflection($class)->isAbstract() )
+                    (self::CLASS_IS_CONCRETE & $mask) ?
+                        (!$this->getClassReflection($class)->isAbstract())
                         : true
                     )
                 )
             )
-            || ( self::INTERFACE_EXISTS & $mask && interface_exists($class) )
-            || ( self::TRAIT_EXISTS & $mask && trait_exists($class) );
+            || (self::INTERFACE_EXISTS & $mask && interface_exists($class))
+            || (self::TRAIT_EXISTS & $mask && trait_exists($class));
     }
 
     /**
@@ -258,8 +258,8 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     private function getClassReflection($className)
     {
-        if (isset($this->reflections[ $className ])) {
-            return $this->reflections[ $className ];
+        if (isset($this->reflections[$className])) {
+            return $this->reflections[$className];
         }
 
         // @phpstan-ignore-next-line Throwing here is fine.
@@ -286,14 +286,14 @@ class Container implements \ArrayAccess, ContainerInterface
             return [];
         }
 
-        if (! $constructor->isPublic()) {
+        if (!$constructor->isPublic()) {
             throw new ContainerException("The '{$id}' class constructor method is not public.");
         }
 
         $resolved = [];
         foreach ($constructor->getParameters() as $i => $parameter) {
-            if (isset($readyArgs[ $i ])) {
-                $resolved[] = $this->makeInternally($readyArgs[ $i ], true);
+            if (isset($readyArgs[$i])) {
+                $resolved[] = $this->makeInternally($readyArgs[$i], true);
                 continue;
             }
             $resolved[] = $this->resolveParameter($parameter, $id);
@@ -315,14 +315,14 @@ class Container implements \ArrayAccess, ContainerInterface
     private function makeInternally($id, $safely = false)
     {
         $this->makeLine[] = is_string($id) ? "'{$id}'" : "'" . gettype($id) . "'";
-        $isString         = is_string($id);
-        $isBound          = $isString && isset($this->bindings[ $id ]);
+        $isString = is_string($id);
+        $isBound = $isString && isset($this->bindings[$id]);
 
-        if (! $safely && ! $isBound && $isString && ! $this->classExists($id, self::CLASS_EXISTS)) {
+        if (!$safely && !$isBound && $isString && !$this->classExists($id, self::CLASS_EXISTS)) {
             throw new NotFoundException("Nothing is bound to the '{$id}' id and it's not an existing class.");
         }
 
-        $maker = $isBound ? $this->bindings[ $id ] : $this->getMakeClosure($id, $id, $this->resolveUnboundAsSingletons);
+        $maker = $isBound ? $this->bindings[$id] : $this->getMakeClosure($id, $id, $this->resolveUnboundAsSingletons);
 
         return $maker($this);
     }
@@ -343,8 +343,8 @@ class Container implements \ArrayAccess, ContainerInterface
         $parameterClassName = $this->getParameterClassName($parameter);
 
         if ($parameterClassName !== null) {
-            if (isset($this->whenNeedsGive[ $id ][ $parameterClassName ])) {
-                $parameterClassName = $this->whenNeedsGive[ $id ][ $parameterClassName ];
+            if (isset($this->whenNeedsGive[$id][$parameterClassName])) {
+                $parameterClassName = $this->whenNeedsGive[$id][$parameterClassName];
             }
 
             return $this->makeInternally($parameterClassName);
@@ -375,7 +375,7 @@ class Container implements \ArrayAccess, ContainerInterface
          * not be correctly identified.
          */
         $parameterClassString = $parameter->__toString();
-        $parameterClass       = preg_replace_callback(
+        $parameterClass = preg_replace_callback(
             '/^.*\\[\\s*<(required|optional)>\\s*([\\\\\\w_-]*).*].*$/i',
             static function ($m) {
                 return isset($m[2]) ? $m[2] : null;
@@ -425,7 +425,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetSet($offset, $value)
     {
-        $this->bindings[ $offset ] = $this->getMakeClosure($offset, $value, true);
+        $this->bindings[$offset] = $this->getMakeClosure($offset, $value, true);
     }
 
     /**
@@ -442,7 +442,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function getVar($key, $default = null)
     {
-        if (isset($this->bindings[ $key ])) {
+        if (isset($this->bindings[$key])) {
             return $this->bindings[$key]($this);
         }
 
@@ -485,6 +485,28 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string|object $id A fully qualified class or interface name or an already built object.
+     *
+     * @return mixed The entry for an id.
+     *
+     * @throws ContainerException Error while retrieving the entry.
+     * @throws NotFoundException  No entry was found for **this** identifier or the string identifier does not map to
+     *                            a concrete class.
+     */
+    public function get($id)
+    {
+        $this->makeLine = [];
+        try {
+            return $this->makeInternally($id, false);
+        } catch (ContainerException $e) {
+            $exceptionClass = get_class($e);
+            throw new $exceptionClass($this->buildMakeErrorMessage($id, $e));
+        }
+    }
+
+    /**
      * Formats an error message to provide a useful debug message.
      *
      * @param string|object $id The id of what is actually being built or the object that is being built.
@@ -494,13 +516,15 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     protected function buildMakeErrorMessage($id, \Exception $e)
     {
-        $idString  = is_string($id) ? $id : gettype($id);
-        $last      = array_pop($this->makeLine) ?: $idString;
-        $lastEntry = "Error while making {$last}: " . lcfirst(rtrim(
-            str_replace('"', '', $e->getMessage()),
-            '.'
-        )) . '.';
-        $frags     = array_merge($this->makeLine, [ $lastEntry ]);
+        $idString = is_string($id) ? $id : gettype($id);
+        $last = array_pop($this->makeLine) ?: $idString;
+        $lastEntry = "Error while making {$last}: " . lcfirst(
+            rtrim(
+                str_replace('"', '', $e->getMessage()),
+                '.'
+            )
+        ) . '.';
+        $frags = array_merge($this->makeLine, [$lastEntry]);
 
         return implode("\n\t=> ", $frags);
     }
@@ -518,8 +542,8 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetExists($offset)
     {
-        return isset($this->bindings[ $offset ]) || ( is_string($offset)
-                                                        && $this->classExists($offset, self::CLASS_EXISTS) );
+        return isset($this->bindings[$offset]) || (is_string($offset)
+                && $this->classExists($offset, self::CLASS_EXISTS));
     }
 
     /**
@@ -539,7 +563,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function tag(array $implementationsArray, $tag)
     {
-        $this->tags[ $tag ] = $implementationsArray;
+        $this->tags[$tag] = $implementationsArray;
     }
 
     /**
@@ -561,11 +585,11 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function tagged($tag)
     {
-        if (! $this->hasTag($tag)) {
+        if (!$this->hasTag($tag)) {
             throw new NotFoundException("Nothing is tagged as '{$tag}'");
         }
 
-        return array_map([ $this, 'make' ], $this->tags[ $tag ]);
+        return array_map([$this, 'make'], $this->tags[$tag]);
     }
 
     /**
@@ -579,7 +603,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function hasTag($tag)
     {
-        return isset($this->tags[ $tag ]);
+        return isset($this->tags[$tag]);
     }
 
     /**
@@ -611,22 +635,22 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         /** @var ServiceProvider $provider */
         $provider = new $serviceProviderClass($this);
-        if (! $provider->isDeferred()) {
+        if (!$provider->isDeferred()) {
             $provider->register();
         } else {
             $provided = $provider->provides();
-            if (! is_array($provided) || count($provided) === 0) {
+            if (!is_array($provided) || count($provided) === 0) {
                 throw new ContainerException(
                     "Service provider '{$serviceProviderClass}' is marked as deferred" .
                     " but is not providing any implementation."
                 );
             }
             foreach ($provided as $id) {
-                $this->bindings[ $id ] = $this->getDeferredProviderMakeClosure($provider, $id);
+                $this->bindings[$id] = $this->getDeferredProviderMakeClosure($provider, $id);
             }
         }
-        $bootMethod   = new ReflectionMethod($provider, 'boot');
-        $requiresBoot = ( $bootMethod->getDeclaringClass()->getName() === get_class($provider) );
+        $bootMethod = new ReflectionMethod($provider, 'boot');
+        $requiresBoot = ($bootMethod->getDeclaringClass()->getName() === get_class($provider));
         if ($requiresBoot) {
             $this->bootable[] = $provider;
         }
@@ -670,7 +694,7 @@ class Container implements \ArrayAccess, ContainerInterface
     public function singleton($id, $implementation = null, array $afterBuildMethods = null)
     {
         $this->bind($id, $implementation, $afterBuildMethods);
-        $this->bindings[ $id ] = $this->getCachingClosure($this->bindings[ $id ], $id);
+        $this->bindings[$id] = $this->getCachingClosure($this->bindings[$id], $id);
     }
 
     /**
@@ -695,7 +719,7 @@ class Container implements \ArrayAccess, ContainerInterface
             $implementation = $id;
         }
 
-        $this->bindings[ $id ] = $this->getMakeClosure($id, $implementation, false, $afterBuildMethods);
+        $this->bindings[$id] = $this->getMakeClosure($id, $implementation, false, $afterBuildMethods);
     }
 
     /**
@@ -715,15 +739,17 @@ class Container implements \ArrayAccess, ContainerInterface
         } catch (ReflectionException $e) {
             throw new ContainerException($e->getMessage());
         }
-        if (! $classReflection->isInstantiable()) {
-            throw new ContainerException(sprintf(
-                'To bind a class in the Container without defining an implementation' .
-                ', the class must be instantiable. %s is not instantiable.',
-                $className
-            ));
+        if (!$classReflection->isInstantiable()) {
+            throw new ContainerException(
+                sprintf(
+                    'To bind a class in the Container without defining an implementation' .
+                    ', the class must be instantiable. %s is not instantiable.',
+                    $className
+                )
+            );
         }
         // Cache the reflection.
-        $this->reflections[ $className ] = $classReflection;
+        $this->reflections[$className] = $classReflection;
     }
 
     /**
@@ -738,7 +764,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function boot()
     {
-        if (! empty($this->bootable)) {
+        if (!empty($this->bootable)) {
             foreach ($this->bootable as $provider) {
                 /** @var ServiceProvider $provider */
                 $provider->boot();
@@ -764,7 +790,7 @@ class Container implements \ArrayAccess, ContainerInterface
     public function singletonDecorators($id, $decorators, array $afterBuildMethods = null)
     {
         $this->bindDecorators($id, $decorators, $afterBuildMethods);
-        $this->bindings[ $id ] = $this->getCachingClosure($this->bindings[ $id ], $id);
+        $this->bindings[$id] = $this->getCachingClosure($this->bindings[$id], $id);
     }
 
     /**
@@ -790,12 +816,12 @@ class Container implements \ArrayAccess, ContainerInterface
             throw new ContainerException('The decorator chain cannot be empty.');
         }
         do {
-            $previous          = isset($maker) ? $maker : null;
-            $maker             = $this->getMakeClosure($id, $decorator, false, (array) $afterBuildMethods, $previous);
-            $decorator         = array_pop($decorators);
+            $previous = isset($maker) ? $maker : null;
+            $maker = $this->getMakeClosure($id, $decorator, false, (array)$afterBuildMethods, $previous);
+            $decorator = array_pop($decorators);
             $afterBuildMethods = [];
         } while ($decorator !== null);
-        $this->bindings[ $id ] = $maker;
+        $this->bindings[$id] = $maker;
     }
 
     /**
@@ -807,7 +833,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetUnset($offset)
     {
-        unset($this->bindings[ $offset ], $this->tags[ $offset ]);
+        unset($this->bindings[$offset], $this->tags[$offset]);
     }
 
     /**
@@ -874,7 +900,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function give($implementation)
     {
-        $this->whenNeedsGive[ $this->whenClass ][ $this->needsClass ] = $implementation;
+        $this->whenNeedsGive[$this->whenClass][$this->needsClass] = $implementation;
         unset($this->whenClass, $this->needsClass);
     }
 
@@ -891,18 +917,18 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function callback($id, $method)
     {
-        if (! is_string($method)) {
+        if (!is_string($method)) {
             throw new ContainerException('Callback method must be a string');
         }
 
         $callbackId = $this->getCallbackId($id, $method);
 
-        if ($callbackId && ! isset($this->callbacks[ $callbackId ])
-             && ( $this->isStaticMethod($id, $method) || $this->isSingleton($id) )) {
+        if ($callbackId && !isset($this->callbacks[$callbackId])
+            && ($this->isStaticMethod($id, $method) || $this->isSingleton($id))) {
             // If we can know immediately, without actually resolving the binding, then build and cache immediately.
-            $this->callbacks[ $callbackId ] = $this->getCallbackClosure($id, $method);
+            $this->callbacks[$callbackId] = $this->getCallbackClosure($id, $method);
 
-            return $this->callbacks[ $callbackId ];
+            return $this->callbacks[$callbackId];
         }
 
         return $this->getCallbackClosure($id, $method);
@@ -939,7 +965,7 @@ class Container implements \ArrayAccess, ContainerInterface
 
         if (!isset(static::$isStaticMethodCache[$key])) {
             try {
-                static::$isStaticMethodCache[$key] = ( new ReflectionMethod($object, $method) )->isStatic();
+                static::$isStaticMethodCache[$key] = (new ReflectionMethod($object, $method))->isStatic();
             } catch (ReflectionException $e) {
                 return false;
             }
@@ -957,7 +983,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     private function isSingleton($id)
     {
-        return is_string($id) && isset(array_flip($this->singletons)[ $id ]);
+        return is_string($id) && isset(array_flip($this->singletons)[$id]);
     }
 
     /**
@@ -973,8 +999,8 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $callbackId = $this->getCallbackId($id, $method);
 
-        if ($callbackId && isset($this->callbacks[ $callbackId ])) {
-            return $this->callbacks[ $callbackId ];
+        if ($callbackId && isset($this->callbacks[$callbackId])) {
+            return $this->callbacks[$callbackId];
         }
 
         return function (...$args) use ($id, $method) {
@@ -1023,27 +1049,6 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Finds an entry of the container by its identifier and returns it.
-     *
-     * @param string|object $id A fully qualified class or interface name or an already built object.
-     *
-     * @return mixed The entry for an id.
-     *
-     * @throws ContainerException Error while retrieving the entry.
-     * @throws NotFoundException  No entry was found for **this** identifier.
-     */
-    public function get($id)
-    {
-        $this->makeLine = [];
-        try {
-            return $this->makeInternally($id, false);
-        } catch (ContainerException $e) {
-            $exceptionClass = get_class($e);
-            throw new $exceptionClass($this->buildMakeErrorMessage($id, $e));
-        }
-    }
-
-    /**
      * Returns true if the container can return an entry for the given identifier.
      * Returns false otherwise.
      *
@@ -1056,7 +1061,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function has($id)
     {
-        return isset($this->bindings[ $id ]) || ( is_string($id) && $this->classExists($id) );
+        return isset($this->bindings[$id]) || (is_string($id) && $this->classExists($id));
     }
 
     /**
@@ -1071,7 +1076,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function isBound($id)
     {
-        return isset($this->bindings[ $id ]);
+        return isset($this->bindings[$id]);
     }
 
     /**
@@ -1097,7 +1102,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function getProvider($class)
     {
-        if (! isset($this->bindings[ $class ])) {
+        if (!isset($this->bindings[$class])) {
             throw new NotFoundException("Service provider '{$class}' is not registered in the container.");
         }
 
