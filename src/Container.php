@@ -481,13 +481,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function make($id)
     {
-        $this->makeLine = [];
-        try {
-            return $this->makeInternally($id, false);
-        } catch (ContainerException $e) {
-            $exceptionClass = get_class($e);
-            throw new $exceptionClass($this->buildMakeErrorMessage($id, $e));
-        }
+        return $this->get($id);
     }
 
     /**
@@ -1031,7 +1025,7 @@ class Container implements \ArrayAccess, ContainerInterface
     /**
      * Finds an entry of the container by its identifier and returns it.
      *
-     * @param string $id Identifier of the entry to look for.
+     * @param string|object $id A fully qualified class or interface name or an already built object.
      *
      * @return mixed The entry for an id.
      *
@@ -1040,7 +1034,13 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function get($id)
     {
-        return $this->make($id);
+        $this->makeLine = [];
+        try {
+            return $this->makeInternally($id, false);
+        } catch (ContainerException $e) {
+            $exceptionClass = get_class($e);
+            throw new $exceptionClass($this->buildMakeErrorMessage($id, $e));
+        }
     }
 
     /**
