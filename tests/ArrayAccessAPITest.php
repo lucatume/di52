@@ -99,15 +99,15 @@ class ArrayAccessAPITest extends TestCase
     }
 
     /**
-     * It should mark private constructor class as existing
+     * It should mark private constructor class as non existing
      *
      * @test
      */
-    public function should_mark_private_constructor_class_as_existing()
+    public function should_mark_private_constructor_class_as_non_existing()
     {
         $container = new Container();
 
-        $this->assertTrue(isset($container[ArrayAccessTestClassPrivateConstructor::class]));
+        $this->assertFalse(isset($container[ArrayAccessTestClassPrivateConstructor::class]));
     }
 
     /**

@@ -100,9 +100,9 @@ class NamespacedTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * it should allow binding a closure to an interface as a singletong
+     * it should allow binding a closure to an interface as a singleton
      */
-    public function it_should_allow_binding_a_closure_to_an_interface_as_a_singletong()
+    public function it_should_allow_binding_a_closure_to_an_interface_as_a_singleton()
     {
         $container = new Container();
 
