@@ -217,7 +217,7 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
      */
     public function it_should_throw_if_trying_to_resolve_class_with_unbound_interface_dependency()
     {
-        $this->expectException(NotFoundException::class);
+        $this->expectException(ContainerException::class);
 
         $container = new tad_DI52_Container();
 

@@ -50,7 +50,7 @@ class Container implements \ArrayAccess, ContainerInterface
     /**
      * A list of bound and resolved singletons.
      *
-     * @var array<string>
+     * @var array<string,bool>
      */
     protected $singletons = [];
     /**
@@ -85,7 +85,9 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     protected $whenNeedsGive = [];
     /**
-     * @var array<string,callable>
+     * A map from the bound implementations to either the callables that will build the implementations or the solved
+     * singleton implementations.
+     * @var array<string,callable|ServiceProvider|object>
      */
     protected $bindings = [];
     /**
@@ -147,20 +149,19 @@ class Container implements \ArrayAccess, ContainerInterface
     /**
      * Builds and returns a Closure to build and object instance.
      *
-     * @param string                               $id                The id, class or object to build
-     *                                                                the callable for.
-     * @param callable|string|array<string>|object $implementation    The implementation to build the Closure for.
-     * @param array<string>|null                   $afterBuildMethods A set of methods that should be called on the
-     *                                                                instance
-     *                                                                after it's built and before it's returned.
-     * @param array<mixed>                         $buildArgs         An array of arguments to use when building the
-     *                                                                instance.
+     * @param string                                    $id                The id, class or object to build
+     *                                                                     the callable for.
+     * @param callable|string|array<string>|object|null $implementation    The implementation to build the Closure for.
+     * @param array<string>|null                        $afterBuildMethods A set of methods that should be called on the
+     *                                                                     instance
+     *                                                                     after it's built and before it's returned.
+     * @param array<mixed> $buildArgs                                      An array of arguments to use when building
+     *                                                                     the instance.
      *
-     * @return Closure|callable A closure to build the implementation.
+     * @return Closure|callable|object A closure to build the implementation or the implementation itself if already
+     *                                 built.
      *
      * @throws ContainerException If there's an issue resolving the id, or its dependencies.
-     * @since TBD
-     *
      */
     private function buildClosure(
         $id,
@@ -169,12 +170,14 @@ class Container implements \ArrayAccess, ContainerInterface
         ...$buildArgs
     ) {
         // Allow single argument binding.
-        $implementation = $implementation ?: $id;
+        $implementation = $implementation === null ? $id : $implementation;
         $implementationIsString = is_string($implementation);
 
         if ($implementationIsString && $implementation === $id
-            && !$this->classExists( $id, self::CLASS_IS_INSTANTIATABLE )) {
-            throw new ContainerException("Class '{$id}' does not exist or is not instantiatable.");
+            && !$this->classExists($id, self::CLASS_IS_INSTANTIATABLE)) {
+            throw new NotFoundException(
+                "nothing is bound to the '{$id}' id and it's not an existing or instantiable class."
+            );
         }
 
         if ($implementation instanceof Closure) {
@@ -187,22 +190,22 @@ class Container implements \ArrayAccess, ContainerInterface
             return $implementation;
         }
 
-        if (!($implementationIsString && $this->classExists($implementation, self::CLASS_EXISTS))) {
-            return ProtectedValue::of($implementation);
+        if (is_string($implementation) && $this->classExists($implementation, self::CLASS_EXISTS)) {
+            // @phpstan-ignore-next-line Keep a reference to the closure to keep it alive while solving it.
+            $closure = function () use ($id, $implementation, $buildArgs, $afterBuildMethods, &$closure) {
+                $buildArgs = $this->resolveBuildArgs($id, $implementation, ...$buildArgs);
+                $instance = new $implementation(...$buildArgs);
+                foreach ((array)$afterBuildMethods as $method) {
+                    $instance->{$method}();
+                }
+
+                return $instance;
+            };
+
+            return $closure;
         }
 
-        // Use the closure itself to keep a reference to it and avoid it garbage collection.
-        $closure = function () use ($id, $implementation, $buildArgs, $afterBuildMethods, &$closure) {
-            $buildArgs = $this->resolveBuildArgs($id, $implementation, ...$buildArgs);
-            $instance = new $implementation(...$buildArgs);
-            foreach ((array)$afterBuildMethods as $method) {
-                $instance->{$method}();
-            }
-
-            return $instance;
-        };
-
-        return $closure;
+        return ProtectedValue::of($implementation);
     }
 
     /**
@@ -341,8 +344,6 @@ class Container implements \ArrayAccess, ContainerInterface
      * @return mixed The entry for an id.
      *
      * @throws ContainerException Error while retrieving the entry.
-     * @throws NotFoundException  No entry was found for **this** identifier or the string identifier does not map to
-     *                            a concrete class.
      */
     public function get($id)
     {
@@ -351,7 +352,7 @@ class Container implements \ArrayAccess, ContainerInterface
             $bound = $this->bindings[$id];
             // Bound, resolve and return.
             if ($bound instanceof Closure || $bound instanceof ProtectedValue) {
-                $instance = $this->bindings[$id]($this);
+                $instance = $bound($this);
                 if (isset($this->singletons[$id])) {
                     $this->bindings[$id] = $instance;
                 }
@@ -365,14 +366,8 @@ class Container implements \ArrayAccess, ContainerInterface
         try {
             // Unbound, try and resolve it now.
             return $this->resolve($id);
-        } catch (\Exception $e) {
-            if (!$this->classExists($id, self::CLASS_IS_INSTANTIATABLE)) {
-                throw new NotFoundException(
-                    "Nothing is bound to the '{$id}' id and it's not an instantiable class."
-                );
-            }
-
-            throw new ContainerException($this->buildMakeErrorMessage($id, $e));
+        } catch (\Exception $exception) {
+            throw $this->castException($exception, $id);
         }
     }
 
@@ -402,6 +397,22 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
+     * Builds an instance of the exception with a pretty message.
+     *
+     * @param \Exception    $exception The exception to cast.
+     * @param string|object $id        The top identifier the containe was attempting to build, or object.
+     *
+     * @return ContainerException The cast exception.
+     */
+    private function castException(\Exception $exception, $id)
+    {
+        $exceptionClass = $exception instanceof ContainerException ? get_class($exception) : ContainerException::class;
+        $exception = new $exceptionClass($this->buildMakeErrorMessage($id, $exception));
+
+        return $exception;
+    }
+
+    /**
      * Formats an error message to provide a useful debug message.
      *
      * @param string|object $id The id of what is actually being built or the object that is being built.
@@ -409,16 +420,16 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return string The formatted make error message.
      */
-    protected function buildMakeErrorMessage($id, \Exception $e)
+    private function buildMakeErrorMessage($id, \Exception $e)
     {
         $idString = is_string($id) ? $id : gettype($id);
         $last = array_pop($this->makeLine) ?: $idString;
         $lastEntry = "Error while making {$last}: " . lcfirst(
-                rtrim(
-                    str_replace('"', '', $e->getMessage()),
-                    '.'
-                )
-            ) . '.';
+            rtrim(
+                str_replace('"', '', $e->getMessage()),
+                '.'
+            )
+        ) . '.';
         $frags = array_merge($this->makeLine, [$lastEntry]);
 
         return implode("\n\t=> ", $frags);
@@ -494,13 +505,14 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param mixed|null $default A default value to return if the variable is not set in the container.
      *
      * @return mixed The variable value or the resolved binding.
-     * @see lucatume\DI52\Container::make
+     * @throws ContainerException If there's an issue resolving the variable.
      *
+     * @see Container::get()
      */
     public function getVar($key, $default = null)
     {
         if (isset($this->bindings[$key])) {
-            return $this->bindings[$key]($this);
+            return $this->get($key);
         }
 
         return $default;
@@ -530,7 +542,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * If the implementation has been bound as singleton using the `singleton` method
      * or the ArrayAccess API then the implementation will be resolved just on the first request.
      *
-     * @param string|object $id A fully qualified class or interface name or an already built object.
+     * @param string $id A fully qualified class or interface name or an already built object.
      *
      * @return mixed
      * @throws ContainerException If the target of the make is not bound and is not a valid,
@@ -591,8 +603,8 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return array<mixed> An array of resolved bound implementations.
      * @throws NotFoundException If nothing is tagged with the tag.
+     * @throws ContainerException If one of the bindings is not of the correct type.
      * @see Container::tag()
-     *
      */
     public function tagged($tag)
     {
@@ -639,18 +651,17 @@ class Container implements \ArrayAccess, ContainerInterface
      * container itself.
      *
      * @param string $serviceProviderClass The fully-qualified Service Provider class name.
-     *
+     * @param string ...$alias             A list of aliases the provider should be registered with.
      * @return void This method does not return any value.
      * @throws ContainerException If the Service Provider is not correctly configured or there's an issue
-     *                            reflecting on it.
-     *
+     *                                     reflecting on it.
      * @see ServiceProvider::register()
      * @see ServiceProvider::isDeferred()
      * @see ServiceProvider::provides()
-     *
+     * @see Container::getProvider()
      * @see ServiceProvider::boot()
      */
-    public function register($serviceProviderClass)
+    public function register($serviceProviderClass, ...$alias)
     {
         /** @var ServiceProvider $provider */
         $provider = new $serviceProviderClass($this);
@@ -668,12 +679,23 @@ class Container implements \ArrayAccess, ContainerInterface
                 $this->bindings[$id] = $this->getDeferredProviderMakeClosure($provider, $id);
             }
         }
-        $bootMethod = new ReflectionMethod($provider, 'boot');
+
+        try {
+            $bootMethod = new ReflectionMethod($provider, 'boot');
+        } catch (ReflectionException $e) {
+            throw new ContainerException('Could not reflect on the provider boot method.');
+        }
+
         $requiresBoot = ($bootMethod->getDeclaringClass()->getName() === get_class($provider));
         if ($requiresBoot) {
             $this->bootable[] = $provider;
         }
-        $this->singleton($serviceProviderClass, $provider);
+        $this->bindings[$serviceProviderClass] = $provider;
+        $this->singletons[$serviceProviderClass] = true;
+        foreach ($alias as $a) {
+            $this->bindings[$a] = $provider;
+            $this->singletons[$a] = true;
+        }
     }
 
     /**
@@ -777,6 +799,18 @@ class Container implements \ArrayAccess, ContainerInterface
         $this->bindings[$id] = $this->getDecoratorClosure($decorators, $id, true, $afterBuildMethods);
     }
 
+    /**
+     * Builds and returns a closure that will start building the chain of decorators.
+     *
+     * @param array<string|object|callable> $decorators        A list of decorators.
+     * @param string                 $id                The id to bind the decorator tail to.
+     * @param bool                   $singleton         Whether the create the closure for singletons or not.
+     * @param array<string>|null     $afterBuildMethods A set of method to run on the built decorated instance after
+     *                                                  it's built.
+     * @return callable The callable or Closure that will start building the decorator chain.
+     *
+     * @throws ContainerException If there's any issue while trying to register any decorator step.
+     */
     private function getDecoratorClosure(array $decorators, $id, $singleton, array $afterBuildMethods = null)
     {
         $decorator = array_pop($decorators);
@@ -785,16 +819,25 @@ class Container implements \ArrayAccess, ContainerInterface
             throw new ContainerException('The decorator chain cannot be empty.');
         }
 
-        $this->singletons[$id] = true;
-
         do {
-            $previous = isset($maker) ? $maker : null;
-            $maker = $this->buildClosure($id, $decorator, $afterBuildMethods, $previous);
+            $previous = isset($buildClosure) ? $buildClosure : null;
+            $buildClosure = $this->buildClosure($id, $decorator, $afterBuildMethods, $previous);
             $decorator = array_pop($decorators);
             $afterBuildMethods = [];
         } while ($decorator !== null);
 
-        return $maker;
+        if (!is_callable($buildClosure)) {
+            throw new ContainerException(
+                "Decorator build closure for '{$id}' should be a function returning an object, not an object. " .
+                'The `$id` parameter should be a string, not an object. '
+            );
+        }
+
+        if ($singleton) {
+            $this->singletons[$id] = true;
+        }
+
+        return $buildClosure;
     }
 
     /**
@@ -997,15 +1040,24 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function instance($id, array $buildArgs = [], array $afterBuildMethods = null)
     {
-        return empty($buildArgs) ?
-            $this->getInstanceClosure($id)
-            : $this->buildClosure($id, $id, $afterBuildMethods, ...$buildArgs);
+        if (empty($buildArgs)) {
+            $buildClosure = $this->getInstanceClosure($id);
+        } else {
+            $buildClosure = $this->buildClosure($id, $id, $afterBuildMethods, ...$buildArgs);
+            if (!is_callable($buildClosure)) {
+                throw new ContainerException(
+                    "Build closure for '{$id}' should be a function returning an object, not an object. " .
+                    'The `$id` parameter should be a string, not an object. '
+                );
+            }
+        }
+        return $buildClosure;
     }
 
     /**
      * Builds and returns a closure to be used to lazily make objects on PHP 5.3+ and return them.
      *
-     * @param string $id The id to produce the closure for.
+     * @param string|object $id The id to produce the closure for.
      *
      * @return Closure The closure that will produce the instance.
      */
@@ -1062,19 +1114,19 @@ class Container implements \ArrayAccess, ContainerInterface
     /**
      * Returns the Service Provider instance registered.
      *
-     * @param string $class The Service Provider clas to return the instance for.
+     * @param string $providerId The Service Provider clas to return the instance for.
      *
      * @return ServiceProvider The service provider instance.
      *
      * @throws NotFoundException If the Service Provider class was never registered in the container.
      */
-    public function getProvider($class)
+    public function getProvider($providerId)
     {
-        if (!isset($this->bindings[$class])) {
-            throw new NotFoundException("Service provider '{$class}' is not registered in the container.");
+        if (!isset($this->bindings[$providerId])) {
+            throw new NotFoundException("Service provider '{$providerId}' is not registered in the container.");
         }
 
-        return $this->bindings[$class]();
+        return $this->get($providerId);
     }
 
     /**
@@ -1105,18 +1157,5 @@ class Container implements \ArrayAccess, ContainerInterface
         }
         // Cache the reflection.
         $this->reflections[$className] = $classReflection;
-    }
-
-    /**
-     * Builds and returns an identifier for a callback.
-     *
-     * @param string|object $id     Either a class name, a bound slug or an object.
-     * @param string        $method The method to call on the instance.
-     *
-     * @return string The callback identifier or `null` to indicate an identifier could not be built.
-     * @throws ContainerException If the id is not a string and not an object, if the method name is not a string.
-     */
-    private function getCallbackId($id, $method)
-    {
     }
 }

@@ -1,2 +1,2 @@
 'Clutch'
-	=> Error while making 'PrivateConstructor': the 'PrivateConstructor' class constructor method is not public.
+	=> Error while making 'PrivateConstructor': nothing is bound to the 'PrivateConstructor' id and it's not an existing or instantiable class.

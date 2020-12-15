@@ -94,6 +94,16 @@ class ExternalServiceDataProvider extends ServiceProvider
     }
 }
 
+class AliasServiceProvider extends ServiceProvider
+{
+    public $registered = false;
+
+    public function register()
+    {
+        $this->registered = true;
+    }
+}
+
 class ServiceProviderTest extends TestCase
 {
     /**
@@ -228,11 +238,59 @@ class ServiceProviderTest extends TestCase
     }
 
     /**
-     * It should throw if
+     * It should allow registering a service provider with one alias
      *
      * @test
      */
-    public function should_throw_if()
+    public function should_allow_registering_a_service_provider_with_one_alias()
     {
+        $container = new Container();
+
+        $container->register(AliasServiceProvider::class, 'alias-service-provider');
+
+        $this->assertTrue($container->getProvider(AliasServiceProvider::class)->registered);
+        $this->assertSame(
+            $container->getProvider(AliasServiceProvider::class),
+            $container->getProvider(AliasServiceProvider::class)
+        );
+        $this->assertSame(
+            $container->getProvider(AliasServiceProvider::class),
+            $container->getProvider('alias-service-provider')
+        );
+    }
+
+    /**
+     * It should allow registering a service provider with multiple aliases
+     *
+     * @test
+     */
+    public function should_allow_registering_a_service_provider_with_multiple_aliases()
+    {
+        $container = new Container();
+
+        $container->register(
+            AliasServiceProvider::class,
+            'alias-service-provider',
+            'alternate-service-provider',
+            'other-service-provider'
+        );
+
+        $this->assertTrue($container->getProvider(AliasServiceProvider::class)->registered);
+        $this->assertSame(
+            $container->getProvider(AliasServiceProvider::class),
+            $container->getProvider(AliasServiceProvider::class)
+        );
+        $this->assertSame(
+            $container->getProvider(AliasServiceProvider::class),
+            $container->getProvider('alias-service-provider')
+        );
+        $this->assertSame(
+            $container->getProvider(AliasServiceProvider::class),
+            $container->getProvider('alternate-service-provider')
+        );
+        $this->assertSame(
+            $container->getProvider(AliasServiceProvider::class),
+            $container->getProvider('other-service-provider')
+        );
     }
 }
