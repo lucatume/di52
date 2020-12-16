@@ -11,16 +11,48 @@ PROJECT_NAME = $(notdir $(PWD))
 # Create a script to support command line arguments for targets.
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
-SUPPORTED_COMMANDS := benchmark.profile test.coverage test.run composer
+# To get the nth argument, use `export TARGET_ARG_2="$(word 2,$(TARGET_ARGS))"`.
+SUPPORTED_COMMANDS := wait_file wait_url benchmark.profile test.coverage test.run composer
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
   $(eval $(TARGET_ARGS):;@:)
 endif
+# Color definitions for skimmable output.
+COLOR_RESET=\x1b[0m
+COLOR_GREEN=\x1b[32m
+COLOR_RED=\x1b[31m
+COLOR_YELLOW=\x1b[33m
 
 help: ## Show this help message.
 	@grep -E '^[a-zA-Z0-9\._-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
+
+wait_file: ## Wait for a file; example: `make wait_file some-file.txt 30`
+	export target_file="$(word 1,$(TARGET_ARGS))"; \
+	export wait_timeout="$(word 2,$(TARGET_ARGS))"; \
+	echo -n "Waiting for file $${target_file} for $${wait_timeout}s ..."; \
+	c=0; \
+	until [ -f "$${target_file}" -o -d "$${target_file}" -o $$c -eq $${wait_timeout} ]; \
+		do echo -n '.' && sleep 1 && c=$$(expr $$c + 1); \
+	done; \
+	[ "$$c" != "$${wait_timeout}" ] \
+		&& { echo -e " $(COLOR_GREEN)done$(COLOR_RESET)"; } \
+		|| { echo -e " $(COLOR_RED)fail$(COLOR_RESET)"; exit 1; }
+.PHONY: wait_file
+
+wait_url: ## Wait for a URL; example: `make wait_url http://example.com 30`
+	export target_url="$(word 1,$(TARGET_ARGS))"; \
+	export wait_timeout="$(word 2,$(TARGET_ARGS))"; \
+	echo -n "Waiting for URL $${target_url} ..."; \
+	c=0; \
+	until [[ $$(curl --output /dev/null --silent --head --fail $${target_url}) || $$c > "$${wait_timeout:-10}" ]]; \
+		do sleep 1 && echo -n '.' && c=$$((c+1)); \
+	done; \
+	[ "$$c" != "$${wait_timeout}" ] \
+		&& { echo -e " $(COLOR_GREEN)done$(COLOR_RESET)"; } \
+		|| { echo -e " $(COLOR_RED)fail$(COLOR_RESET)"; exit 1; }
+.PHONY: wait_url
 
 composer: ## Runs a Composer command on PHP 5.6. Example: `make composer update`.
 	docker run --rm \
@@ -146,8 +178,9 @@ benchmark.build: ## !!WiP!! Build the benchmark suite.
 .PHONY: benchmark.build
 
 benchmark.run: ## Runs the benchmark suite in docker.
+	(cd ${PWD}/_build/benchmark; docker-compose down)
+	rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52/src
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
-	open docs/benchmark.html
 .PHONY: benchmark.run
 
 benchmark.debug: ## Run a benchmark test and debug it. Example `make benchmark_debug 3.1`.
