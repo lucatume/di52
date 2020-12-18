@@ -64,24 +64,44 @@ composer: ## Runs a Composer command on PHP 5.6. Example: `make composer update`
 	lucatume/composer:php5.6-composer-v2 $(TARGET_ARGS)
 .PHONY: composer
 
-build_php_versions = '5.6' '7.0' '7.1' '7.2' '7.3' '7.4' '8.0'
-$(build_php_versions): %:
+build_php_versions_lt_72 = '5.6' '7.0' '7.1'
+$(build_php_versions_lt_72): %:
 	docker build \
 		--build-arg PHP_VERSION=$@ \
 		--build-arg XDEBUG_REMOTE_HOST=$${XDEBUG_REMOTE_HOST:-host.docker.internal} \
 		--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
-		_build/containers/dev \
+		_build/containers/dev-lt-72 \
 		--tag lucatume/di52-dev:php-v$@
+	docker run --rm lucatume/di52-dev:php-v$@ -v
 	docker build \
 		--build-arg PHP_VERSION=$@ \
 		--build-arg XDEBUG_OUTPUT_DIR=${PWD}/_build/profile \
-		_build/containers/profile \
+		_build/containers/profile-lt-72 \
 		--tag lucatume/di52-profile:php-v$@
+	docker run --rm lucatume/di52-profile:php-v$@ -v
 
-build: $(build_php_versions) ## Builds the project PHP images.
+build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0'
+$(build_php_versions_gte_72): %:
+	docker build \
+		--build-arg PHP_VERSION=$@ \
+		--build-arg XDEBUG_REMOTE_HOST=$${XDEBUG_REMOTE_HOST:-host.docker.internal} \
+		--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
+		_build/containers/dev-gte-72 \
+		--tag lucatume/di52-dev:php-v$@
+	docker run --rm lucatume/di52-dev:php-v$@ -v
+	docker build \
+		--build-arg PHP_VERSION=$@ \
+		--build-arg XDEBUG_OUTPUT_DIR=${PWD}/_build/profile \
+		_build/containers/profile-gte-72 \
+		--tag lucatume/di52-profile:php-v$@
+	docker run --rm lucatume/di52-profile:php-v$@ -v
+
+build: $(build_php_versions_lt_72) $(build_php_versions_gte_72) ## Builds the project PHP images.
+.PHONY: build
 
 test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0'
 $(test_php_versions): %:
+	echo "Running tests on $@"
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
