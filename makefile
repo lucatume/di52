@@ -191,23 +191,23 @@ pre_commit: code.lint code.fix code.sniff test phpstan phan ## Run pre-commit ch
 .PHONY: pre_commit
 
 benchmark.build: ## !!WiP!! Build the benchmark suite.
-	rm -rf ${PWD}/_build/benchmark
-	[ -d ${PWD}/_build/benchmark ] || \
+		rm -rf ${PWD}/_build/benchmark
+		[ -d ${PWD}/_build/benchmark ] || \
 		git clone https://github.com/kocsismate/php-di-container-benchmarks.git _build/benchmark
-	cp ${PWD}/_build/benchmark/.env.dist ${PWD}/_build/benchmark/.env
+		cp ${PWD}/_build/benchmark/.env.dist ${PWD}/_build/benchmark/.env
 .PHONY: benchmark.build
 
 benchmark.run: ## Runs the benchmark suite in docker.
-	(cd ${PWD}/_build/benchmark; docker-compose down)
-	rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52/src
-	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
+		(cd ${PWD}/_build/benchmark; docker-compose down)
+		rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52
+		(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
 .PHONY: benchmark.run
 
 benchmark.debug: ## Run a benchmark on PHP 8.0 and debug it. Example `make benchmark_debug 3.1`.
 	docker run --rm \
-	   -v "${PWD}:${PWD}" \
-	   lucatume/di52-dev:php-v8.0 \
-	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS) \
+		-v "${PWD}:${PWD}" \
+		lucatume/di52-dev:php-v8.0 \
+		${PWD}/_build/run-benchmark.php $(TARGET_ARGS) \
 .PHONY: benchmark.debug
 
 benchmark.profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
