@@ -200,7 +200,9 @@ benchmark.build: ## !!WiP!! Build the benchmark suite.
 benchmark.run: ## Runs the benchmark suite in docker.
 		(cd ${PWD}/_build/benchmark; docker-compose down)
 		rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52
-		(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
+		(cd ${PWD}/_build/benchmark; ./benchmark.sh docker --detach)
+		docker wait benchmark-cli
+		open ${PWD}/_build/benchmark/docs/benchmark.html
 .PHONY: benchmark.run
 
 benchmark.debug: ## Run a benchmark on PHP 8.0 and debug it. Example `make benchmark_debug 3.1`.
