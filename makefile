@@ -203,7 +203,7 @@ benchmark.run: ## Runs the benchmark suite in docker.
 	(cd ${PWD}/_build/benchmark; ./benchmark.sh docker)
 .PHONY: benchmark.run
 
-benchmark.debug: ## Run a benchmark test and debug it. Example `make benchmark_debug 3.1`.
+benchmark.debug: ## Run a benchmark on PHP 8.0 and debug it. Example `make benchmark_debug 3.1`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   lucatume/di52-dev:php-v8.0 \
@@ -211,19 +211,22 @@ benchmark.debug: ## Run a benchmark test and debug it. Example `make benchmark_d
 .PHONY: benchmark.debug
 
 benchmark.profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
-	rm -rf _build/profile/cachegrind.out*
+	rm -rf "${PWD}/_build/profile/cachegrind.out.suite-$(TARGET_ARGS)"
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
+	   -e XDEBUG_CONFIG="profiler_output_name=callgrind.out.suite-$(TARGET_ARGS)" \
 	   lucatume/di52-profile:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).1
 	echo ''
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
+	   -e XDEBUG_CONFIG="profiler_output_name=callgrind.out.suite-$(TARGET_ARGS)" \
 	   lucatume/di52-profile:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).2
 	echo ''
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
+	   -e XDEBUG_CONFIG="profiler_output_name=callgrind.out.suite-$(TARGET_ARGS)" \
 	   lucatume/di52-profile:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).3 \
 .PHONY: benchmark.profile
