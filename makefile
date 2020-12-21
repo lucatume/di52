@@ -12,7 +12,7 @@ PROJECT_NAME = $(notdir $(PWD))
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
 # To get the nth argument, use `export TARGET_ARG_2="$(word 2,$(TARGET_ARGS))"`.
-SUPPORTED_COMMANDS := wait_file wait_url benchmark.profile test.coverage test.run composer
+SUPPORTED_COMMANDS := wait_file wait_url benchmark.profile benchmark.debug test.coverage test.run composer
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
