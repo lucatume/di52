@@ -808,4 +808,17 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 
 		$container->bind('PrivateConstructor');
 	}
+
+	/** @test */
+	public function it_should_give_when_need_without_a_bind() {
+        $container = new tad_DI52_Container();
+
+        $container->when(ClassSix::class)
+                  ->needs(One::class)
+                  ->give(ClassOne::class);
+
+        $six = $container->make(ClassSix::class);
+
+        $this->assertInstanceOf(ClassOne::class, $six->getOne());
+	}
 }
