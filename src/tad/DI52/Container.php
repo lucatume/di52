@@ -816,7 +816,7 @@ class tad_DI52_Container implements ArrayAccess {
 
 		$parameterClass = $parameter->getClass()->getName();
 
-		if (!$this->isBound($parameterClass) && !$parameter->getClass()->isInstantiable()) {
+        if (!$this->isBound($parameterClass) && !$parameter->getClass()->isInstantiable() && !isset($this->contexts[$parameterClass])) {
 			if (!$parameter->isDefaultValueAvailable()) {
 				throw new ReflectionException("parameter '{$parameter->name}' of '{$this->resolving}::__construct' does not have a default value.");
 			}
