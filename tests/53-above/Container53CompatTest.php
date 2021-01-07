@@ -813,23 +813,23 @@ class Container53CompatTest extends \PHPUnit_Framework_TestCase
 	public function it_should_resolve_contextual_binding_without_an_early_bind() {
         $container = new tad_DI52_Container();
 
-        $container->when(ClassSix::class)
-                  ->needs(One::class)
-                  ->give(ClassOne::class);
+        $container->when('ClassSix')
+                  ->needs('One')
+                  ->give('ClassOne');
 
-        $this->assertInstanceOf(ClassOne::class, $container->make(ClassSix::class)->getOne());
+        $this->assertInstanceOf('ClassOne', $container->make('ClassSix')->getOne());
 	}
 
 	/** @test */
 	public function it_should_resolve_contextual_binding_with_an_early_bind_of_different_type() {
         $container = new tad_DI52_Container();
 
-        $container->bind(One::class, 'foo');
+        $container->bind('One', 'foo');
 
-        $container->when(ClassSix::class)
-                  ->needs(One::class)
-                  ->give(ClassOne::class);
+        $container->when('ClassSix')
+                  ->needs('One')
+                  ->give('ClassOne');
 
-        $this->assertInstanceOf(ClassOne::class, $container->make(ClassSix::class)->getOne());
+        $this->assertInstanceOf('ClassOne', $container->make('ClassSix')->getOne());
 	}
 }
