@@ -8,11 +8,14 @@
 namespace lucatume\DI52;
 
 use Closure;
+use lucatume\DI52\Builders\BuilderInterface;
+use lucatume\DI52\Builders\ValueBuilder;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionParameter;
+use SplObjectStorage;
 
 /**
  * Class Container
@@ -32,21 +35,14 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @var array<string,bool>
      */
-    protected static $classExistsCache = [];
+    protected $classExistsCache = [];
 
     /**
      * A cache of what methods are static and what are not.
      *
      * @var array<string,bool>
      */
-    protected static $isStaticMethodCache = [];
-
-    /**
-     * Whether unbound classes should be resolved as singletons, by default, or not.
-     *
-     * @var bool
-     */
-    protected $resolveUnboundAsSingletons = false;
+    protected $isStaticMethodCache = [];
     /**
      * A list of bound and resolved singletons.
      *
@@ -78,16 +74,9 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     protected $needsClass;
     /**
-     * A map from classes to what actual class to build when they need it.
-     * Stores the results of the when > needs > give calls.
-     *
-     * @var array<string,array<string,string>>
-     */
-    protected $whenNeedsGive = [];
-    /**
      * A map from the bound implementations to either the callables that will build the implementations or the solved
      * singleton implementations.
-     * @var array<string,callable|ServiceProvider|object>
+     * @var array<string,BuilderInterface|mixed>
      */
     protected $bindings = [];
     /**
@@ -101,7 +90,34 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @var array<string>
      */
-    protected $makeLine = [];
+    protected $buildLine = [];
+    /**
+     * A cache mapping each class constructor to a set of its reflection parameters.
+     *
+     * @var SplObjectStorage<ReflectionMethod,array<ReflectionParameter>>
+     */
+    protected $constructorParametersCache;
+    /**
+     * A cache mapping ids to the closures to build them.
+     *
+     * @var array<string,Closure>
+     */
+    protected $buildClosuresCache = [];
+    /**
+     * @var Builders\Resolver
+     */
+    protected $resolver;
+    /**
+     * @var Builders\Factory
+     */
+    protected $builders;
+
+    /**
+     * A cache mapping parameter reflections to their class.
+     *
+     * @var SplObjectStorage<ReflectionParameter,string>
+     */
+    private $parameterClassNameCache;
 
     /**
      * Container constructor.
@@ -111,7 +127,8 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function __construct($resolveUnboundAsSingletons = false)
     {
-        $this->resolveUnboundAsSingletons = $resolveUnboundAsSingletons;
+        $this->resolver = new Builders\Resolver($resolveUnboundAsSingletons);
+        $this->builders = new Builders\Factory($this, $this->resolver);
     }
 
     /**
@@ -124,7 +141,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function setVar($key, $value)
     {
-        $this->bindings[$key] = ProtectedValue::of($value);
+        $this->resolver->bind($key, ValueBuilder::of($value));
     }
 
     /**
@@ -142,8 +159,273 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetSet($offset, $value)
     {
-        $this->singletons[$offset] = true;
-        $this->bindings[$offset] = $this->buildClosure($offset, $value);
+        $this->singleton($offset, $value);
+    }
+
+    /**
+     * Binds an interface a class or a string slug to an implementation and will always return the same instance.
+     *
+     * @param string             $id                A class or interface fully qualified name or a string slug.
+     * @param mixed              $implementation    The implementation that should be bound to the alias(es); can be a
+     *                                              class name, an object or a closure.
+     * @param array<string>|null $afterBuildMethods An array of methods that should be called on the built
+     *                                              implementation after resolving it.
+     *
+     * @return void This method does not return any value.
+     * @throws ContainerException If there's any issue reflecting on the class, interface or the implementation.
+     */
+    public function singleton($id, $implementation = null, array $afterBuildMethods = null)
+    {
+        if ($implementation === null) {
+            $implementation = $id;
+        }
+
+        $this->resolver->singleton($id, $this->builders->getBuilder($id, $implementation, $afterBuildMethods));
+    }
+
+    /**
+     * Returns a variable stored in the container.
+     *
+     * If the variable is a binding then the binding will be resolved before returning it.
+     *
+     * @param string     $key     The alias of the variable or binding to fetch.
+     * @param mixed|null $default A default value to return if the variable is not set in the container.
+     *
+     * @return mixed The variable value or the resolved binding.
+     * @throws ContainerException If there's an issue resolving the variable.
+     *
+     * @see Container::get()
+     */
+    public function getVar($key, $default = null)
+    {
+        if ($this->resolver->isBound($key)) {
+            return $this->resolver->resolve($key);
+        }
+
+        return $default;
+    }
+
+    /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string $offset Identifier of the entry to look for.
+     *
+     * @return mixed The entry for an id.
+     *
+     * @return mixed The value for the offset.
+     *
+     * @throws ContainerException Error while retrieving the entry.
+     * @throws NotFoundException  No entry was found for **this** identifier.
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @param string $id A fully qualified class or interface name or an already built object.
+     *
+     * @return mixed The entry for an id.
+     *
+     * @throws ContainerException Error while retrieving the entry.
+     */
+    public function get($id)
+    {
+        try {
+            return $this->resolver->resolve($id, [$id]);
+        } catch (\Throwable $throwable) {
+            throw $this->castThrown($throwable, $id);
+        } catch (\Exception $exception) {
+            throw $this->castThrown($exception, $id);
+        }
+    }
+
+    /**
+     * Builds an instance of the exception with a pretty message.
+     *
+     * @param \Exception|\Throwable $thrown The exception to cast.
+     * @param string|object         $id     The top identifier the containe was attempting to build, or object.
+     *
+     * @return ContainerException The cast exception.
+     */
+    private function castThrown($thrown, $id)
+    {
+        $exceptionClass = $thrown instanceof ContainerException ? get_class($thrown) : ContainerException::class;
+        $thrown = new $exceptionClass($this->makeBuildLineErrorMessage($id, $thrown));
+
+        return $thrown;
+    }
+
+    /**
+     * Formats an error message to provide a useful debug message.
+     *
+     * @param string|object         $id     The id of what is actually being built or the object that is being built.
+     * @param \Exception|\Throwable $thrown The original exception thrown while trying to make the target.
+     *
+     * @return string The formatted make error message.
+     */
+    private function makeBuildLineErrorMessage($id, $thrown)
+    {
+        $buildLine = $this->resolver->getBuildLine();
+        $idString = is_string($id) ? $id : gettype($id);
+        $last = array_pop($buildLine) ?: $idString;
+        $lastEntry = "Error while making {$last}: " . lcfirst(
+            rtrim(
+                str_replace('"', '', $thrown->getMessage()),
+                '.'
+            )
+        ) . '.';
+        $frags = array_merge($buildLine, [$lastEntry]);
+
+        return implode("\n\t=> ", $frags);
+    }
+
+    /**
+     * Returns an instance of the class or object bound to an interface, class  or string slug if any, else it will try
+     * to automagically resolve the object to a usable instance.
+     *
+     * If the implementation has been bound as singleton using the `singleton` method
+     * or the ArrayAccess API then the implementation will be resolved just on the first request.
+     *
+     * @param string $id A fully qualified class or interface name or an already built object.
+     *
+     * @return mixed
+     * @throws ContainerException If the target of the make is not bound and is not a valid,
+     *                                              concrete, class name or there's any issue making the target.
+     */
+    public function make($id)
+    {
+        return $this->get($id);
+    }
+
+    /**
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
+     *
+     * `$container[$id]` returning true does not mean that `$container[$id]` will not throw an exception.
+     * It does however mean that `$container[$id]` will not throw a `NotFoundExceptionInterface`.
+     *
+     * @param string $offset An offset to check for.
+     *
+     * @return boolean true on success or false on failure.
+     */
+    public function offsetExists($offset)
+    {
+        return $this->has($offset);
+    }
+
+    /**
+     * Returns true if the container can return an entry for the given identifier.
+     * Returns false otherwise.
+     *
+     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
+     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+     *
+     * @param string $id Identifier of the entry to look for.
+     *
+     * @return bool Whether the container contains a binding for an id or not.
+     */
+    public function has($id)
+    {
+        return $this->resolver->isBound($id) || class_exists($id);
+    }
+
+    /**
+     * Tags an array of implementations bindings for later retrieval.
+     *
+     * The implementations can also reference interfaces, classes or string slugs.
+     * Example:
+     *
+     *        $container->tag(['Posts', 'Users', 'Comments'], 'endpoints');
+     *
+     * @param array<string|callable|object> $implementationsArray The ids, class names or objects to apply the tag to.
+     * @param string                        $tag                  The tag to apply.
+     *
+     * @return void This method does not return any value.
+     * @see Container::tagged()
+     *
+     */
+    public function tag(array $implementationsArray, $tag)
+    {
+        $this->tags[$tag] = $implementationsArray;
+    }
+
+    /**
+     * Retrieves an array of bound implementations resolving them.
+     *
+     * The array of implementations should be bound using the `tag` method:
+     *
+     *        $container->tag(['Posts', 'Users', 'Comments'], 'endpoints');
+     *        foreach($container->tagged('endpoints') as $endpoint){
+     *            $endpoint->register();
+     *        }
+     *
+     * @param string $tag The tag to return the tagged values for.
+     *
+     * @return array<mixed> An array of resolved bound implementations.
+     * @throws NotFoundException If nothing is tagged with the tag.
+     * @throws ContainerException If one of the bindings is not of the correct type.
+     * @see Container::tag()
+     */
+    public function tagged($tag)
+    {
+        if (!$this->hasTag($tag)) {
+            throw new NotFoundException("Nothing is tagged as '{$tag}'");
+        }
+
+        return array_map(
+            function ($id) {
+                if (is_string($id)) {
+                    return $this->get($id);
+                }
+                return $this->builders->getBuilder($id)->build();
+            },
+            $this->tags[$tag]
+        );
+    }
+
+    /**
+     * Checks whether a tag group exists in the container.
+     *
+     * @param string $tag
+     *
+     * @return bool
+     * @see Container::tag()
+     *
+     */
+    public function hasTag($tag)
+    {
+        return isset($this->tags[$tag]);
+    }
+
+    /**
+     * Resolves something to an implementation.
+     *
+     * @param string|mixed      $id             A fully qualified class or interface name or an already built object.
+     * @param string|mixed|null $implementation The optional implementation to resolve.
+     *
+     * @return mixed The value built by the container.
+     * @throws ContainerException If the target of the make is a string and is not bound.
+     */
+    private function resolve($id, $implementation = null)
+    {
+        $isString = is_string($id);
+        $this->buildLine[] = $isString ? "'{$id}'" : "'" . gettype($id) . "'";
+        if ($implementation === null) {
+            $implementation = $id;
+        }
+        $maker = $this->buildClosure($id, $implementation);
+
+        $made = $maker instanceof Closure || $maker instanceof ProtectedValue ? $maker($this) : $maker;
+
+        if ($this->resolveUnboundAsSingletons && $isString) {
+            $this->singletons[$id] = true;
+            $this->bindings[$id] = $made;
+        }
+
+        return $made;
     }
 
     /**
@@ -155,7 +437,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param array<string>|null                        $afterBuildMethods A set of methods that should be called on the
      *                                                                     instance
      *                                                                     after it's built and before it's returned.
-     * @param array<mixed> $buildArgs                                      An array of arguments to use when building
+     * @param array<mixed>                              $buildArgs         An array of arguments to use when building
      *                                                                     the instance.
      *
      * @return Closure|callable|object A closure to build the implementation or the implementation itself if already
@@ -172,6 +454,12 @@ class Container implements \ArrayAccess, ContainerInterface
         // Allow single argument binding.
         $implementation = $implementation === null ? $id : $implementation;
         $implementationIsString = is_string($implementation);
+
+        if ($implementationIsString) {
+            if (isset($this->buildClosuresCache[$implementation])) {
+                return $this->buildClosuresCache[$implementation];
+            }
+        }
 
         if ($implementationIsString && $implementation === $id
             && !$this->classExists($id, self::CLASS_IS_INSTANTIATABLE)) {
@@ -202,6 +490,8 @@ class Container implements \ArrayAccess, ContainerInterface
                 return $instance;
             };
 
+            $this->buildClosuresCache[$id] = $closure;
+
             return $closure;
         }
 
@@ -222,23 +512,23 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $cacheKey = $class . $mask;
 
-        if (isset(static::$classExistsCache[$cacheKey])) {
-            return static::$classExistsCache[$cacheKey];
+        if (isset($this->classExistsCache[$cacheKey])) {
+            return $this->classExistsCache[$cacheKey];
         }
 
         if (PHP_VERSION_ID < 70000) {
             $exists = $this->checkClassExists($class, $mask); // @codeCoverageIgnore
-            static::$classExistsCache[$cacheKey] = $exists;
+            $this->classExistsCache[$cacheKey] = $exists;
             return $exists;
         }
 
         // PHP 7.0+ allows handling fatal errors; x_exists will trigger auto-loading, that might result in an error.
         try {
             $exists = $this->checkClassExists($class, $mask);
-            static::$classExistsCache[$cacheKey] = $exists;
+            $this->classExistsCache[$cacheKey] = $exists;
             return $exists;
         } catch (\Throwable $e) {
-            static::$classExistsCache[$cacheKey] = false;
+            $this->classExistsCache[$cacheKey] = false;
             throw new ContainerException($e->getMessage());
         }
     }
@@ -297,347 +587,6 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Parses and resolves the constructor parameters for a class.
-     *
-     * @param string $id           The id to resolve the build arguments for.
-     * @param string $className    The name of the class to resolve the constructor parameters for.
-     * @param mixed  ...$readyArgs A set of ready arguments.
-     *
-     * @return array<mixed> An array of the resolved class constructor parameters.
-     * @throws ContainerException If there's an issue reflecting on the class.
-     * @throws ReflectionException If there's an issue reflecting on the class to build.
-     */
-    private function resolveBuildArgs($id, $className, ...$readyArgs)
-    {
-        $constructor = $this->getClassReflection($className)->getConstructor();
-
-        if ($constructor === null) {
-            // No constructor arguments to resolve.
-            return [];
-        }
-
-        if (!$constructor->isPublic()) {
-            throw new ContainerException("The '{$id}' class constructor method is not public.");
-        }
-
-        $resolved = [];
-        foreach ($constructor->getParameters() as $i => $parameter) {
-            if (isset($readyArgs[$i])) {
-                if (is_string($readyArgs[$i]) && isset($this->bindings[$readyArgs[$i]])) {
-                    $resolved[] = $this->get($readyArgs[$i]);
-                } else {
-                    $resolved[] = $this->resolve('arg_' . $i, $readyArgs[$i]);
-                }
-                continue;
-            }
-            $resolved[] = $this->resolveParameter($parameter, $id);
-        }
-
-        return $resolved;
-    }
-
-    /**
-     * Finds an entry of the container by its identifier and returns it.
-     *
-     * @param string $id A fully qualified class or interface name or an already built object.
-     *
-     * @return mixed The entry for an id.
-     *
-     * @throws ContainerException Error while retrieving the entry.
-     */
-    public function get($id)
-    {
-        $this->makeLine = [];
-        if (isset($this->bindings[$id])) {
-            $bound = $this->bindings[$id];
-            // Bound, resolve and return.
-            if ($bound instanceof Closure || $bound instanceof ProtectedValue) {
-                $instance = $bound($this);
-                if (isset($this->singletons[$id])) {
-                    $this->bindings[$id] = $instance;
-                }
-            } else {
-                $instance = $this->bindings[$id];
-            }
-
-            return $instance;
-        }
-
-        try {
-            // Unbound, try and resolve it now.
-            return $this->resolve($id);
-        } catch (\Exception $exception) {
-            throw $this->castException($exception, $id);
-        }
-    }
-
-    /**
-     * Makes something with the option of not checking for consistency and making it safely.
-     *
-     * @param string|mixed      $id             A fully qualified class or interface name or an already built object.
-     * @param string|mixed|null $implementation The optional implementation to resolve.
-     *
-     * @return mixed The value built by the container.
-     * @throws ContainerException If the target of the make is a string and is not bound.
-     */
-    private function resolve($id, $implementation = null)
-    {
-        $isString = is_string($id);
-        $this->makeLine[] = $isString ? "'{$id}'" : "'" . gettype($id) . "'";
-        $maker = $this->buildClosure($id, $implementation ?: $id);
-
-        $made = $maker instanceof Closure || $maker instanceof ProtectedValue ? $maker($this) : $maker;
-
-        if ($this->resolveUnboundAsSingletons && $isString) {
-            $this->singletons[$id] = true;
-            $this->bindings[$id] = $made;
-        }
-
-        return $made;
-    }
-
-    /**
-     * Builds an instance of the exception with a pretty message.
-     *
-     * @param \Exception    $exception The exception to cast.
-     * @param string|object $id        The top identifier the containe was attempting to build, or object.
-     *
-     * @return ContainerException The cast exception.
-     */
-    private function castException(\Exception $exception, $id)
-    {
-        $exceptionClass = $exception instanceof ContainerException ? get_class($exception) : ContainerException::class;
-        $exception = new $exceptionClass($this->buildMakeErrorMessage($id, $exception));
-
-        return $exception;
-    }
-
-    /**
-     * Formats an error message to provide a useful debug message.
-     *
-     * @param string|object $id The id of what is actually being built or the object that is being built.
-     * @param \Exception    $e  The original exception thrown while trying to make the target.
-     *
-     * @return string The formatted make error message.
-     */
-    private function buildMakeErrorMessage($id, \Exception $e)
-    {
-        $idString = is_string($id) ? $id : gettype($id);
-        $last = array_pop($this->makeLine) ?: $idString;
-        $lastEntry = "Error while making {$last}: " . lcfirst(
-            rtrim(
-                str_replace('"', '', $e->getMessage()),
-                '.'
-            )
-        ) . '.';
-        $frags = array_merge($this->makeLine, [$lastEntry]);
-
-        return implode("\n\t=> ", $frags);
-    }
-
-    /**
-     * Resolves a parameter reflection to a value, if possible.
-     *
-     * @param ReflectionParameter $parameter The parameter reflection to try and resolve.
-     * @param string              $id        The id to resolve the parameter for.
-     *
-     * @return mixed The parameter resolved value, or the parameter default value, if available.
-     *
-     * @throws ContainerException If there's an issue resolving the parameter or reflecting on it.
-     * @throws NotFoundException If the parameters maps to a not found binding.
-     */
-    protected function resolveParameter(ReflectionParameter $parameter, $id)
-    {
-        $parameterClassName = $this->getParameterClassName($parameter);
-
-        if ($parameterClassName !== null) {
-            if (isset($this->whenNeedsGive[$id][$parameterClassName])) {
-                $parameterClassName = $this->whenNeedsGive[$id][$parameterClassName];
-            }
-
-            return is_string($parameterClassName) && isset($this->bindings[$parameterClassName]) ?
-                $this->get($parameterClassName)
-                : $this->resolve($parameterClassName);
-        }
-
-        if ($parameter->allowsNull()) {
-            try {
-                return $parameter->getDefaultValue();
-            } catch (ReflectionException $e) {
-                throw new ContainerException($e->getMessage());
-            }
-        }
-    }
-
-    /**
-     * Returns a parameter class name.
-     *
-     * @param ReflectionParameter $parameter The parameter to get the class for.
-     *
-     * @return string|null Either the parameter class name, or `null` if the parameter does not have a class.
-     * @throws ContainerException If the parameter class is not defined or its auto-loading triggers an errors;
-     *                            this might be the case for file that contain syntax errors.
-     */
-    private function getParameterClassName(ReflectionParameter $parameter)
-    {
-        /*
-         * Get the parameter class without triggering autoload; if this was triggered here, then syntax errors would
-         * not be correctly identified.
-         */
-        $parameterClassString = $parameter->__toString();
-        $parameterClass = preg_replace_callback(
-            '/^.*\\[\\s*<(required|optional)>\\s*([\\\\\\w_-]*).*].*$/i',
-            static function ($m) {
-                return isset($m[2]) ? $m[2] : null;
-            },
-            $parameterClassString
-        );
-
-        return $parameterClass ?: null;
-    }
-
-    /**
-     * Returns a variable stored in the container.
-     *
-     * If the variable is a binding then the binding will be resolved before returning it.
-     *
-     * @param string     $key     The alias of the variable or binding to fetch.
-     * @param mixed|null $default A default value to return if the variable is not set in the container.
-     *
-     * @return mixed The variable value or the resolved binding.
-     * @throws ContainerException If there's an issue resolving the variable.
-     *
-     * @see Container::get()
-     */
-    public function getVar($key, $default = null)
-    {
-        if (isset($this->bindings[$key])) {
-            return $this->get($key);
-        }
-
-        return $default;
-    }
-
-    /**
-     * Finds an entry of the container by its identifier and returns it.
-     *
-     * @param string $offset Identifier of the entry to look for.
-     *
-     * @return mixed The entry for an id.
-     *
-     * @return mixed The value for the offset.
-     *
-     * @throws ContainerException Error while retrieving the entry.
-     * @throws NotFoundException  No entry was found for **this** identifier.
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
-    }
-
-    /**
-     * Returns an instance of the class or object bound to an interface, class  or string slug if any, else it will try
-     * to automagically resolve the object to a usable instance.
-     *
-     * If the implementation has been bound as singleton using the `singleton` method
-     * or the ArrayAccess API then the implementation will be resolved just on the first request.
-     *
-     * @param string $id A fully qualified class or interface name or an already built object.
-     *
-     * @return mixed
-     * @throws ContainerException If the target of the make is not bound and is not a valid,
-     *                                              concrete, class name or there's any issue making the target.
-     */
-    public function make($id)
-    {
-        return $this->get($id);
-    }
-
-    /**
-     * Returns true if the container can return an entry for the given identifier.
-     * Returns false otherwise.
-     *
-     * `$container[$id]` returning true does not mean that `$container[$id]` will not throw an exception.
-     * It does however mean that `$container[$id]` will not throw a `NotFoundExceptionInterface`.
-     *
-     * @param string $offset An offset to check for.
-     *
-     * @return boolean true on success or false on failure.
-     */
-    public function offsetExists($offset)
-    {
-        return isset($this->bindings[$offset]) || $this->classExists($offset, self::CLASS_IS_INSTANTIATABLE);
-    }
-
-    /**
-     * Tags an array of implementations bindings for later retrieval.
-     *
-     * The implementations can also reference interfaces, classes or string slugs.
-     * Example:
-     *
-     *        $container->tag(['Posts', 'Users', 'Comments'], 'endpoints');
-     *
-     * @param array<string|callable|object> $implementationsArray The ids, class names or objects to apply the tag to.
-     * @param string                        $tag                  The tag to apply.
-     *
-     * @return void This method does not return any value.
-     * @see Container::tagged()
-     *
-     */
-    public function tag(array $implementationsArray, $tag)
-    {
-        $this->tags[$tag] = $implementationsArray;
-    }
-
-    /**
-     * Retrieves an array of bound implementations resolving them.
-     *
-     * The array of implementations should be bound using the `tag` method:
-     *
-     *        $container->tag(['Posts', 'Users', 'Comments'], 'endpoints');
-     *        foreach($container->tagged('endpoints') as $endpoint){
-     *            $endpoint->register();
-     *        }
-     *
-     * @param string $tag The tag to return the tagged values for.
-     *
-     * @return array<mixed> An array of resolved bound implementations.
-     * @throws NotFoundException If nothing is tagged with the tag.
-     * @throws ContainerException If one of the bindings is not of the correct type.
-     * @see Container::tag()
-     */
-    public function tagged($tag)
-    {
-        if (!$this->hasTag($tag)) {
-            throw new NotFoundException("Nothing is tagged as '{$tag}'");
-        }
-
-        return array_map(
-            function ($id) {
-                if (is_string($id)) {
-                    return $this->get($id);
-                }
-                return $this->resolve($id);
-            },
-            $this->tags[$tag]
-        );
-    }
-
-    /**
-     * Checks whether a tag group exists in the container.
-     *
-     * @param string $tag
-     *
-     * @return bool
-     * @see Container::tag()
-     *
-     */
-    public function hasTag($tag)
-    {
-        return isset($this->tags[$tag]);
-    }
-
-    /**
      * Registers a service provider implementation.
      *
      * The `register` method will be called immediately on the service provider.
@@ -676,7 +625,10 @@ class Container implements \ArrayAccess, ContainerInterface
                 );
             }
             foreach ($provided as $id) {
-                $this->bindings[$id] = $this->getDeferredProviderMakeClosure($provider, $id);
+                $this->resolver->bind(
+                    $id,
+                    $this->builders->getBuilder($this->getDeferredProviderMakeClosure($provider, $id))
+                );
             }
         }
 
@@ -690,11 +642,9 @@ class Container implements \ArrayAccess, ContainerInterface
         if ($requiresBoot) {
             $this->bootable[] = $provider;
         }
-        $this->bindings[$serviceProviderClass] = $provider;
-        $this->singletons[$serviceProviderClass] = true;
+        $this->resolver->singleton($serviceProviderClass, new ValueBuilder($provider));
         foreach ($alias as $a) {
-            $this->bindings[$a] = $provider;
-            $this->singletons[$a] = true;
+            $this->resolver->singleton($a, new ValueBuilder($provider));
         }
     }
 
@@ -721,24 +671,6 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Binds an interface a class or a string slug to an implementation and will always return the same instance.
-     *
-     * @param string             $id                A class or interface fully qualified name or a string slug.
-     * @param mixed              $implementation    The implementation that should be bound to the alias(es); can be a
-     *                                              class name, an object or a closure.
-     * @param array<string>|null $afterBuildMethods An array of methods that should be called on the built
-     *                                              implementation after resolving it.
-     *
-     * @return void This method does not return any value.
-     * @throws ContainerException If there's any issue reflecting on the class, interface or the implementation.
-     */
-    public function singleton($id, $implementation = null, array $afterBuildMethods = null)
-    {
-        $this->singletons[$id] = true;
-        $this->bindings[$id] = $this->buildClosure($id, $implementation, $afterBuildMethods);
-    }
-
-    /**
      * Binds an interface, a class or a string slug to an implementation.
      *
      * Existing implementations are replaced.
@@ -751,12 +683,16 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return void The method does not return any value.
      * @throws ContainerException      If there's an issue while trying to bind the implementation.
-     *
      */
     public function bind($id, $implementation = null, array $afterBuildMethods = null)
     {
-        unset($this->singletons[$id]);
-        $this->bindings[$id] = $this->buildClosure($id, $implementation, $afterBuildMethods);
+        if ($implementation === null) {
+            $implementation = $id;
+        }
+        if ($implementation === $id && !$this->classExists($implementation, self::CLASS_IS_INSTANTIATABLE)) {
+            throw new NotFoundException("Class {$implementation} does not exist.");
+        }
+        $this->resolver->bind($id, $this->builders->getBuilder($id, $implementation, $afterBuildMethods));
     }
 
     /**
@@ -793,25 +729,25 @@ class Container implements \ArrayAccess, ContainerInterface
      *                                                         require any argument.
      *
      * @return void This method does not return any value.
+     * @throws ContainerException
      */
     public function singletonDecorators($id, $decorators, array $afterBuildMethods = null)
     {
-        $this->bindings[$id] = $this->getDecoratorClosure($decorators, $id, true, $afterBuildMethods);
+        $this->resolver->singleton($id, $this->getDecoratorBuilder($decorators, $id, $afterBuildMethods));
     }
 
     /**
      * Builds and returns a closure that will start building the chain of decorators.
      *
      * @param array<string|object|callable> $decorators        A list of decorators.
-     * @param string                 $id                The id to bind the decorator tail to.
-     * @param bool                   $singleton         Whether the create the closure for singletons or not.
-     * @param array<string>|null     $afterBuildMethods A set of method to run on the built decorated instance after
-     *                                                  it's built.
-     * @return callable The callable or Closure that will start building the decorator chain.
+     * @param string                        $id                The id to bind the decorator tail to.
+     * @param array<string>|null            $afterBuildMethods A set of method to run on the built decorated instance
+     *                                                         after it's built.
+     * @return BuilderInterface The callable or Closure that will start building the decorator chain.
      *
      * @throws ContainerException If there's any issue while trying to register any decorator step.
      */
-    private function getDecoratorClosure(array $decorators, $id, $singleton, array $afterBuildMethods = null)
+    private function getDecoratorBuilder(array $decorators, $id, array $afterBuildMethods = null)
     {
         $decorator = array_pop($decorators);
 
@@ -820,24 +756,13 @@ class Container implements \ArrayAccess, ContainerInterface
         }
 
         do {
-            $previous = isset($buildClosure) ? $buildClosure : null;
-            $buildClosure = $this->buildClosure($id, $decorator, $afterBuildMethods, $previous);
+            $previous = isset($builder) ? $builder : null;
+            $builder = $this->builders->getBuilder($id, $decorator, $afterBuildMethods, $previous);
             $decorator = array_pop($decorators);
             $afterBuildMethods = [];
         } while ($decorator !== null);
 
-        if (!is_callable($buildClosure)) {
-            throw new ContainerException(
-                "Decorator build closure for '{$id}' should be a function returning an object, not an object. " .
-                'The `$id` parameter should be a string, not an object. '
-            );
-        }
-
-        if ($singleton) {
-            $this->singletons[$id] = true;
-        }
-
-        return $buildClosure;
+        return $builder;
     }
 
     /**
@@ -858,7 +783,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function bindDecorators($id, array $decorators, array $afterBuildMethods = null)
     {
-        $this->bindings[$id] = $this->getDecoratorClosure($decorators, $id, false, $afterBuildMethods);
+        $this->resolver->bind($id, $this->getDecoratorBuilder($decorators, $id, $afterBuildMethods));
     }
 
     /**
@@ -870,7 +795,8 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetUnset($offset)
     {
-        unset($this->bindings[$offset], $this->tags[$offset], $this->singletons[$offset]);
+        $this->resolver->unbind($offset);
+        unset($this->tags[$offset]);
     }
 
     /**
@@ -934,10 +860,13 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param mixed $implementation The implementation specified
      *
      * @return void This method does not return any value.
+     * @throws NotFoundException
      */
     public function give($implementation)
     {
-        $this->whenNeedsGive[$this->whenClass][$this->needsClass] = $implementation;
+        $id = "{$this->whenClass}::{$this->needsClass}";
+        $builder = $this->builders->getBuilder($id, $implementation);
+        $this->resolver->setWhenNeedsGive($this->whenClass, $this->needsClass, $builder);
         unset($this->whenClass, $this->needsClass);
     }
 
@@ -974,28 +903,18 @@ class Container implements \ArrayAccess, ContainerInterface
         }
 
         $callbackClosure = function (...$args) use ($id, $method) {
-            $instance = is_string($id) && isset($this->bindings[$id]) ? $this->get($id) : $this->resolve($id);
+            $instance = is_string($id) ?
+                $this->resolver->resolve($id)
+                : $this->builders->getBuilder($id)->build();
             return $instance->{$method}(...$args);
         };
 
-        if ($this->isSingleton($id) || $this->isStaticMethod($id, $method)) {
+        if (is_string($id) && ($this->resolver->isSingleton($id) || $this->isStaticMethod($id, $method))) {
             // If we can know immediately, without actually resolving the binding, then build and cache immediately.
             $this->callbacks[$callbackId] = $callbackClosure;
         }
 
         return $callbackClosure;
-    }
-
-    /**
-     * Returns whether a string id maps to a resolved singleton or not.
-     *
-     * @param mixed $id The string, class name or object to check.
-     *
-     * @return bool Whether the id maps to something bound as singleton or not.
-     */
-    private function isSingleton($id)
-    {
-        return is_string($id) && isset($this->singletons[$id]);
     }
 
     /**
@@ -1010,15 +929,15 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $key = is_string($object) ? $object . '::' . $method : get_class($object) . '::' . $method;
 
-        if (!isset(static::$isStaticMethodCache[$key])) {
+        if (!isset($this->isStaticMethodCache[$key])) {
             try {
-                static::$isStaticMethodCache[$key] = (new ReflectionMethod($object, $method))->isStatic();
+                $this->isStaticMethodCache[$key] = (new ReflectionMethod($object, $method))->isStatic();
             } catch (ReflectionException $e) {
                 return false;
             }
         }
 
-        return static::$isStaticMethodCache[$key];
+        return $this->isStaticMethodCache[$key];
     }
 
     /**
@@ -1036,22 +955,61 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return callable  A callable function that will return an instance of the specified class when
      *                   called.
-     * @throws ContainerException If a closure to build the object cannot be created.
      */
     public function instance($id, array $buildArgs = [], array $afterBuildMethods = null)
     {
-        if (empty($buildArgs)) {
-            $buildClosure = $this->getInstanceClosure($id);
-        } else {
-            $buildClosure = $this->buildClosure($id, $id, $afterBuildMethods, ...$buildArgs);
-            if (!is_callable($buildClosure)) {
-                throw new ContainerException(
-                    "Build closure for '{$id}' should be a function returning an object, not an object. " .
-                    'The `$id` parameter should be a string, not an object. '
-                );
+        return function () use ($id, $afterBuildMethods, $buildArgs) {
+            if (is_string($id)) {
+                return $this->resolver->resolveWithArgs($id, $afterBuildMethods, ...$buildArgs);
             }
+            return $this->builders->getBuilder($id, $afterBuildMethods, ...$buildArgs)->build();
+        };
+    }
+
+    /**
+     * Protects a value to make sure it will not be resolved, if callable or if the name of an existing class.
+     *
+     * @param mixed $value The value to protect.
+     *
+     * @return ValueBuilder A protected value instance, its value set to the provided value.
+     */
+    public function protect($value)
+    {
+        return new ValueBuilder($value);
+    }
+
+    /**
+     * Returns the Service Provider instance registered.
+     *
+     * @param string $providerId The Service Provider clas to return the instance for.
+     *
+     * @return ServiceProvider The service provider instance.
+     *
+     * @throws NotFoundException|ContainerException If the Service Provider class was never registered in the container
+     *                                              or there's an issue retrieving it.
+     */
+    public function getProvider($providerId)
+    {
+        if (!$this->resolver->isBound($providerId)) {
+            throw new NotFoundException("Service provider '{$providerId}' is not registered in the container.");
         }
-        return $buildClosure;
+
+        return $this->get($providerId);
+    }
+
+    /**
+     * Returns whether a binding exists in the container or not.
+     *
+     * `isBound($id)` returning `true` means the a call to `bind($id, $implementaion)` or `singleton($id,
+     * $implementation)` (or equivalent ArrayAccess methods) was explicitly made.
+     *
+     * @param string $id The id to check for bindings in the container.
+     *
+     * @return bool Whether an explicit binding for the id exists in the container or not.
+     */
+    public function isBound($id)
+    {
+        return is_string($id) && $this->resolver->isBound($id);
     }
 
     /**
@@ -1069,64 +1027,81 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     /**
-     * Returns true if the container can return an entry for the given identifier.
-     * Returns false otherwise.
+     * Resolves a parameter reflection to a value, if possible.
      *
-     * `has($id)` returning true does not mean that `get($id)` will not throw an exception.
-     * It does however mean that `get($id)` will not throw a `NotFoundExceptionInterface`.
+     * @param ReflectionParameter $parameter The parameter reflection to try and resolve.
+     * @param string              $id        The id to resolve the parameter for.
      *
-     * @param string $id Identifier of the entry to look for.
+     * @return mixed The parameter resolved value, or the parameter default value, if available.
      *
-     * @return bool Whether the container contains a binding for an id or not.
+     * @throws ContainerException If there's an issue resolving the parameter or reflecting on it.
      */
-    public function has($id)
+    protected function resolveParameter(ReflectionParameter $parameter, $id)
     {
-        return isset($this->bindings[$id]) || (is_string($id) && $this->classExists($id));
-    }
+        $parameterClassName = $this->getParameterClassName($parameter);
 
-    /**
-     * Returns whether a binding exists in the container or not.
-     *
-     * `isBound($id)` returning `true` means the a call to `bind($id, $implementaion)` or `singleton($id,
-     * $implementation)` (or equivalent ArrayAccess methods) was explicitly made.
-     *
-     * @param string $id The id to check for bindings in the container.
-     *
-     * @return bool Whether an explicit binding for the id exists in the container or not.
-     */
-    public function isBound($id)
-    {
-        return isset($this->bindings[$id]);
-    }
+        if ($parameterClassName !== null) {
+            if (isset($this->whenNeedsGive[$id][$parameterClassName])) {
+                $parameterClassName = $this->whenNeedsGive[$id][$parameterClassName];
+            }
 
-    /**
-     * Protects a value to make sure it will not be resolved, if callable or if the name of an existing class.
-     *
-     * @param mixed $value The value to protect.
-     *
-     * @return ProtectedValue A protected value instance, its value set to the provided value.
-     */
-    public function protect($value)
-    {
-        return ProtectedValue::of($value);
-    }
-
-    /**
-     * Returns the Service Provider instance registered.
-     *
-     * @param string $providerId The Service Provider clas to return the instance for.
-     *
-     * @return ServiceProvider The service provider instance.
-     *
-     * @throws NotFoundException If the Service Provider class was never registered in the container.
-     */
-    public function getProvider($providerId)
-    {
-        if (!isset($this->bindings[$providerId])) {
-            throw new NotFoundException("Service provider '{$providerId}' is not registered in the container.");
+            return is_string($parameterClassName) && isset($this->bindings[$parameterClassName]) ?
+                $this->get($parameterClassName)
+                : $this->resolve($parameterClassName);
         }
 
-        return $this->get($providerId);
+        if ($parameter->allowsNull()) {
+            try {
+                return $parameter->getDefaultValue();
+            } catch (ReflectionException $e) {
+                throw new ContainerException($e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Returns a parameter class name.
+     *
+     * @param ReflectionParameter $parameter The parameter to get the class for.
+     *
+     * @return string|null Either the parameter class name, or `null` if the parameter does not have a class.
+     * @throws ContainerException If the parameter class is not defined or its auto-loading triggers an errors;
+     *                            this might be the case for file that contain syntax errors.
+     */
+    private function getParameterClassName(ReflectionParameter $parameter)
+    {
+        if (isset($this->parameterClassNameCache[$parameter])) {
+            return $this->parameterClassNameCache[$parameter];
+        }
+
+        /*
+         * Get the parameter class without triggering autoload; if this was triggered here, then syntax errors would
+         * not be correctly identified.
+         */
+        $parameterClassString = $parameter->__toString();
+        $frags = explode(' ', $parameterClassString);
+        $requiredIndex = array_search('<required>', $frags, true);
+        if ($requiredIndex === false) {
+            return null;
+        }
+
+        $className = isset($frags[$requiredIndex + 1]) ? $frags[$requiredIndex + 1] : null;
+
+        $this->parameterClassNameCache[$parameter] = $className;
+
+        return $className;
+    }
+
+    /**
+     * Returns whether a string id maps to a resolved singleton or not.
+     *
+     * @param mixed $id The string, class name or object to check.
+     *
+     * @return bool Whether the id maps to something bound as singleton or not.
+     */
+    private function isSingleton($id)
+    {
+        return is_string($id) && isset($this->singletons[$id]);
     }
 
     /**

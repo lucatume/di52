@@ -1,3 +1,3 @@
-'Lorem'
-	=> 'Dolor'
-	=> Error while making 'FatalErrorClassFour': syntax error, unexpected token [.
+Lorem
+	=> Dolor $dolor
+	=> Error while making FatalErrorClassFour $four: syntax error, unexpected token [.

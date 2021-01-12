@@ -99,27 +99,27 @@ class ArrayAccessAPITest extends TestCase
     }
 
     /**
-     * It should mark private constructor class as non existing
+     * It should mark private constructor class as existing
      *
      * @test
      */
-    public function should_mark_private_constructor_class_as_non_existing()
+    public function should_mark_private_constructor_class_as_existing()
     {
         $container = new Container();
 
-        $this->assertFalse(isset($container[ArrayAccessTestClassPrivateConstructor::class]));
+        $this->assertTrue(isset($container[ArrayAccessTestClassPrivateConstructor::class]));
     }
 
     /**
-     * It should mark unbound abstract class as not existing
+     * It should mark unbound abstract class as existing
      *
      * @test
      */
-    public function should_mark_unbound_abstract_class_as_not_existing()
+    public function should_mark_unbound_abstract_class_as_existing()
     {
         $container = new Container();
 
-        $this->assertFalse(isset($container[ArrayAccessAbstractClass::class]));
+        $this->assertTrue(isset($container[ArrayAccessAbstractClass::class]));
     }
 
     /**

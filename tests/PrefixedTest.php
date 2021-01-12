@@ -1464,23 +1464,6 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * It should throw an exception when trying to resolve unbound interface parameter with no default value
-     *
-     * @test
-     */
-    public function it_should_throw_an_exception_when_trying_to_resolve_unbound_interface_parameter_with_no_default_value()
-    {
-        $reflectionMethod = new ReflectionMethod('TestInterface', 'apiMethodTwo');
-        $params = $reflectionMethod->getParameters();
-        $reflectionParameter = reset($params);
-
-        $this->expectException(ContainerException::class);
-
-        $container = new ObservableContainer();
-        $container->_resolveParameter($reflectionParameter, 'test');
-    }
-
-    /**
      * It should build not registered class dependencies anew each time
      *
      * @test

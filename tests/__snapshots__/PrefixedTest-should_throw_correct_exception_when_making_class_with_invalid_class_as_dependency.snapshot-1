@@ -1,2 +1,2 @@
-'Valve'
-	=> Error while making 'NonExisting1': nothing is bound to the 'NonExisting1' id and it's not an existing or instantiable class.
+Valve
+	=> Error while making NonExisting1 $n: nothing is bound to the 'NonExisting1' id and it's not an existing or instantiable class.

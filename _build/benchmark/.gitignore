@@ -1,0 +1,12 @@
+vendor/
+.terraform/
+
+.terraform*
+.env
+.phpcs-cache
+*.pem
+*.tfplan
+*.tfstate
+*.tfstate.backup
+*.tfvars
+archive.tar

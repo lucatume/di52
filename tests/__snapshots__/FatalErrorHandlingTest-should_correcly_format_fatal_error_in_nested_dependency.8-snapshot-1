@@ -1,2 +1,2 @@
-'DependingOnFatalError'
-	=> Error while making 'FatalErrorClassThree': syntax error, unexpected token [.
+DependingOnFatalError
+	=> Error while making FatalErrorClassThree $three: syntax error, unexpected token [.

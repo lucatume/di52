@@ -1,4 +1,4 @@
-'LowerEngine'
-	=> 'DriveShaft'
-	=> 'Clutch'
-	=> Error while making 'PrivateConstructor': nothing is bound to the 'PrivateConstructor' id and it's not an existing or instantiable class.
+LowerEngine
+	=> DriveShaft $c
+	=> Clutch $c
+	=> Error while making PrivateConstructor $c: constructor method is not public.

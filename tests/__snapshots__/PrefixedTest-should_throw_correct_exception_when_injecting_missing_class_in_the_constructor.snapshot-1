@@ -1,6 +1,6 @@
-'Car'
-	=> 'Engine'
-	=> 'UpperEngine'
-	=> 'CombustionChamber'
-	=> 'Valve'
-	=> Error while making 'NonExisting1': nothing is bound to the 'NonExisting1' id and it's not an existing or instantiable class.
+Car
+	=> Engine $e
+	=> UpperEngine $u
+	=> CombustionChamber $c
+	=> Valve $v
+	=> Error while making NonExisting1 $n: nothing is bound to the 'NonExisting1' id and it's not an existing or instantiable class.

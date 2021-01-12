@@ -107,6 +107,7 @@ $(test_php_versions): %:
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
 	   lucatume/di52-dev:$@ \
 	   --bootstrap ${PWD}/tests/bootstrap.php \
+	   --stop-on-failure \
 	   ${PWD}/tests
 
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
@@ -213,6 +214,7 @@ benchmark.debug: ## Run a benchmark on PHP 8.0 and debug it. Example `make bench
 .PHONY: benchmark.debug
 
 benchmark.profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
+	rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52
 	rm -rf "${PWD}/_build/profile/cachegrind.out.suite-$(TARGET_ARGS)"
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
