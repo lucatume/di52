@@ -1,8 +1,6 @@
 <?php
 /**
- * ${CARET}
- *
- * @since   TBD
+ * Closure-based builder.
  *
  * @package lucatume\DI52
  */

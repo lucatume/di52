@@ -1,12 +1,9 @@
 <?php
 /**
- * ${CARET}
- *
- * @since   TBD
+ * Builds and returns object instances.
  *
  * @package lucatume\DI52
  */
-
 
 namespace lucatume\DI52\Builders;
 
@@ -14,36 +11,56 @@ use lucatume\DI52\ContainerException;
 use lucatume\DI52\NotFoundException;
 use ReflectionMethod;
 
+/**
+ * Class ClassBuilder
+ *
+ * @package lucatume\DI52\Builders
+ */
 class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
 {
     /**
+     * An array cache of resolved constructor parameters, shared across all instances of the builder.
      * @var array<string,array<Parameter>>
      */
-    private static $constructorParametersCache = [];
+    protected static $constructorParametersCache = [];
     /**
-     * @var array
+     * A set of arguments that will be passed to the class constructor.
+     *
+     * @var array<mixed>
      */
     protected $buildArgs;
-    protected $id;
     /**
+     * The id associated with the builder by the resolver.
      * @var string
      */
-    private $className;
+    protected $id;
     /**
-     * @var array|null
+     * The fully-qualified class name the builder should build instances of.
+     *
+     * @var string
      */
-    private $afterBuildMethods;
+    protected $className;
     /**
+     * A set of methods to call on the built object.
+     *
+     * @var array<string>|null
+     */
+    protected $afterBuildMethods;
+
+    /**
+     * A reference to the resolver currently using the builder.
+     *
      * @var Resolver
      */
-    private $resolver;
+    protected $resolver;
 
     /**
      * ClassBuilder constructor.
-     * @param            $id
-     * @param Resolver   $resolver
-     * @param string     $className
-     * @param array|null $afterBuildMethods
+     *
+     * @param            string $id The identifier associated with this builder.
+     * @param Resolver   $resolver A reference to the resolver currently using the builder.
+     * @param string     $className The fully-qualified class name to build instances for.
+     * @param array<string>|null $afterBuildMethods An optional set of methods to call on the built object.
      * @param mixed      ...$buildArgs
      * @throws NotFoundException
      */
@@ -139,6 +156,14 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         return $resolved;
     }
 
+    /**
+     * Reinitialize the builder setting the after build methods and build args.
+     *
+     * @param array<string>|null $afterBuildMethods A set of methods to call on the object after it's built.
+     * @param mixed              ...$buildArgs      A set of build arguments that will be passed to the constructor.
+     *
+     * @return void This method does not return any value.
+     */
     public function reinit(array $afterBuildMethods = null, ...$buildArgs)
     {
         $this->afterBuildMethods = $afterBuildMethods;

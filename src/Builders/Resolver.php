@@ -74,6 +74,15 @@ class Resolver
         $this->whenNeedsGive[$whenClass][$needsClass] = $builder;
     }
 
+    /**
+     * Resolves an ide to an implementation with the input arguments.
+     *
+     * @param            string|mixed $id The id, class name or built value to resolve.
+     * @param array<string>|null $afterBuildMethods  A list of methods that should run on the built instance.
+     * @param mixed      ...$buildArgs A set of build arguments that will be passed to the implementation constructor.
+     * @return BuilderInterface|ReinitializableBuilderInterface|mixed The builder, set up to use the specified set of
+     *                                                                build arguments.
+     */
     public function resolveWithArgs($id, array $afterBuildMethods = null, ...$buildArgs)
     {
         if (empty($afterBuildMethods) && empty($buildArgs)) {

@@ -67,6 +67,10 @@ class Factory
             return new ClosureBuilder($this->container, $implementation);
         }
 
+        if (is_callable($implementation)) {
+            return new CallableBuilder($this->container, $implementation);
+        }
+
         return new ValueBuilder($implementation);
     }
 }

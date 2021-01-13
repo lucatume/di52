@@ -1448,22 +1448,6 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * It should return an interface argument default value if available and the interface is not bound
-     *
-     * @test
-     */
-    public function it_should_return_an_interface_argument_default_value_if_available_and_the_interface_is_not_bound()
-    {
-        $params = ( new ReflectionMethod('TestInterface', 'apiMethodOne') )->getParameters();
-        $reflectionParameter = reset($params);
-
-        $container = new ObservableContainer();
-        $value = $container->_resolveParameter($reflectionParameter, 'test');
-
-        $this->assertEquals(23, $value);
-    }
-
-    /**
      * It should build not registered class dependencies anew each time
      *
      * @test

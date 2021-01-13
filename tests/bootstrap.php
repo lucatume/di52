@@ -4,7 +4,6 @@ require_once __DIR__ . '/data/test-classes.php';
 require_once __DIR__ . '/data/test-car-classes.php';
 require_once __DIR__ . '/data/namespaced-test-classes.php';
 require_once __DIR__ . '/data/test-providers.php';
-require_once __DIR__ . '/data/observable-container.php';
 
 function assertMatchesSnapshots($actual, $prefix = null)
 {

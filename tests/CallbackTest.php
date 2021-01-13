@@ -1,6 +1,7 @@
 <?php
 
 use lucatume\DI52\Container;
+use lucatume\DI52\ContainerException;
 use PHPUnit\Framework\TestCase;
 
 class CallbackClassOne
@@ -85,5 +86,19 @@ class CallbackTest extends TestCase
         $this->assertSame($closureOne, $closureTwo);
         $this->assertEquals('static-value', $closureOne());
         $this->assertEquals('static-value', $closureTwo());
+    }
+
+    /**
+     * It should throw if trying ot build callback for non string or object
+     *
+     * @test
+     */
+    public function should_throw_if_trying_ot_build_callback_for_non_string_or_object()
+    {
+        $container = new Container();
+
+        $this->expectException(ContainerException::class);
+
+        $container->callback(['foo','bar'], 'someMethod');
     }
 }
