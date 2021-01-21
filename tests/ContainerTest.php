@@ -59,9 +59,9 @@ class ContainerTest extends TestCase
 
         $this->expectException(ContainerException::class);
 
-        $container->bind(FatalErrorClassSeven::class);
-        $container->bind(FatalErrorClassSeven::class);
-        $container->bind(FatalErrorClassSeven::class);
+        $container->bind(PrivateConstructor::class);
+        $container->bind(PrivateConstructor::class);
+        $container->bind(PrivateConstructor::class);
     }
 
     /**

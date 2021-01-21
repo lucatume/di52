@@ -14,8 +14,6 @@ use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use ReflectionParameter;
-use SplObjectStorage;
 
 /**
  * Class Container
@@ -198,8 +196,10 @@ class Container implements \ArrayAccess, ContainerInterface
             return $this->resolver->resolve($id, [$id]);
         } catch (\Throwable $throwable) {
             throw $this->castThrown($throwable, $id);
-        } catch (\Exception $exception) { // @codeCoverageIgnore
-            throw $this->castThrown($exception, $id); // @codeCoverageIgnore
+            // @codeCoverageIgnoreStart
+        } catch (\Exception $exception) { // @phan-suppress-current-line PhanUnreachableCatch @phpstan-ignore-line
+            throw $this->castThrown($exception, $id);
+            // @codeCoverageIgnoreEnd
         }
     }
 
@@ -782,7 +782,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * The callable will be a closure on PHP 5.3+ or a lambda function on PHP 5.2.
      *
-     * @param string|mixed             $id                The fully qualified name of a class or an interface.
+     * @param string|mixed       $id                The fully qualified name of a class or an interface.
      * @param array<mixed>       $buildArgs         An array of arguments that should be used to build the instance;
      *                                              note that any argument will be resolved using the container itself
      *                                              and bindings will apply.
@@ -798,7 +798,8 @@ class Container implements \ArrayAccess, ContainerInterface
             if (is_string($id)) {
                 return $this->resolver->resolveWithArgs($id, $afterBuildMethods, ...$buildArgs);
             }
-            return $this->builders->getBuilder($id, $afterBuildMethods, ...$buildArgs)->build();
+
+            return $this->builders->getBuilder($id, $id, $afterBuildMethods, ...$buildArgs)->build();
         };
     }
 

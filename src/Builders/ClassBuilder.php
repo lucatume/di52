@@ -57,12 +57,14 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     /**
      * ClassBuilder constructor.
      *
-     * @param            string $id The identifier associated with this builder.
-     * @param Resolver   $resolver A reference to the resolver currently using the builder.
-     * @param string     $className The fully-qualified class name to build instances for.
+     * @param string             $id                The identifier associated with this builder.
+     * @param Resolver           $resolver          A reference to the resolver currently using the builder.
+     * @param string             $className         The fully-qualified class name to build instances for.
      * @param array<string>|null $afterBuildMethods An optional set of methods to call on the built object.
-     * @param mixed      ...$buildArgs
-     * @throws NotFoundException
+     * @param mixed              ...$buildArgs      An optional set of build arguments that should be provided to the
+     *                                              class constructor method.
+     *
+     * @throws NotFoundException If the class does not exist.
      */
     public function __construct($id, Resolver $resolver, $className, array $afterBuildMethods = null, ...$buildArgs)
     {
@@ -78,6 +80,11 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         $this->buildArgs = $buildArgs;
     }
 
+    /**
+     * Builds and returns an instance of the class.
+     *
+     * @return object An instance of the class.
+     */
     public function build()
     {
         $constructorArgs = $this->resolveConstructorParameters();
@@ -88,7 +95,14 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         return $built;
     }
 
-    private function resolveConstructorParameters()
+    /**
+     * Resolves the constructor arguments to concrete implementations or values.
+     *
+     * @return array<mixed> A set of resolved constructor arguments.
+     *
+     * @throws ContainerException If a constructor argument resolution raises issues.
+     */
+    protected function resolveConstructorParameters()
     {
         $constructorArgs = [];
 
@@ -96,7 +110,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         foreach ($this->getResolvedConstructorParameters($this->className) as $i => $parameter) {
             $this->resolver->addToBuildLine((string)$parameter->getType(), $parameter->getName());
             if (isset($this->buildArgs[$i])) {
-                $arg = $this->buildArgs[$i] ;
+                $arg = $this->buildArgs[$i];
                 if ($arg instanceof BuilderInterface) {
                     $constructorArgs[] = $arg->build();
                     continue;
@@ -112,7 +126,15 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         return $constructorArgs;
     }
 
-    private function getResolvedConstructorParameters($className)
+    /**
+     * Returns a set of resolved constructor parameters.
+     *
+     * @param string $className The fully-qualified class name to get the resolved constructor parameters yet.
+     * @return array<Parameter> A set of resolved constructor parameters.
+     *
+     * @throws ContainerException If the resolution of any constructor parameters is problematic.
+     */
+    protected function getResolvedConstructorParameters($className)
     {
         if (isset(self::$constructorParametersCache[$className])) {
             return self::$constructorParametersCache[$className];
@@ -141,7 +163,31 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         return $parameters;
     }
 
-    private function resolveParameter(Parameter $parameter)
+    /**
+     * Resolves a build argument to a concrete implementation.
+     *
+     * @param mixed $arg The argument id or value to resolve.
+     *
+     * @return mixed The resolved build argument.
+     */
+    protected function resolveBuildArg($arg)
+    {
+        if (is_string($arg) && ($this->resolver->isBound($arg) || class_exists($arg))) {
+            return $this->resolver->resolve($arg);
+        }
+        return $arg;
+    }
+
+    /**
+     * Resolves a parameter to a concrete implementation or value.
+     *
+     * @param Parameter $parameter The parameter to resolve.
+     *
+     * @return mixed The resolved parameter.
+     *
+     * @throws ContainerException If the parameter resolution fails.
+     */
+    protected function resolveParameter(Parameter $parameter)
     {
         $paramClass = $parameter->getClass();
 
@@ -157,24 +203,11 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     }
 
     /**
-     * Reinitialize the builder setting the after build methods and build args.
-     *
-     * @param array<string>|null $afterBuildMethods A set of methods to call on the object after it's built.
-     * @param mixed              ...$buildArgs      A set of build arguments that will be passed to the constructor.
-     *
-     * @return void This method does not return any value.
+     * {@inheritdoc}
      */
     public function reinit(array $afterBuildMethods = null, ...$buildArgs)
     {
         $this->afterBuildMethods = $afterBuildMethods;
         $this->buildArgs = $buildArgs;
-    }
-
-    private function resolveBuildArg($arg)
-    {
-        if (is_string($arg) && ($this->resolver->isBound($arg) || class_exists($arg))) {
-            return $this->resolver->resolve($arg);
-        }
-        return $arg;
     }
 }

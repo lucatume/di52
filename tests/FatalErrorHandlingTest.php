@@ -19,7 +19,7 @@ class FatalErrorHandlingTest extends TestCase
 
     protected function setUp()
     {
-        if (! version_compare(PHP_VERSION, '7.0', '>=')) {
+        if (PHP_VERSION_ID < 70000) {
             $this->markTestSkipped('Fatal error handling is only available on PHP 7.0+');
         }
     }
@@ -90,5 +90,20 @@ class FatalErrorHandlingTest extends TestCase
             $this->assertNotInstanceOf(NotFoundException::class, $e);
             assertMatchesSnapshots($e->getMessage(), PHP_MAJOR_VERSION.'-');
         }
+    }
+
+    /**
+     * It should correctly handle single id binding of syntax error class
+     *
+     * @test
+     */
+    public function should_correctly_handle_single_id_binding_of_syntax_error_class()
+    {
+        $container = new Container();
+
+        $this->expectException(ContainerException::class);
+
+        $container->bind(FatalErrorClassSeven::class);
+        $container->singleton(FatalErrorClassSeven::class);
     }
 }

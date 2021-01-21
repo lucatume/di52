@@ -1,7 +1,7 @@
 <?php
-
-
 class FatalErrorClassSeven
 {
-    purrvate function __constructor()
+    public function[]{
+        wrong
+    }
 }

@@ -1,12 +1,9 @@
 <?php
 /**
- * ${CARET}
- *
- * @since   TBD
+ * Builds and sets up the correct builder for a binding.
  *
  * @package lucatume\DI52
  */
-
 
 namespace lucatume\DI52\Builders;
 
@@ -14,19 +11,30 @@ use Closure;
 use lucatume\DI52\Container;
 use lucatume\DI52\NotFoundException;
 
+/**
+ * Class Factory
+ *
+ * @package lucatume\DI52\Builders
+ */
 class Factory
 {
     /**
-     * @var Container
+     * A reference to the resolver that should be used to resolve the implementations.
+     *
+     * @var Resolver
      */
-    private $resolver;
+    protected $resolver;
     /**
+     * A reference to the DI container builder will be built for.
+     *
      * @var Container
      */
-    private $container;
+    protected $container;
 
     /**
      * BuilderFactory constructor.
+     * @param Container $container A reference to the DI container the builder is working for.
+     * @param Resolver  $resolver A reference to the resolver builders will use to resolve to implementations.
      */
     public function __construct(Container $container, Resolver $resolver)
     {
@@ -37,15 +45,17 @@ class Factory
     /**
      * Returns the correct builder for a value.
      *
-     * @param string             $id                 The id to build the builder for.
+     * @param string|mixed       $id                 The string id to provide a builder for, or a value.
      * @param mixed              $implementation     The implementation to build the builder for.
      * @param array<string>|null $afterBuildMethods  A list of methods that should be called on the built instance
      *                                               after
      *                                               it's been built.
      * @param mixed              ...$buildArgs       A set of arguments to pass that should be used to build the
      *                                               instance, if any.
+     *
      * @return BuilderInterface A builder instance.
-     * @throws NotFoundException
+     *
+     * @throws NotFoundException If a builder cannot find its implementation target.
      */
     public function getBuilder($id, $implementation = null, array $afterBuildMethods = null, ...$buildArgs)
     {

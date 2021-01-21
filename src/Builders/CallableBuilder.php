@@ -71,7 +71,7 @@ class CallableBuilder implements BuilderInterface, ReinitializableBuilderInterfa
     {
         $built = call_user_func($this->callable, ...$this->buildArgs);
 
-        foreach ($this->afterBuildMethods as $afterBuildMethod) {
+        foreach ((array)$this->afterBuildMethods as $afterBuildMethod) {
             $built->{$afterBuildMethod}();
         }
 

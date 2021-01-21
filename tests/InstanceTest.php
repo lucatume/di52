@@ -127,7 +127,7 @@ class Shoe
 
     public function setLargeSize()
     {
-       $this->size = 50 ;
+        $this->size = 50 ;
     }
 
     public function setFunColor()
@@ -140,12 +140,12 @@ class ShoeFactory
 {
     public static function produce($size = 40, $color = 'black')
     {
-        return new Shoe($size,$color);
+        return new Shoe($size, $color);
     }
 
     public function __invoke(...$args)
     {
-       return static::produce(...$args);
+        return static::produce(...$args);
     }
 }
 
@@ -276,7 +276,7 @@ class InstanceTest extends TestCase
         $container = new Container();
 
         $container->bind('shoe', new ShoeFactory());
-        $produce = $container->instance('shoe', [42, 'brown'],['setLargeSize','setFunColor']);
+        $produce = $container->instance('shoe', [42, 'brown'], ['setLargeSize','setFunColor']);
 
         $shoe = $produce();
 

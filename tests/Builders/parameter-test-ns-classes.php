@@ -16,3 +16,10 @@ class ClassThree
     {
     }
 }
+
+class ClassFour
+{
+    public function __construct($noTypeHintNoDefaultValue)
+    {
+    }
+}

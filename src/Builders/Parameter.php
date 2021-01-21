@@ -1,39 +1,53 @@
 <?php
 /**
- * ${CARET}
- *
- * @since   TBD
+ * The representation of a builder parameter.
  *
  * @package lucatume\DI52\Builders
  */
-
 
 namespace lucatume\DI52\Builders;
 
 use lucatume\DI52\ContainerException;
 use ReflectionParameter;
 
+/**
+ * Class Parameter
+ *
+ * @package lucatume\DI52\Builders
+ */
 class Parameter
 {
     /**
-     * @var array
-     */
-    protected $data;
-    /**
-     * @var mixed|string|null
+     * The parameter type or `null` if the type cannot be parsed.
+     *
+     * @var string|null
      */
     protected $type;
     /**
+     * Whether the parameter is an optional one or not.
+     *
      * @var bool
      */
     protected $isOptional;
     /**
+     * The parameter default value, or `null` if not available.
+     *
      * @var mixed|null
      */
     protected $defaultValue;
+    /**
+     * Whether the parameter is a class or not.
+     *
+     * @var bool
+     */
     protected $isClass;
 
-    private static $nonClassTypes = [
+    /**
+     * A list of the types that are NOT classes.
+     *
+     * @var array<string>
+     */
+    protected static $nonClassTypes = [
         'string',
         'int',
         'bool',
@@ -44,13 +58,30 @@ class Parameter
         'callable',
         'iterable',
     ];
-    private static $conversionMap = [
+    /**
+     * A map relating the string output type to the internal, type-hintable, type.
+     *
+     * @var array<string>
+     */
+    protected static $conversionMap = [
         'integer' => 'int',
         'boolean' => 'bool',
         'double' => 'float'
     ];
+
+    /**
+     * The parameter name.
+     *
+     * @var string
+     */
     protected $name;
 
+    /**
+     * Parameter constructor.
+     *
+     * @param int                 $index               The parameter position in the list of parameters.
+     * @param ReflectionParameter $reflectionParameter The parameter reflection to extract the information from.
+     */
     public function __construct($index, ReflectionParameter $reflectionParameter)
     {
         $string = $reflectionParameter->__toString();
@@ -60,15 +91,20 @@ class Parameter
         $this->name = $reflectionParameter->name;
         $this->type = strpos($frags[1], '$') === 0 ? null : $frags[1];
         // PHP 8.0 nullables.
-        $this->type = str_replace('?', '', $this->type) ;
+        $this->type = str_replace('?', '', (string)$this->type);
         if (isset(static::$conversionMap[$this->type])) {
-            $this->type = static::$conversionMap[$this->type];
+            $this->type = static::$conversionMap[$this->type]; // @codeCoverageIgnore
         }
         $this->isClass = $this->type && !in_array($this->type, static::$nonClassTypes, true);
         $this->isOptional = $frags[0] === '<optional>';
         $this->defaultValue = $this->isOptional ? $reflectionParameter->getDefaultValue() : null;
     }
 
+    /**
+     * Returns the parameter extracted data.
+     *
+     * @return array<string,string|bool|mixed> A map of the parameter data.
+     */
     public function getData()
     {
         return [
@@ -78,26 +114,52 @@ class Parameter
         ];
     }
 
+    /**
+     * Returns the parameter default value, if any.
+     *
+     * @return mixed|null The parameter default value, if any.
+     */
     public function getDefaultValue()
     {
         return $this->defaultValue;
     }
 
+    /**
+     * Returns the parameter class name, if any.
+     *
+     * @return string|null The parameter class name, if any.
+     */
     public function getClass()
     {
         return $this->isClass ? $this->type : null;
     }
 
+    /**
+     * Returns the parameter name.
+     *
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * Returns the parameter type, if any.
+     *
+     * @return string|null The parameter type, if any.
+     */
     public function getType()
     {
         return $this->type;
     }
 
+    /**
+     * Either return the parameter default value, or die trying.
+     *
+     * @return mixed|null The parameter default value.
+     * @throws ContainerException If the parameter does not have a default value.
+     */
     public function getDefaultValueOrFail()
     {
         if (!$this->isOptional) {
