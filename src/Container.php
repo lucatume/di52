@@ -723,8 +723,9 @@ class Container implements \ArrayAccess, ContainerInterface
         $callbackIdPrefix = is_object($id) ? \spl_object_hash($id) : $id;
 
         if (!is_string($callbackIdPrefix)) {
+            $typeOfId = gettype($id);
             throw new ContainerException(
-                "Callbacks can only be built on ids, class names or objects; '{$id}' is neither."
+                "Callbacks can only be built on ids, class names or objects; '{$typeOfId}' is neither."
             );
         }
 
