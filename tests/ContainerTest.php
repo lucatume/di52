@@ -81,4 +81,30 @@ class ContainerTest extends TestCase
             }
         }
     }
+
+    /** @test */
+    public function it_should_resolve_contextual_binding_without_an_early_bind()
+    {
+        $container = new tad_DI52_Container();
+
+        $container->when('ClassSix')
+            ->needs('One')
+            ->give('ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $container->make('ClassSix')->getOne());
+    }
+
+    /** @test */
+    public function it_should_resolve_contextual_binding_with_an_early_bind_of_different_type()
+    {
+        $container = new tad_DI52_Container();
+
+        $container->bind('One', 'foo');
+
+        $container->when('ClassSix')
+            ->needs('One')
+            ->give('ClassOne');
+
+        $this->assertInstanceOf('ClassOne', $container->make('ClassSix')->getOne());
+    }
 }
