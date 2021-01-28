@@ -1,9 +1,12 @@
-<phpunit bootstrap='tests/bootstrap.php'
-    colors='true'>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/|version|/phpunit.xsd"
+        bootstrap='tests/bootstrap.php'
+        colors='true'
+>
     <testsuites>
         <testsuite name='All'>
-            <directory suffix="Test.php">tests/52-compat</directory>
-            <directory suffix="Test.php" phpVersion="5.3.0" phpVersionOperator=">=">tests/53-above</directory>
+            <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
     <filter>
@@ -14,4 +17,8 @@
             <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-html" target="tests/coverage" lowUpperBound="35"
+             highLowerBound="70"/>
+    </logging>
 </phpunit>

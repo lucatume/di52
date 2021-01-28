@@ -23,7 +23,6 @@ class DeferredProviderOne extends tad_DI52_ServiceProvider
     {
         $this->container->bind('foo', 23);
     }
-
 }
 
 class DeferredProviderTwo extends tad_DI52_ServiceProvider
@@ -44,7 +43,7 @@ class DeferredProviderTwo extends tad_DI52_ServiceProvider
 
     public function provides()
     {
-        return array('One');
+        return [ 'One' ];
     }
 
 
@@ -56,7 +55,6 @@ class DeferredProviderTwo extends tad_DI52_ServiceProvider
         $this->container->bind('One', 'ClassOne');
         self::$wasRegistered = true;
     }
-
 }
 
 class ProviderThree extends tad_DI52_ServiceProvider

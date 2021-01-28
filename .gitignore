@@ -8,4 +8,6 @@ vendor/
 # composer.lock
 
 tests/coverage
+_build/profile/callgrind.out.*
+_build/benchmark/vendor
 

@@ -1,0 +1,53 @@
+name: "Continuous Integration"
+
+on:
+  - pull_request
+  - push
+
+jobs:
+  coding-standards:
+    name: "Coding Standards"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+
+      - name: "Install PHP 8.0"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml
+          tools: composer:v2
+
+      - name: "Validate composer.json"
+        run: php8.0 $(which composer) validate --no-check-all
+
+      - name: "Install dependencies with composer"
+        run: php8.0 $(which composer) install --no-interaction --no-progress --ignore-platform-reqs
+
+      - name: "Run PHP CodeSniffer"
+        run: php8.0 vendor/bin/phpcs --standard=phpcs.xml
+
+  static-code-analysis:
+    name: "Static Code Analysis"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@master
+
+      - name: "Install PHP 8.0"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          extensions: mbstring, xml
+          tools: composer:v2
+
+      - name: "Install dependencies with composer"
+        run: php8.0 $(which composer) install --no-interaction --no-progress --ignore-platform-reqs
+
+      - name: "Run phpstan/phpstan"
+        run: php8.0 vendor/bin/phpstan analyse --level 8 src tests

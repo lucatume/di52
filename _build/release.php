@@ -36,17 +36,20 @@ require_once $root . '/vendor/autoload.php';
 
 $changelogFile = $root . '/CHANGELOG.md';
 
-if ( ! file_exists( $changelogFile ) ) {
-	echo "\e[31mChangelog file (CHANGELOG.md, changelog.md) does not exist.\e[0m\n";
-	exit( 1 );
+if (! file_exists($changelogFile)) {
+    echo "\e[31mChangelog file (CHANGELOG.md, changelog.md) does not exist.\e[0m\n";
+    exit(1);
 }
 
 function args()
 {
     global $argv;
 
-    $options = getopt('q', ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
-        $optind);
+    $options = getopt(
+        'q',
+        ['not-interactive', 'no-diff-check', 'no-unpushed-check', 'dry-run', 'no-changelog-update'],
+        $optind
+    );
 
     $map = [
         'releaseType' => isset($argv[$optind]) ? $argv[$optind] : 'patch',
@@ -112,7 +115,7 @@ function changelog($changelog)
 
     fclose($f);
 
-	return [ 'notes' => trim( $notes ), 'latestVersion' => $latestVersion ];
+    return [ 'notes' => trim($notes), 'latestVersion' => $latestVersion ];
 }
 
 function updateChangelog($changelogFile, $version, callable $args, $date = null)
@@ -122,17 +125,21 @@ function updateChangelog($changelogFile, $version, callable $args, $date = null)
     $changelogFileName = basename($changelogFile);
     $currentContents = file_get_contents($changelogFile);
     $entryLine = '## [unreleased] Unreleased';
-	if ( strpos( $currentContents, $entryLine ) === false ) {
-		$message = 'Unreleased entry line not found; does the changelog file contain an entry like "' . $entryLine . '"?';
-		echo "\e[31m{$message}\e[0m\n";
-		exit( 1 );
-	}
-	$changelogContents = str_replace($entryLine, $entryLine . $changelogVersionLine, $currentContents);
+    if (strpos($currentContents, $entryLine) === false) {
+        $message = 'Unreleased entry line not found; does the changelog file contain an entry like "' . $entryLine . '"?';
+        echo "\e[31m{$message}\e[0m\n";
+        exit(1);
+    }
+    $changelogContents = str_replace($entryLine, $entryLine . $changelogVersionLine, $currentContents);
     $changelogContents = preg_replace_callback(
         '/\\[(?:[Uu])nreleased]:\\s+(?<repo>.*)\\/(?<previous_version>\\d+\\.\\d+\\.\\d+)...(HEAD|head)/ium',
         static function (array $matches) use ($version) {
-            return sprintf('[%1$s]: %2$s/%3$s...%1$s' . PHP_EOL . '[unreleased]: %2$s/%1$s...HEAD'
-                , $version, $matches['repo'], $matches['previous_version']);
+            return sprintf(
+                '[%1$s]: %2$s/%3$s...%1$s' . PHP_EOL . '[unreleased]: %2$s/%1$s...HEAD',
+                $version,
+                $matches['repo'],
+                $matches['previous_version']
+            );
         },
         $changelogContents
     );
@@ -167,10 +174,13 @@ switch ($releaseType) {
         }, $changelog['latestVersion']);
         break;
     case 'patch':
-        $releaseVersion = preg_replace_callback('/(?<major>\\d+)\\.(?<minor>\\d)\.(?<target>\\d+)/',
+        $releaseVersion = preg_replace_callback(
+            '/(?<major>\\d+)\\.(?<minor>\\d)\.(?<target>\\d+)/',
             static function ($m) {
                 return $m['major'] . '.' . ($m['minor']) . '.' . (++$m['target']);
-            }, $changelog['latestVersion']);
+            },
+            $changelog['latestVersion']
+        );
         break;
 }
 

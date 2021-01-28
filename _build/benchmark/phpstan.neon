@@ -1,0 +1,18 @@
+parameters:
+    bootstrapFiles:
+        - app/bootstrap.php
+    excludes_analyse:
+        - src/Container/Chubbyphp/
+        - src/Container/Dice/
+        - src/Container/PhpDi/
+        - src/Container/Symfony/
+        - src/Container/Yii2/
+        - src/Container/Zen/Resource
+        - src/Fixture/
+    ignoreErrors:
+        - '#^Anonymous function should have native return typehint \".*\"\.$#'
+        - '#^Call to static method getPrettyVersion\(\) on an unknown class Composer\\InstalledVersions\.$#'
+
+includes:
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon

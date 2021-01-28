@@ -1,0 +1,10 @@
+build/infrastructure/
+docs/
+
+.*
+benchmark.*
+*.md
+*.yml
+*.xml
+Dockerfile
+LICENSE
