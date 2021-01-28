@@ -12,7 +12,7 @@ PROJECT_NAME = $(notdir $(PWD))
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
 # To get the nth argument, use `export TARGET_ARG_2="$(word 2,$(TARGET_ARGS))"`.
-SUPPORTED_COMMANDS := wait_file wait_url benchmark.profile benchmark.debug test.coverage test.run composer
+SUPPORTED_COMMANDS := wait_file wait_url benchmark_profile benchmark_debug test_coverage test_run composer composer_install composer_update
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -64,6 +64,26 @@ composer: ## Runs a Composer command on PHP 5.6. Example: `make composer update`
 	lucatume/composer:php5.6-composer-v2 $(TARGET_ARGS)
 .PHONY: composer
 
+composer_install: ## Runs the Composer install command on a target PHP version. Example: `make composer_install 7.2`
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php$(TARGET_ARGS)-composer-v2 install
+.PHONY: composer_install
+
+composer_update: ## Runs the Composer install command on a target PHP version. Example: `make composer_update 7.2`
+	docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e FIXUID=1 \
+	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
+	-v "${PWD}:/project" \
+	-t \
+	lucatume/composer:php$(TARGET_ARGS)-composer-v2 update
+.PHONY: composer_update
+
 build_php_versions_lt_72 = '5.6' '7.0' '7.1'
 $(build_php_versions_lt_72): %:
 	docker build \
@@ -113,7 +133,7 @@ $(test_php_versions): %:
 test: $(test_php_versions) ## Runs the project PHPUnit tests on all PHP versions.
 .PHONY: test
 
-test.coverage: ## Generate code coverage reports for a PHP version. Example: `make coverage 7.1`.
+test_coverage: ## Generate code coverage reports for a PHP version. Example: `make coverage 7.1`.
 ifeq ( $(TARGET_ARGS),5.6)
 		echo 'Generating coverage for PHP 5.6';
 		docker run --rm \
@@ -131,9 +151,9 @@ else
 			${PWD}/tests
 endif
 	open tests/coverage/index.html
-.PHONY: test.coverage
+.PHONY: test_coverage
 
-test.run: ## Run the test on the specified PHP version with XDebug support. Example `make test.run 7.2`.
+test_run: ## Run the test on the specified PHP version with XDebug support. Example `make test.run 7.2`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -141,15 +161,15 @@ test.run: ## Run the test on the specified PHP version with XDebug support. Exam
 	   --bootstrap ${PWD}/tests/bootstrap.php \
 	   --stop-on-failure \
 	   ${PWD}/tests
-.PHONY: test.run
+.PHONY: test_run
 
-code.lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
+code_lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
 	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \
 			${PWD}/src \
 			${PWD}/aliases.php
-.PHONY: code.lint
+.PHONY: code_lint
 
-code.sniff: ## Run PHP Code Sniffer on the project source files.
+code_sniff: ## Run PHP Code Sniffer on the project source files.
 	docker run --rm \
         -u "$$(id -u):$$(id -g)" \
 		-v ${PWD}:${PWD} cytopia/phpcs \
@@ -158,9 +178,9 @@ code.sniff: ## Run PHP Code Sniffer on the project source files.
 		-s \
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/aliases.php
-.PHONY: code.sniff
+.PHONY: code_sniff
 
-code.fix: ## Run PHP Code Sniffer Beautifier on the project source files.
+code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 	docker run --rm \
         -u "$$(id -u):$$(id -g)" \
         -v ${PWD}:${PWD} cytopia/phpcbf \
@@ -169,7 +189,7 @@ code.fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 		-s \
 		--standard=${PWD}/phpcs.xml \
 		${PWD}/src ${PWD}/tests ${PWD}/aliases.php
-.PHONY: code.fix
+.PHONY: code_fix
 
 PHPSTAN_LEVEL?=max
 phpstan: ## Run phpstan on the project source files.
@@ -191,29 +211,22 @@ phan: ## Run phan on the project source files.
 pre_commit: code.lint code.fix code.sniff test phpstan phan ## Run pre-commit checks: code.lint, code.fix, code.sniff, test, phpstan, phan.
 .PHONY: pre_commit
 
-benchmark.build: ## !!WiP!! Build the benchmark suite.
-		rm -rf ${PWD}/_build/benchmark
-		[ -d ${PWD}/_build/benchmark ] || \
-		git clone https://github.com/kocsismate/php-di-container-benchmarks.git _build/benchmark
-		cp ${PWD}/_build/benchmark/.env.dist ${PWD}/_build/benchmark/.env
-.PHONY: benchmark.build
-
-benchmark.run: ## Runs the benchmark suite in docker.
+benchmark_run: ## Runs the benchmark suite in docker.
 		(cd ${PWD}/_build/benchmark; docker-compose down)
 		rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52
 		(cd ${PWD}/_build/benchmark; ./benchmark.sh docker --detach)
 		docker wait benchmark-cli
 		open ${PWD}/_build/benchmark/docs/benchmark.html
-.PHONY: benchmark.run
+.PHONY: benchmark_run
 
-benchmark.debug: ## Run a benchmark on PHP 8.0 and debug it. Example `make benchmark_debug 3.1`.
+benchmark_debug: ## Run a benchmark on PHP 8.0 and debug it. Example `make benchmark_debug 3.1`.
 	docker run --rm \
 		-v "${PWD}:${PWD}" \
 		lucatume/di52-dev:php-v8.0 \
 		${PWD}/_build/run-benchmark.php $(TARGET_ARGS) \
-.PHONY: benchmark.debug
+.PHONY: benchmark_debug
 
-benchmark.profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
+benchmark_profile: ## Run a benchmark test suite and profiles it. Example `make benchmark_profile 3`.
 	rsync -azvhP ${PWD}/src ${PWD}/_build/benchmark/vendor/lucatume/di52
 	rm -rf "${PWD}/_build/profile/cachegrind.out.suite-$(TARGET_ARGS)"
 	docker run --rm \
@@ -233,4 +246,4 @@ benchmark.profile: ## Run a benchmark test suite and profiles it. Example `make 
 	   -e XDEBUG_CONFIG="profiler_output_name=callgrind.out.suite-$(TARGET_ARGS)" \
 	   lucatume/di52-profile:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).3 \
-.PHONY: benchmark.profile
+.PHONY: benchmark_profile
