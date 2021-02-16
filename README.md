@@ -286,10 +286,10 @@ building only objects that are really needed taking care of **resolving** nested
 A "Service Locator" is an object, or function, that will answer to this question made by your code:
 
 ```php
-$db = $serviceLocator->get('db');
+$db = $serviceLocator->get('database');
 ```
 
-In Plain English "I do not care how it's built or where it comes from, give the current implementation of the db service.".
+In Plain English "I do not care how it's built or where it comes from, give me the current implementation of the database service.".
 
 Service Locators are, usually, globally-available DI Containers for obvious reasons: the DI Container knows how to build the services the Service Locator will provide when required.  
 The concept of Service Locators and DI Containers are often conflated as a DI Container, when globally available, becomes a good implementation of a Service Locator.
@@ -305,13 +305,13 @@ use lucatume\DI52\App;
 $diContainer = new Container();
 
 // Register a binding in the DI Container.
-$diContainer->singleton('db', MySqlDb::class);
+$diContainer->singleton('database', MySqlDb::class);
 
 // If we make it globally-available, then it will be used by the Service Locator (the `App` class).
 App::setContainer($diContainer);
 
 // We can now globally, i.e. anywhere in the code, access the `db` service.
-$db = App::get('db');
+$db = App::get('database');
 ```
 
 Since the `lucatume\DI52\App` class proxies calls to the Container, the example could be made shorter:
@@ -321,10 +321,10 @@ Since the `lucatume\DI52\App` class proxies calls to the Container, the example 
 use lucatume\DI52\App;
 
 // Register a binding in the App (Service Locator).
-App::singleton('db', MySqlDb::class);
+App::singleton('database', MySqlDb::class);
 
 // We can now globally, i.e. anywhere in the code, access the `db` service.
-$db = App::get('db');
+$db = App::get('database');
 ```
 
 ### Construction templates
