@@ -121,6 +121,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
             }
 
             $constructorArgs [] = $this->resolveParameter($parameter);
+            $this->resolver->buildLinePop();
         }
 
         return $constructorArgs;

@@ -188,7 +188,7 @@ code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 		-p \
 		-s \
 		--standard=${PWD}/phpcs.xml \
-		${PWD}/src ${PWD}/tests ${PWD}/aliases.php
+		${PWD}/src ${PWD}/tests ${PWD}/aliases.php ${PWD}/docs/examples
 .PHONY: code_fix
 
 PHPSTAN_LEVEL?=max
@@ -247,3 +247,8 @@ benchmark_profile: ## Run a benchmark test suite and profiles it. Example `make 
 	   lucatume/di52-profile:php-v8.0 \
 	   ${PWD}/_build/run-benchmark.php $(TARGET_ARGS).3 \
 .PHONY: benchmark_profile
+
+app_facade: ## Creates or updates the src/App.php file from the current Container API.
+	php "${PWD}/_build/create-app-facade.php"
+	$(MAKE) code_fix
+.PHONY: app_facade

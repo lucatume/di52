@@ -1,6 +1,122 @@
-A PHP 5.2 compatible dependency injection container heavily inspired by [Laravel IOC](https://laravel.com/docs/5.0/container "Service Container - Laravel - The PHP Framework For Web Artisans") and [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") that works even better on newer version of PHP.
+A PHP 5.6+ compatible dependency injection container inspired
+by [Laravel IOC](https://laravel.com/docs/5.0/container "Service Container - Laravel - The PHP Framework For Web Artisans")
+and [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") that works even
+better on newer version of PHP.
 
-[![Build Status](https://travis-ci.org/lucatume/di52.svg?branch=master)](https://travis-ci.org/lucatume/di52)
+A quick overview of the Container features:
+
+* **Auto-wiring** - The Container will use Reflection to find what class should be built and how, it's almost magic.
+* **Flexible** - Legacy code? Fat constructors with tons of side-effects? The Container offers auto-wiring without making it a requirement. It will adapt to existing code and will not require your code to adapt to it. 
+* **Fatal error handling** - On PHP 7.0+ the Container will take care of handling fatal errors that might happen at class file load time and handle them.
+* **Fast** - The Container is optimized for speed as much as it can be squeezed out of the required PHP compatibility.
+* **Flexible default mode** - Singleton (build at most once) an prototype (build new each time) default modes available.
+* **Application Facade** - Like using `App::get($id)`? The `App` facade allows using the DI Container as a globally available Service Locator.
+* **PSR-11 compatible** - The container is fully compatible with [PSR-11 specification](https://www.php-fig.org/psr/psr-11/).
+* **Ready for WordPress and other Event-driven frameworks** - The container API provides methods like [`callback`](#the-callback-method) and [`instance`](#the-instance-method) to easily be integrated with Event-driven frameworks like WordPress.
+* **Service Providers** - To keep your code organized, the library provides an [advanced Service Provider implementation](#service-providers).
+
+## Table of Contents
+
+* [Code Example](#code-example)
+* [Installation](#installation)
+* [Upgrading from version 2](#upgrading-from-version-2-to-version-3)
+* [Quick and dirty introduction to dependency injection](#quick-and-dirty-introduction-to-dependency-injection)
+
+## Code Example
+
+In the application bootstrap file we define how the componentns will come together:
+
+```php
+<?php
+/**
+ * The application bootstrap file: here the container is provided the minimal set of instructions
+ * required to set up the application objects.
+ */
+
+namespace lucatume\DI52\Example1;
+
+use lucatume\DI52\App;
+use lucatume\DI52\Container;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+// Start by building an instance of the DI container.
+$container = new Container();
+
+// When an instance of `TemplateInterface` is required, build and return an instance
+// of `PlainPHPTemplate`; build at most once (singleton).
+$container->singleton(
+    TemplateInterface::class,
+    static function () {
+        return new PlainPHPTemplate(__DIR__ . '/templates');
+    }
+);
+
+// The default application Repository is the Posts one.
+// When a class needs an instance of the `RepositoryInterface`, then
+// return an instance of the `PostsRepository` class.
+$container->bind(RepositoryInterface::class, PostsRepository::class);
+
+// But the Users page should use the Users repository.
+$container->when(UsersPageRequest::class)
+    ->needs(RepositoryInterface::class)
+    ->give(UsersRepository::class);
+
+// The `UsersRepository` will require a `DbConnection` instance, that
+// should be built at most once (singleton).
+$container->singleton(DbConnection::class);
+
+// Set the routes.
+$container->bind('home', HomePageRequest::class);
+$container->bind('users', UsersPageRequest::class);
+
+// Make the container globally available as a service locator using the App.
+App::setContainer($container);
+```
+
+In the application entrypoint, the `index.php` file, we'll **lazily** resolve the whole dependency tree following the rules set in the
+bootstrap file:
+
+```php
+<?php
+use lucatume\DI52\App;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/bootstrap.php';
+
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$route = basename(basename($path, '.php'), '.html') ?: 'home';
+?>
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>di52 Example 1</title>
+    </head>
+    <body>
+        <section>
+            <header>
+                <h2>Path and Route</h2>
+            </header>
+            <ul>
+                <li><strong>Path: </strong><?php echo $path; ?></li>
+                <li><strong>Route: </strong><?php echo $route; ?></li>
+            </ul>
+        </section>
+        <main>
+            <?php
+            App::get($route)->serve(); ?>
+        </main>
+    </body>
+</html>
+```
+
+That's it.
+
+You can find the full code for this example in the `docs/examples/01-application`](docs/examples/01-application) directory.
 
 ## Installation
 Use [Composer](https://getcomposer.org/) to require the library:
@@ -9,59 +125,46 @@ Use [Composer](https://getcomposer.org/) to require the library:
 composer require lucatume/di52
 ```
 
-Include the [Composer](https://getcomposer.org/) autoload file in your project entry point and create a new instance of the container to start using it:
+Include the [Composer](https://getcomposer.org/) autoload file in your project entry point and create a new instance of
+the container to start using it:
 
 ```php
 require_once 'vendor/autoload.php'
 
-$container = new tad_DI52_Container();
+$container = new lucatume\di52\Container();
 ```
 
-If that's not an option then clone or download the package and require the `di52/autoload.php` file in your code:
+Read more about the container API
 
-```php
-require_once 'path/to/di52/autoload.php'
+## Upgrading from version 2 to version 3
 
-$container = new tad_DI52_Container();
-```
+The main change introduced by version `3.0.0` of the library is dropping compatibility with PHP 5.2 to require a minimum
+version of PHP 5.6. The library is tested up to PHP 8.0.
 
-Where `path/to/di52/autoload.php` is the absolute path to the `autoload.php` file found in di52 root folder.
+If you're using version 2 of DI52 in your project, then there should be nothing you need to do.  
+The new, namespaced, classes of version 3 are aliased to their version 2 correspondent, e.g. `tad_DI52_Container` is
+aliased to `lucatume\di52\Container` and `tad_DI52_ServiceProvider` is aliased to `lucatume\di52\ServiceProvider`.
 
-### PHP 5.2 Installation
-While the container will work on newer versions of php it was born to support PHP 5.2 out of the box; if the application requires it I suggest [requiring the `xrstf/composer-php52` package](https://packagist.org/packages/xrstf/composer-php52 "xrstf/composer-php52 - Packagist") to handle autoloading on PHP 5.2 compatible code.
+I suggest an update for **a performance gain**, though, to use the new, namespaced, class names in place of the PHP 5.2
+compatible ones:
 
-## PHP 5.2 examples, PHP 7 ready code
-While the examples in the code are, for the most part, PHP 5.2 compatible di52 will work even better with newer versions of PHP.
+* replace uses of `tad_DI52_Container` with `lucatume\di52\Container`
+* replace uses of `tad_DI52_ServiceProvider` with `lucatume\DI52\ServiceProvider`
 
-## Code example
-```php
-// ClassOne.php
-class ClassOne implements InterfaceOne {}
+The new version implemented [PSR-11](https://www.php-fig.org/psr/psr-11/) compatibility and the main method to get hold
+of an object instance from the container changed from `make` to `get`.  
+Do not worry, the `lucatume\di52\Container::make` method is still there: it's just an alias of
+the `lucatume\di52\Container::get` one.  
+For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\di52\Container::get`.
 
- // MysqlConnection.php
-class MysqlConnection implements DbConnectionInterface {}
+That should be all of it.
 
- // ClassThree.php
-class ClassThree {
-    public function __construct(InterfaceOne $one, DbConnectionInterface $db){
-       // ... 
-    }
-}
-
-// in the application bootstrap file
-$container = new tad_DI52_Container();
-
-$container->bind('InterfaceOne', 'ClassOne');
-$container->singleton('DbConnectionInterface', 'MysqlConnection');
-
-$three = $container->make('ClassThree');
-```
-
-## Quick and dirty introduction to dependency injection and DI containers
+## Quick and dirty introduction to dependency injection
 
 ### What is dependency injection?
 
-A [Dependency Injection (DI) Container](https://en.wikipedia.org/wiki/Dependency_injection "Dependency injection - Wikipedia") is a tool meant to make dependency injection possible and easy to manage.  
+A [Dependency Injection (DI) Container](https://en.wikipedia.org/wiki/Dependency_injection "Dependency injection - Wikipedia")
+is a tool meant to make dependency injection possible and easy to manage.  
 Dependencies are specified by a class constructor method via [**type-hinting**](http://php.net/manual/en/language.oop5.typehinting.php "PHP: Type Hinting - Manual"):
 
 ```php
@@ -77,14 +180,15 @@ class A {
 ```
 
 Any instance of class `A` **depends** on implementations of the `B` and `C` classes.  
-The "injection" happens when class `A` dependencies are passed to it, "injected" in its constructor method, in place of being created inside the class itself.
-
+The "injection" happens when class `A` dependencies are passed to it, "injected" in its constructor method, in place of
+being created inside the class itself.
 
 ```php
 $a = new A(new B(), new C());
 ```
 
-The flexibility of type hinting allows injecting into `A` not just instances of `B` and `C` but instances of any class extending the two:
+The flexibility of type hinting allows injecting into `A` not just instances of `B` and `C` but instances of any class
+extending the two:
 
 ```php
 class ExtendedB extends B {}
@@ -119,8 +223,13 @@ $a = new a(new B(), new C());
 ```
 
 ### What is a DI container?
-The `B` and `C` classes are concrete (as in "you can instance them") implementations of interfaces and while the interfaces might never change the implementations might and should change in the lifecycle of code: that's the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) or "depend upon abstraction, non concretions".  
-If the implementation of `BInterface` changes from `B` to `BetterB` then I'd have to update all the code where I'm building instances of `A` to use `BetterB` in place of `B`:
+
+The `B` and `C` classes are concrete (as in "you can instance them") implementations of interfaces and while the
+interfaces might never change the implementations might and should change in the lifecycle of code: that's
+the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) or "depend upon
+abstraction, non concretions".  
+If the implementation of `BInterface` changes from `B` to `BetterB` then I'd have to update all the code where I'm
+building instances of `A` to use `BetterB` in place of `B`:
 
 ```php
 
@@ -131,7 +240,8 @@ $a = new A(new B(), new C());
 $a = new A(new BetterB(), new C());
 ```
 
-On smaller code-bases this might prove to be a quick solution but, as the code grows, it will become less and less an applicable solution.  
+On smaller code-bases this might prove to be a quick solution but, as the code grows, it will become less and less an
+applicable solution.  
 Adding classes to the mix proves the point when dependencies start to stack:
 
 ```php
@@ -148,19 +258,31 @@ $d = new D($a, $c);
 $e = new E($d);
 ```
 
-Another issue with this approach is that classes have to be built immediately to be injected, see `$a` and `$d` above to feed `$e`, with the immediate cost of "eager" instantiation, if `$e` is never used than the effort put into building it, in terms of time and resources spent by PHP to build `$a`, `$b`, `$c`, `$d` and finally `$e`, are wasted.  
-A **dependency injection container** is an object that, provided construction templates of objects, will take care of building only objects that are really needed taking care of **resolving** nested dependencies. 
+Another issue with this approach is that classes have to be built immediately to be injected, see `$a` and `$d` above to
+feed `$e`, with the immediate cost of "eager" instantiation, if `$e` is never used than the effort put into building it,
+in terms of time and resources spent by PHP to build `$a`, `$b`, `$c`, `$d` and finally `$e`, are wasted.  
+A **dependency injection container** is an object that, provided construction templates of objects, will take care of
+building only objects that are really needed taking care of **resolving** nested dependencies.
 
->Need an instance of `E`? I will build instances of `B` and `C` to build an instance of `A` to build an instance of `D` to finally build and return an instance of `E`.
+> Need an instance of `E`? I will build instances of `B` and `C` to build an instance of `A` to build an instance of `D` to finally build and return an instance of `E`.
 
 ### Construction templates
+
 The container will need to be told, just once, how objects should be built.  
-For the container it's easy to understand that a class type-hinting an instance of the concrete class `A` will require a new instance of `A` but loosely coupled code leveraging the use of a DI container will probably type-hint an `interface` in place of concrete `class`es.  
-Telling the container what concrete `class` to instance when a certain `interface` is requested by an object `__construct` method is called "binding and implementation to an interface".  
-While dependency injection can be made in other methods too beyond the `__construct` one that's what di52 supports at the moment; if you want to read more the web is full of good reference material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very good start.
+For the container it's easy to understand that a class type-hinting an instance of the concrete class `A` will require a
+new instance of `A` but loosely coupled code leveraging the use of a DI container will probably type-hint an `interface`
+in place of concrete `class`es.  
+Telling the container what concrete `class` to instance when a certain `interface` is requested by an
+object `__construct` method is called "binding and implementation to an interface".  
+While dependency injection can be made in other methods too beyond the `__construct` one that's what di52 supports at
+the moment; if you want to read more the web is full of good reference
+material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very
+good start.
 
 ## The power of make
-At its base the container is a dependency resolution and injection machine: given a class to its `make` method it will read the class type-hinted dependencies, build them and inject them in the class.
+
+At its base the container is a dependency resolution and injection machine: given a class to its `make` method it will
+read the class type-hinted dependencies, build them and inject them in the class.
 
 ```php
 // file ClassThree.php
@@ -183,6 +305,7 @@ $three = $container->make('ClassThree');
 Keep that in mind while reading the following paragraphs.
 
 ## Storing variables
+
 In its most basic use case the container can store variables:
 
 ```php
@@ -193,7 +316,8 @@ $container->setVar('foo', 23);
 $foo = $container->getVar('foo');
 ```
 
-Since di52 will treat any callable object as a factory (see below) callables have to be protected using the container `protect` method:
+Since di52 will treat any callable object as a factory (see below) callables have to be protected using the
+container `protect` method:
 
 ```php
 $container = new tad_DI52_Container();
@@ -206,7 +330,11 @@ $foo = $container->getVar('foo');
 ```
 
 ## Binding implementations
-Once an instance of di52 is available telling it what should be built and when is quite easy; di52 proposes the same API exposed by [Laravel Service container](https://laravel.com/docs/5.3/container "Service Container - Laravel - The PHP Framework For Web ...") and while the inner workings are different the good idea (Laravel's) is reused.  
+
+Once an instance of di52 is available telling it what should be built and when is quite easy; di52 proposes the same API
+exposed
+by [Laravel Service container](https://laravel.com/docs/5.3/container "Service Container - Laravel - The PHP Framework For Web ...")
+and while the inner workings are different the good idea (Laravel's) is reused.  
 Reusing the example above:
 
 ```php
@@ -223,7 +351,9 @@ $e = $container->make('E');
 ```
 
 The `make` method will build the `E` object resolving its requirements to the bound implementations when requested.  
-When using the `bind` method a new instance of the bound implementations will be returned on each request; this might not be the wanted behaviour especially for object costly to build (like a database driver that needs to connect): in that case the `singleton` method should be used:
+When using the `bind` method a new instance of the bound implementations will be returned on each request; this might
+not be the wanted behaviour especially for object costly to build (like a database driver that needs to connect): in
+that case the `singleton` method should be used:
 
 ```php
 $container = new tad_DI52_Container();
@@ -234,11 +364,17 @@ $container->singleton('RepositoryInterface', 'MYSQLRepository');
 $container->make('RepositoryInterface');
 ```
 
-Binding an implementation to an interface using the `singleton` methods tells the container the implementations should be built just the first time: any later call for that same interface should return the same instance.  
-Implementations can be redefined in any moment simple calling the `bind` or `singleton` methods again specifying a different implementation.
+Binding an implementation to an interface using the `singleton` methods tells the container the implementations should
+be built just the first time: any later call for that same interface should return the same instance.  
+Implementations can be redefined in any moment simple calling the `bind` or `singleton` methods again specifying a
+different implementation.
 
 ## Binding objects
-The container allows binding (using the `bind` or the `singleton` method) more than just implementations in the form of class names to take into account various scenarios where objects might be pre-existing in previous code or built in an other way; when binding an object that same object will be returned each time making the use of `bind` and `singleton` equivalent:
+
+The container allows binding (using the `bind` or the `singleton` method) more than just implementations in the form of
+class names to take into account various scenarios where objects might be pre-existing in previous code or built in an
+other way; when binding an object that same object will be returned each time making the use of `bind` and `singleton`
+equivalent:
 
 ```php
 $container = new tad_DI52_Container();
@@ -262,7 +398,9 @@ $container->bind('HandlerInterface', $handler);
 ```
 
 ## Binding closures on PHP 5.3+
-All of the cases above suffers from an "eager instantiation" that's far from being ideal; if that's the case and the code runs on PHP 5.3+ then closures can be bound as factories using `bind` and as singletons using `singleton`:
+
+All of the cases above suffers from an "eager instantiation" that's far from being ideal; if that's the case and the
+code runs on PHP 5.3+ then closures can be bound as factories using `bind` and as singletons using `singleton`:
 
 ```php
 $container = new tad_DI52_Container();
@@ -297,7 +435,10 @@ $container->bind('DBInterface', function(tad_DI52_Container $container){
 ```
 
 ## Binding implementations to classes
-Binding implementations to interfaces works when the object constructor methods type hint interfaces but that might not always be the case; the container will handle that case allowing implementations to be bound to classes supporting both the `bind` and the `singleton` methods:
+
+Binding implementations to interfaces works when the object constructor methods type hint interfaces but that might not
+always be the case; the container will handle that case allowing implementations to be bound to classes supporting both
+the `bind` and the `singleton` methods:
 
 ```php
 // file LegacyClass.php
@@ -316,8 +457,9 @@ $container->make('LegacyClass');
 ```
 
 ### Registering concrete instantiable classes as singleton
-The container knows how to `make` instances of a concrete, instantiatable class, and there might be situations where
-the requirement is to have `make` return the same singleton instance of a class on each call.  
+
+The container knows how to `make` instances of a concrete, instantiatable class, and there might be situations where the
+requirement is to have `make` return the same singleton instance of a class on each call.
 
 In those situations the binding syntax can be shortened to one parameter in place of two:
 
@@ -335,7 +477,10 @@ assert($container->make(ClassOne::class) === $container->make(ClassOne::class));
 ```
 
 ## Binding implementations to slugs
-The container was heavily inspired by [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") and offers some features of the PHP 5.3+ DI container as well:
+
+The container was heavily inspired
+by [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") and offers some
+features of the PHP 5.3+ DI container as well:
 
 ```php
 $container = new tad_DI52_Container();
@@ -372,8 +517,11 @@ $dbHost = $container['db.host'];
 There is no replacement for the `factory` method offered by Pimple: the `bind` method should be used instead.
 
 ## Contextual binding
-Borrowing an excellent idea from Laravel's container the possibility of contextual binding exists (supporting all the binding possibilities above).  
-Contextual binding solves the problem of different objects requiring different implementations of the same interface (or class, see above):
+
+Borrowing an excellent idea from Laravel's container the possibility of contextual binding exists (supporting all the
+binding possibilities above).  
+Contextual binding solves the problem of different objects requiring different implementations of the same interface (or
+class, see above):
 
 ```php
 $container = new tad_DI52_Container();
@@ -399,8 +547,11 @@ $container->when('TransactionManager')
 ```
 
 ## After-build methods
-When working on PHP 5.2 compatible code closures will not be available and while that does impose limits di52 tries to "limit the damage".  
-The last code example could be rewritten in PHP 5.2 compatible code leveraging the container support for after-build methods: methods that will be called **with no arguments** on the built objects after it has been built:
+
+When working on PHP 5.2 compatible code closures will not be available and while that does impose limits di52 tries to "
+limit the damage".  
+The last code example could be rewritten in PHP 5.2 compatible code leveraging the container support for after-build
+methods: methods that will be called **with no arguments** on the built objects after it has been built:
 
 ```php
 $container = new tad_DI52_Container();
@@ -415,10 +566,13 @@ $container->when('TransactionManager')
 ```
 
 After-build methods can be specified as the third argument of the `bind` an `singleton` methods.  
-If the implementation is bound using `singleton` then the after-build methods will be called only the first time when the object is built.  
+If the implementation is bound using `singleton` then the after-build methods will be called only the first time when
+the object is built.
 
 ## Binding decorator chains
-The [Decorator pattern](https://en.wikipedia.org/wiki/Decorator_pattern "Decorator pattern - Wikipedia") allows extending the functionalities of an implementation without creating an extension and leveraging interfaces.  
+
+The [Decorator pattern](https://en.wikipedia.org/wiki/Decorator_pattern "Decorator pattern - Wikipedia") allows
+extending the functionalities of an implementation without creating an extension and leveraging interfaces.  
 In very simple terms:
 
 ```php
@@ -478,7 +632,8 @@ class LoggingEndpoint implements EndpointInterface {
 }
 ```
 
-The container allows binding "chain of decorators" to an interface (or slug a la Pimple, or class) using the `bindDecorators` and `singletonDecorators`.  
+The container allows binding "chain of decorators" to an interface (or slug a la Pimple, or class) using
+the `bindDecorators` and `singletonDecorators`.  
 The two methods are the `bind` and `singleton` equivalents for decorators.  
 The two methods can be skipped on PHP 5.3+ code:
 
@@ -513,6 +668,7 @@ $postEndpoint = $container->make('EndpointInterface');
 ```
 
 ## Tagging
+
 Tagging allows grouping similar implementations for the purpose of referencing them by group.  
 Grouping implementations makes sense when, as an example, the same method has to be called on each implementation:
 
@@ -535,10 +691,13 @@ foreach($container->tagged('enpoints') as $endpoint) {
 }
 ```
 
-The `tag` method supports any possibility offered by the container in terms of binding of objects, closures, decorator chains and after-build methods.  
+The `tag` method supports any possibility offered by the container in terms of binding of objects, closures, decorator
+chains and after-build methods.
 
 ## The instance method
-In the example above the `UnsupportedEndpoint` requires three primitive parameters and an endpoint to be built and the method used above relies on closures only available in PHP 5.3+.  
+
+In the example above the `UnsupportedEndpoint` requires three primitive parameters and an endpoint to be built and the
+method used above relies on closures only available in PHP 5.3+.  
 To offer a degree of support the container offers the `instance` method that allows rewriting the code above to this:
 
 ```php
@@ -553,11 +712,16 @@ foreach($container->tagged('enpoints') as $endpoint) {
 }
 ```
 
-The instance methods does not offer the same amount of flexibility closures offer (and that's why closures were implemented) but mitigates the problem avoiding other work-arounds (singletons, factories or an eager instantiation) and granting a **lazy instantiation**.
+The instance methods does not offer the same amount of flexibility closures offer (and that's why closures were
+implemented) but mitigates the problem avoiding other work-arounds (singletons, factories or an eager instantiation) and
+granting a **lazy instantiation**.
 
 ## The callback method
+
 Some applications require callbacks (or some form of callable) to be returned in specific pieces of code.  
-This is especially the case with WordPress and its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex").  
+This is especially the case with WordPress and
+its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex")
+.  
 Using the container does not removes that possibility:
 
 ```php
@@ -568,9 +732,9 @@ $container->bind('FilterInterface', 'ConcreteFilter');
 add_filter('some_filter', array($container->make('FilterInterface'), 'filter'));
 ```
 
-This code suffers, but, from an eager instantiation problem: `ConcreteFilter` is built for the purpose of binding it but might never be used.  
+This code suffers, but, from an eager instantiation problem: `ConcreteFilter` is built for the purpose of binding it but
+might never be used.  
 The problem is easy to solve on PHP 5.3+:
-
 
 ```php
 $container = new tad_DI52_Container();
@@ -587,7 +751,8 @@ add_filter('some_filter', $filterFunction);
 ```
 
 But this is not an option on PHP 5.2 compatible code.  
-In that case the container offers the `callback` method to return a callable function that will **lazily build** the object, call the method on it passing the call arguments and return its return value:
+In that case the container offers the `callback` method to return a callable function that will **lazily build** the
+object, call the method on it passing the call arguments and return its return value:
 
 ```php
 $container = new tad_DI52_Container();
@@ -598,8 +763,14 @@ add_filter('some_filter', $container->callback('FilterInterface', 'filter'));
 ```
 
 ## Service providers
-To avoid passing the container instance around (see [Service Locator pattern](https://en.wikipedia.org/wiki/Service_locator_pattern "Service locator pattern - Wikipedia")) or globalising it all the binding should happen in the same PHP file: this could lead, as the application grows, to a thousand lines monster.  
-To avoid that the container supports service providers: those are classes implmenting the `tad_DI52_ServiceProviderInterface` interface, or extend the ready to use `tad_DI52_ServiceProvider` class, that allow organizing the binding registrations into logical, self-contained and manageable units:
+
+To avoid passing the container instance around (
+see [Service Locator pattern](https://en.wikipedia.org/wiki/Service_locator_pattern "Service locator pattern - Wikipedia"))
+or globalising it all the binding should happen in the same PHP file: this could lead, as the application grows, to a
+thousand lines monster.  
+To avoid that the container supports service providers: those are classes implmenting
+the `tad_DI52_ServiceProviderInterface` interface, or extend the ready to use `tad_DI52_ServiceProvider` class, that
+allow organizing the binding registrations into logical, self-contained and manageable units:
 
 ```php
 // file ProviderOne.php
@@ -618,10 +789,12 @@ $container->register('ProviderOne');
 ```
 
 ### Booting service providers
-The container implements a `boot` method that will, in turn, call the `boot` method on any service provider that overloads it.  
-Some applications might define constants and environment variables at "boot" time (e.g. WordPress `plugins_loaded` action) that might make an immediate registration futile.  
-In that case service providers can overload the `boot` method:
 
+The container implements a `boot` method that will, in turn, call the `boot` method on any service provider that
+overloads it.  
+Some applications might define constants and environment variables at "boot" time (e.g. WordPress `plugins_loaded`
+action) that might make an immediate registration futile.  
+In that case service providers can overload the `boot` method:
 
 ```php
 // file ProviderOne.php
@@ -648,8 +821,11 @@ $container->register('ProviderOne');
 ```
 
 ### Deferred service providers
-Sometimes even just setting up the implementations might require such an up-front cost to make it undesireable unless it's needed.  
-This might happen with non autoloading code that will require a tangle of files to load (and side load) to grab a simple class instance.  
+
+Sometimes even just setting up the implementations might require such an up-front cost to make it undesireable unless
+it's needed.  
+This might happen with non autoloading code that will require a tangle of files to load (and side load) to grab a simple
+class instance.  
 To "defer" that cost service providers can overload the `deferred` property and the `provides` method:
 
 ```php

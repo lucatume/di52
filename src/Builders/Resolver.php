@@ -299,4 +299,14 @@ class Resolver
     {
         return $this->buildLine;
     }
+
+    /**
+     * Removes the last element from the build line, if any.
+     *
+     * @return void The method does not return any value.
+     */
+    public function buildLinePop()
+    {
+        array_pop($this->buildLine);
+    }
 }
