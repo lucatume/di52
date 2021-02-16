@@ -10,7 +10,7 @@ A quick overview of the Container features:
 * **Fatal error handling** - On PHP 7.0+ the Container will take care of handling fatal errors that might happen at class file load time and handle them.
 * **Fast** - The Container is optimized for speed as much as it can be squeezed out of the required PHP compatibility.
 * **Flexible default mode** - Singleton (build at most once) an prototype (build new each time) default modes available.
-* **Application Facade** - Like using `App::get($id)`? The `App` facade allows using the DI Container as a globally available Service Locator.
+* **Global Application** - Like using `App::get($id)`? The `App` facade allows using the DI Container as a globally available Service Locator.
 * **PSR-11 compatible** - The container is fully compatible with [PSR-11 specification](https://www.php-fig.org/psr/psr-11/).
 * **Ready for WordPress and other Event-driven frameworks** - The container API provides methods like [`callback`](#the-callback-method) and [`instance`](#the-instance-method) to easily be integrated with Event-driven frameworks like WordPress.
 * **Service Providers** - To keep your code organized, the library provides an [advanced Service Provider implementation](#service-providers).
@@ -21,6 +21,8 @@ A quick overview of the Container features:
 * [Installation](#installation)
 * [Upgrading from version 2](#upgrading-from-version-2-to-version-3)
 * [Quick and dirty introduction to dependency injection](#quick-and-dirty-introduction-to-dependency-injection)
+* [Binding and getting implementations](#binding-and-getting-implementations)
+* [Usage in WordPress and other event-driven frameworks](#usage-in-wordpress-and-other-event-driven-frameworks)
 
 ## Code Example
 
@@ -129,12 +131,25 @@ Include the [Composer](https://getcomposer.org/) autoload file in your project e
 the container to start using it:
 
 ```php
-require_once 'vendor/autoload.php'
+<?php
+require_once 'vendor/autoload.php';
 
-$container = new lucatume\di52\Container();
+$container = new lucatume\DI52\Container();
+
+$container->singleton(DbInterface::class, MySqlDb::class);
 ```
 
-Read more about the container API
+If you would prefer using the Dependency Injection Container as a globally-available Service Locator, then you 
+can use the `lucatume\DI52\App`:
+
+```php
+<?php
+require_once 'vendor/autoload.php';
+
+lucatume\DI52\App::singleton(DbInterface::class, MySqlDb::class);
+```
+
+See the [example above](#code-example) for more usage examples.
 
 ## Upgrading from version 2 to version 3
 
@@ -265,6 +280,52 @@ A **dependency injection container** is an object that, provided construction te
 building only objects that are really needed taking care of **resolving** nested dependencies.
 
 > Need an instance of `E`? I will build instances of `B` and `C` to build an instance of `A` to build an instance of `D` to finally build and return an instance of `E`.
+
+### What is a Service Locator?
+
+A "Service Locator" is an object, or function, that will answer to this question made by your code:
+
+```php
+$db = $serviceLocator->get('db');
+```
+
+In Plain English "I do not care how it's built or where it comes from, give the current implementation of the db service.".
+
+Service Locators are, usually, globally-available DI Containers for obvious reasons: the DI Container knows how to build the services the Service Locator will provide when required.  
+The concept of Service Locators and DI Containers are often conflated as a DI Container, when globally available, becomes a good implementation of a Service Locator.
+
+An example of this is the `lucatume\DI52\App` class: it will expose, by means of static methods, a globally-available instance of the `lucatume\DI52\Container` class.
+
+```php
+<?php
+use lucatume\DI52\Container;
+use lucatume\DI52\App;
+
+// This is a DI Container.
+$diContainer = new Container();
+
+// Register a binding in the DI Container.
+$diContainer->singleton('db', MySqlDb::class);
+
+// If we make it globally-available, then it will be used by the Service Locator (the `App` class).
+App::setContainer($diContainer);
+
+// We can now globally, i.e. anywhere in the code, access the `db` service.
+$db = App::get('db');
+```
+
+Since the `lucatume\DI52\App` class proxies calls to the Container, the example could be made shorter:
+
+```php
+<?php
+use lucatume\DI52\App;
+
+// Register a binding in the App (Service Locator).
+App::singleton('db', MySqlDb::class);
+
+// We can now globally, i.e. anywhere in the code, access the `db` service.
+$db = App::get('db');
+```
 
 ### Construction templates
 
