@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+- PHP 8.1 compatibility issues (thanks @bordoni)
+
 ## [2.1.4] 2021-01-01;
+
 ### Fixed
 - PHP 8 compatibility issues (thanks @bordoni)
 
