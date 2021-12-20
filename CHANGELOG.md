@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [2.1.5] 2021-12-20;
+
 ### Fixed
 - PHP 8.1 compatibility issues (thanks @bordoni)
 
@@ -244,4 +246,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [2.1.2]: https://github.com/lucatume/di52/compare/2.1.1...2.1.2
 [2.1.3]: https://github.com/lucatume/di52/compare/2.1.2...2.1.3
 [2.1.4]: https://github.com/lucatume/di52/compare/2.1.3...2.1.4
-[unreleased]: https://github.com/lucatume/di52/compare/2.1.4...HEAD
+[2.1.5]: https://github.com/lucatume/di52/compare/2.1.4...2.1.5
+[unreleased]: https://github.com/lucatume/di52/compare/2.1.5...HEAD
