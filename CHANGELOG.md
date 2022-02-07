@@ -28,6 +28,16 @@ org/psr/psr-11/)
 [ ] Move benchmarks to Docker, automate them.
 [ ] Update documentation and examples.
 
+## [2.1.5] 2021-12-20;
+
+### Fixed
+- PHP 8.1 compatibility issues (thanks @bordoni)
+
+## [2.1.4] 2021-01-01;
+
+### Fixed
+- PHP 8 compatibility issues (thanks @bordoni)
+
 ## [2.1.3] 2020-11-02;
 
 ### Fixed
@@ -385,5 +395,6 @@ org/psr/psr-11/)
 [2.1.2]: https://github.com/lucatume/di52/compare/2.1.1...2.1.2
 
 [2.1.3]: https://github.com/lucatume/di52/compare/2.1.2...2.1.3
-
-[unreleased]: https://github.com/lucatume/di52/compare/2.1.3...HEAD
+[2.1.4]: https://github.com/lucatume/di52/compare/2.1.3...2.1.4
+[2.1.5]: https://github.com/lucatume/di52/compare/2.1.4...2.1.5
+[unreleased]: https://github.com/lucatume/di52/compare/2.1.5...HEAD
