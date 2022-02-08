@@ -12,7 +12,7 @@ PROJECT_NAME = $(notdir $(PWD))
 # The specified targets will be callable like this `make target_w_args_1 foo bar 23`.
 # In the target, use the `$(TARGET_ARGS)` var to get the arguments.
 # To get the nth argument, use `export TARGET_ARG_2="$(word 2,$(TARGET_ARGS))"`.
-SUPPORTED_COMMANDS := wait_file wait_url benchmark_profile benchmark_debug test_coverage test_run composer composer_install composer_update
+SUPPORTED_COMMANDS := wait_file wait_url benchmark_profile benchmark_debug test_coverage test_run composer composer_install composer_update php_shell
 SUPPORTS_MAKE_ARGS := $(findstring $(firstword $(MAKECMDGOALS)), $(SUPPORTED_COMMANDS))
 ifneq "$(SUPPORTS_MAKE_ARGS)" ""
   TARGET_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -100,7 +100,7 @@ $(build_php_versions_lt_72): %:
 		--tag lucatume/di52-profile:php-v$@
 	docker run --rm lucatume/di52-profile:php-v$@ -v
 
-build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0'
+build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0' '8.1'
 $(build_php_versions_gte_72): %:
 	docker build \
 		--build-arg PHP_VERSION=$@ \
@@ -153,7 +153,7 @@ endif
 	open tests/coverage/index.html
 .PHONY: test_coverage
 
-test_run: ## Run the test on the specified PHP version with XDebug support. Example `make test.run 7.2`.
+test_run: ## Run the test on the specified PHP version with XDebug support. Example `make test_run 7.2`.
 	docker run --rm \
 	   -v "${PWD}:${PWD}" \
 	   --entrypoint ${PWD}/vendor/bin/phpunit \
@@ -196,7 +196,7 @@ phpstan: ## Run phpstan on the project source files.
 	docker run --rm \
 		-v ${PWD}:${PWD} \
 		-u "$$(id -u):$$(id -g)" \
-		phpstan/phpstan analyze \
+		ghcr.io/phpstan/phpstan analyze \
 		-c ${PWD}/_build/phpstan.neon \
 		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/aliases.php
 .PHONY: phpstan
@@ -252,3 +252,15 @@ app_facade: ## Creates or updates the src/App.php file from the current Containe
 	php "${PWD}/_build/create-app-facade.php"
 	$(MAKE) code_fix
 .PHONY: app_facade
+
+php_shell: ## Opens a shell in a PHP container.
+	mkdir -p "${PWD}/.composer/cache"
+	docker run --rm -it \
+	   -u "$(shell id -u):$(shell id -g)" \
+	   -v "${PWD}:${PWD}" \
+	   -v "${PWD}/.cache/composer:${PWD}/.cache/composer" \
+	   -e COMPOSER_CACHE_DIR="${PWD}/.cache/composer" \
+	   -w "${PWD}" \
+	   --entrypoint sh \
+	   lucatume/di52-dev:php-v$(TARGET_ARGS)
+.PHONY: php_shell

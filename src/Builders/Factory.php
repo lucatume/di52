@@ -62,7 +62,7 @@ class Factory
         if ($implementation === null) {
             $implementation = $id;
         }
-        if (is_string($implementation)) {
+        if (is_string($implementation) && is_string($id)) {
             if (class_exists($implementation)) {
                 return new ClassBuilder($id, $this->resolver, $implementation, $afterBuildMethods, ...$buildArgs);
             }

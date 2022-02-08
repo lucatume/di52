@@ -3,7 +3,7 @@
 use lucatume\DI52\ContainerException;
 use lucatume\DI52\Container;
 
-class NamespacedTest extends \PHPUnit_Framework_TestCase
+class NamespacedTest extends \lucatume\DI52\Tests\TestCase
 {
     /**
      * @test

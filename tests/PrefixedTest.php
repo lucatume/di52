@@ -41,7 +41,7 @@ interface TestInterface
     public function apiMethodTwo($param1);
 }
 
-class PrefixedTest extends PHPUnit_Framework_TestCase
+class PrefixedTest extends \lucatume\DI52\Tests\TestCase
 {
 
     public function boundVariables()
@@ -54,7 +54,10 @@ class PrefixedTest extends PHPUnit_Framework_TestCase
         ];
     }
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function before_each()
     {
         ClassEight::reset();
     }

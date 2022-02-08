@@ -1,5 +1,8 @@
 # Read the PHP version to build for from the build arguments.
 ARG PHP_VERSION
+
+FROM composer:2 as composer
+
 FROM php:${PHP_VERSION}-cli-alpine
 
 # Install the XDebug extension that is current for the PHP version the image is being built for.
@@ -13,9 +16,12 @@ RUN echo "date.timezone=UTC" >> /usr/local/etc/php/conf.d/docker-php-config.ini
 ARG XDEBUG_REMOTE_HOST='host.docker.internal'
 ARG XDEBUG_REMOTE_PORT='9009'
 RUN echo $'xdebug.start_with_request=yes\n\
-xdebug.mode=debug\n\
+xdebug.mode=debug,develop\n\
+xdebug.log_level=0\n\
 xdebug.client_host='$XDEBUG_REMOTE_HOST$'\n\
 xdebug.client_port='$XDEBUG_REMOTE_PORT$'\n' \
 >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 # Output the PHP and XDebug version for build debugging purposes.
 RUN cat /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && php -v
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN chmod a+x /usr/bin/composer && composer --version

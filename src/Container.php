@@ -116,6 +116,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @throws ContainerException If the closure building fails.
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->singleton($offset, $value);
@@ -176,6 +177,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @throws ContainerException Error while retrieving the entry.
      * @throws NotFoundException  No entry was found for **this** identifier.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -272,6 +274,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return boolean true on success or false on failure.
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->has($offset);
@@ -409,7 +412,6 @@ class Container implements \ArrayAccess, ContainerInterface
         if (!$exists) {
             return false;
         }
-        // @phpstan-ignore-next-line Throwing here is fine.
         $classReflection = new ReflectionClass($class);
         if ($classReflection->isAbstract()) {
             return false;
@@ -628,8 +630,12 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return void The method does not return any value.
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
+        if (!is_string($offset)) {
+            return;
+        }
         $this->resolver->unbind($offset);
         unset($this->tags[$offset]);
     }
@@ -832,7 +838,13 @@ class Container implements \ArrayAccess, ContainerInterface
             throw new NotFoundException("Service provider '{$providerId}' is not registered in the container.");
         }
 
-        return $this->get($providerId);
+        $provider = $this->get($providerId);
+
+        if (! $provider instanceof ServiceProvider) {
+            throw new NotFoundException("Bound implementation for '{$providerId}' is not Service Provider.");
+        }
+
+        return $provider;
     }
 
     /**

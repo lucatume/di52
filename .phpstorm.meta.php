@@ -5,5 +5,8 @@ namespace PHPSTORM_META {
 		\tad_DI52_Container::make( '' ) => [
 			"" == "@",
 		],
+        \lucatume\DI52\Container::get( '' ) => [
+            "" == "@",
+        ],
 	];
 }

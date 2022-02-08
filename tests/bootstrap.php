@@ -1,15 +1,24 @@
 <?php
+
+use lucatume\DI52\Tests\TestCase;
+use PHPUnit\Framework\Assert;
+
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once __DIR__ . '/data/test-classes.php';
 require_once __DIR__ . '/data/test-car-classes.php';
 require_once __DIR__ . '/data/namespaced-test-classes.php';
 require_once __DIR__ . '/data/test-providers.php';
+require_once __DIR__ . '/TestCase.php';
 
 function assertMatchesSnapshots($actual, $prefix = null)
 {
     foreach (debug_backtrace(true) as $entry) {
         if (isset($entry['class'], $entry['function'], $entry['object'])
-           && $entry['object'] instanceof PHPUnit_Framework_TestCase
+           && (
+               $entry['object'] instanceof TestCase
+                || $entry['object'] instanceof \PHPUnit\Framework\TestCase
+                || $entry['object'] instanceof \PHPUnit_Framework_TestCase
+            )
         ) {
             $testCase   = $entry['class'];
             $tc                 = $entry['object'];
@@ -44,9 +53,14 @@ function assertMatchesSnapshots($actual, $prefix = null)
         if (!file_put_contents($snapshot, $actual)) {
             throw new RuntimeException('Could not write snapshot contents to file.');
         }
-        PHPUnit_Framework_Assert::markTestSkipped('Snapshot updated');
+        class_exists('\\PHPUnit\\Framework\\Assert') ?
+            Assert::markTestSkipped('Snapshot updated')
+            : PHPUnit_Framework_Assert::markTestSkipped('Snapshot updated');
     } else {
-        $expected =file_get_contents($snapshot);
-        PHPUnit_Framework_Assert::assertEquals($expected, $actual, 'Failed asserting that current contents match snapshot.');
+        $expected = file_get_contents($snapshot);
+        $args     = [$expected, $actual, 'Failed asserting that current contents match snapshot.'];
+        class_exists('\\PHPUnit\\Framework\\Assert') ?
+            Assert::assertEquals(...$args)
+            : PHPUnit_Framework_Assert::assertEquals(...$args);
     }
 }

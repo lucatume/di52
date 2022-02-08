@@ -173,6 +173,10 @@ class Resolver
      */
     public function resolveWithArgs($id, array $afterBuildMethods = null, ...$buildArgs)
     {
+        if (! is_string($id)) {
+            return $id;
+        }
+
         if (empty($afterBuildMethods) && empty($buildArgs)) {
             return $this->resolve($id);
         }
@@ -194,6 +198,10 @@ class Resolver
     {
         if ($buildLine !== null) {
             $this->buildLine = $buildLine;
+        }
+
+        if (! is_string($id)) {
+            return $id;
         }
 
         if (!isset($this->bindings[$id])) {
@@ -239,6 +247,7 @@ class Resolver
      */
     private function resolveBound($id)
     {
+        // @phpstan-ignore-next-line
         $built = $this->bindings[$id]->build();
         if (isset($this->singletons[$id])) {
             $this->bindings[$id] = $built;
@@ -262,7 +271,7 @@ class Resolver
      */
     private function cloneBuilder($id, array $afterBuildMethods = null, ...$buildArgs)
     {
-        if (isset($this->bindings[$id])) {
+        if (isset($this->bindings[$id]) && $this->bindings[$id] instanceof BuilderInterface) {
             $builder = clone $this->bindings[$id];
             if ($builder instanceof ReinitializableBuilderInterface) {
                 $builder->reinit($afterBuildMethods, ...$buildArgs);

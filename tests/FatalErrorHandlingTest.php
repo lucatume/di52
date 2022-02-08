@@ -8,7 +8,10 @@ require_once __DIR__ . '/data/DependingOnFatalError.php';
 
 class FatalErrorHandlingTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    /**
+     * @beforeClass
+     */
+    public static function before_all()
     {
         spl_autoload_register(static function ($class) {
             if (strpos($class, 'FatalErrorClass') === 0) {
@@ -17,7 +20,10 @@ class FatalErrorHandlingTest extends TestCase
         });
     }
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function before_each()
     {
         if (PHP_VERSION_ID < 70000) {
             $this->markTestSkipped('Fatal error handling is only available on PHP 7.0+');

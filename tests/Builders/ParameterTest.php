@@ -15,7 +15,10 @@ use ReflectionMethod;
 
 class ParameterTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    /**
+     * @beforeClass
+     */
+    public static function before_all()
     {
         if (PHP_VERSION_ID < 70000) {
             return;
@@ -25,7 +28,10 @@ class ParameterTest extends TestCase
         require_once __DIR__ . '/parameter-test-ns-classes.php';
     }
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function before_each()
     {
         if (PHP_VERSION_ID < 70000) {
             $this->markTestSkipped();

@@ -7,6 +7,8 @@
 
 namespace lucatume\DI52;
 
+use lucatume\DI52\Builders\ValueBuilder;
+
 /**
  * Class App
  *
@@ -282,7 +284,7 @@ class App
      */
     public static function register($serviceProviderClass, ...$alias)
     {
-        static::container()->register($serviceProviderClass, $alias);
+        static::container()->register($serviceProviderClass, ...$alias);
     }
 
     /**

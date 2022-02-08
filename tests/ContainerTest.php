@@ -2,6 +2,7 @@
 
 use lucatume\DI52\Container;
 use lucatume\DI52\ContainerException;
+use lucatume\DI52\NotFoundException;
 use PHPUnit\Framework\TestCase;
 
 class MissingBootMethodServiceProvider
@@ -25,7 +26,10 @@ class PrivateConstructorClass
 
 class ContainerTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    /**
+     * @beforeClass
+     */
+    public static function before_all()
     {
         \spl_autoload_register(static function ($class) {
             if (strpos($class, 'FatalErrorClass') === 0) {
@@ -65,11 +69,11 @@ class ContainerTest extends TestCase
     }
 
     /**
-     * It should correclty handle id-only binding of private constructor class
+     * It should correctly handle id-only binding of private constructor class
      *
      * @test
      */
-    public function should_correclty_handle_id_only_binding_of_private_constructor_class()
+    public function should_correctly_handle_id_only_binding_of_private_constructor_class()
     {
         $container = new Container();
 
@@ -77,7 +81,7 @@ class ContainerTest extends TestCase
             try {
                 $container->bind(PrivateConstructorClass::class);
             } catch (ContainerException $e) {
-                // no-op
+                $this->assertInstanceOf(ContainerException::class, $e);
             }
         }
     }
@@ -106,5 +110,23 @@ class ContainerTest extends TestCase
             ->give('ClassOne');
 
         $this->assertInstanceOf('ClassOne', $container->make('ClassSix')->getOne());
+    }
+
+    /**
+     * It should throw when getting provider from non-provider binding
+     *
+     * @test
+     */
+    public function should_throw_when_getting_provider_from_non_provider_binding()
+    {
+        $container = new Container();
+
+        $container->singleton('testProvider', new ClassOne());
+
+        try {
+            $container->getProvider('testProvider');
+        } catch (Exception $e) {
+            $this->assertInstanceOf(NotFoundException::class, $e);
+        }
     }
 }
