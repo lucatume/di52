@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.0] 2022-02-09;
+
 ### Changed
 - Add support for a default value in the `lucatume\DI52\Container::getVar(string $key, mixed $default = null)
 :mixed` method.
@@ -397,4 +399,5 @@ org/psr/psr-11/)
 [2.1.3]: https://github.com/lucatume/di52/compare/2.1.2...2.1.3
 [2.1.4]: https://github.com/lucatume/di52/compare/2.1.3...2.1.4
 [2.1.5]: https://github.com/lucatume/di52/compare/2.1.4...2.1.5
-[unreleased]: https://github.com/lucatume/di52/compare/2.1.5...HEAD
+[3.0.0]: https://github.com/lucatume/di52/compare/2.1.5...3.0.0
+[unreleased]: https://github.com/lucatume/di52/compare/3.0.0...HEAD
