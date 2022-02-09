@@ -6,27 +6,27 @@ to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 
 ### Changed
-[x] Add support for a default value in the `lucatume\DI52\Container::getVar(string $key, mixed $default = null)
+- Add support for a default value in the `lucatume\DI52\Container::getVar(string $key, mixed $default = null)
 :mixed` method.
-[x] The `lucatume\DI52\Container::setVar(string $key, mixed $value) :void` will **not** try to run callables when
+- The `lucatume\DI52\Container::setVar(string $key, mixed $value) :void` will **not** try to run callables when
 storing variables on the container using the method. As such, the need to protect the variables when using
 the `setVar()` method is no more required.
-[x] The `lucatume\DI52\Container::tagged(string $tag) :array` method will now return an empty array if nothing was
+- The `lucatume\DI52\Container::tagged(string $tag) :array` method will now return an empty array if nothing was
 tagged with the tag; it would throw an error in previous versions.
-[x] Removed the `tad_DI52_ServiceProviderInterface` and `tad_DI52_ContainerInterface` interfaces.
-[x] Rewritten the code to fully leverage Closure support.
-[x] Move build tools to Docker.
-[x] Make the container implementation compatible with [PSR-11 Container specification](https://www.php-fig.
+- Rewritten the code to fully leverage Closure support.
+- Move build tools to Docker.
+- Make the container implementation compatible with [PSR-11 Container specification](https://www.php-fig.
 org/psr/psr-11/)
-[x] Fix #26 to handle and format files syntax errors while trying to autoload.
-[x] Fix #13 and allow explicit definition of default binding method.
-[x] Allow getting the registered provider instances using `getProvider` and `get`, `make` or the `ArrayAccess` API.
-[x] Allow getting callbacks for static and instance methods consistently to unhook.
-[x] phstan
-[x] phan
-[ ] sniff, phpstan and phan in CI
-[ ] Move benchmarks to Docker, automate them.
-[ ] Update documentation and examples.
+- Fix #26 to handle and format files syntax errors while trying to autoload.
+- Fix #13 and allow explicit definition of default binding method.
+- Allow getting the registered provider instances using `getProvider` and `get`, `make` or the `ArrayAccess` API.
+- Allow getting callbacks for static and instance methods consistently to unhook.
+- Add phstan, phan and phpcs checks.
+- Move benchmarks to Docker, automate them.
+- Update documentation and examples.
+
+### Removed
+- Removed the `tad_DI52_ServiceProviderInterface` and `tad_DI52_ContainerInterface` interfaces.
 
 ## [2.1.5] 2021-12-20;
 
