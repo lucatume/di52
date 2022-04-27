@@ -1,6 +1,6 @@
 {
   "name": "lucatume/di52",
-  "description": "A PHP 5.2 compatible dependency injection container.",
+  "description": "A PHP 5.6 compatible dependency injection container.",
   "license": "GPL-3.0",
   "authors": [
     {
