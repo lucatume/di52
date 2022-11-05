@@ -223,9 +223,86 @@ if ($args('checkUnpushed', true) && !$dryRun) {
     }
 }
 
-file_put_contents($root . '/.rel', $fullReleaseNotes);
+$written = file_put_contents($root . '/.rel', $fullReleaseNotes);
 
-$releaseCommand = 'gh release create -F .rel ' . $releaseVersion;
+if ( $written === false ) {
+	echo "Could not write .rel file\n";
+	die( 1 );
+}
+
+$createZip = true;
+
+if ( $createZip ) {
+	if ( ! file_exists( "$root/release" ) ) {
+		mkdir( "$root/release" );
+	}
+
+	$zip = new \ZipArchive;
+	if ( $zip->open( "$root/release/$releaseVersion.zip", \ZipArchive::CREATE ) !== true ) {
+		echo "Could not initialize release zip file.";
+		die( 1 );
+	}
+
+	$ignoreTrainlingSlash = static function ( $v ) {
+		return rtrim( $v, '/' );
+	};
+
+	$doNotIncludeInRelease = array_merge( [
+		'.git',
+		'.github',
+		'.phan',
+		'.rel',
+		'_build',
+		'tests',
+		'makefile',
+		'phpcs.xml',
+		'phpunit.xml',
+		'test-constructor.php',
+	], array_map( $ignoreTrainlingSlash, explode( "\n", file_get_contents( "$root/.gitignore" ) ) ) );
+
+	$zipVerbose = [];
+
+	$normalizePathInZip = static function ( $path ) use ( $root ) {
+		// /home/foo/di52/src/App.php => di52/src/App.php inside the zip file.
+		$root = rtrim( $root, '/' ) . '/';
+		$path = str_replace( $root, '', $path );
+		$path = 'di52/' . ltrim( $path, '/' );
+
+		return $path;
+	};
+
+	$it = new \FileSystemIterator( $root, \FileSystemIterator::SKIP_DOTS );
+	while ( $it->valid() ) {
+		if ( in_array($it->getBasename(), $doNotIncludeInRelease, true) ) {
+			$zipVerbose[] = sprintf( 'Skipped %s: %s', $it->isDir() ? 'dir' : 'file', $it->getPathname() );
+			$it->next();
+			continue;
+		} else {
+			if ($it->isDir()) {
+				$subDir = new \RecursiveDirectoryIterator( $it->getPathname(), \FileSystemIterator::SKIP_DOTS );
+				while( $subDir->valid() ) {
+					if ($subDir->isFile()) {
+						$zipVerbose[] = "Added file: {$subDir->getPathname()}";
+						$zip->addFile( $subDir->getPathname(), $normalizePathInZip( $subDir->getPathname() ) );
+					}
+					$subDir->next();
+				}
+			} else {
+				$zipVerbose[] = "Added file: {$it->getPathname()}";
+				$zip->addFile( $it->getPathname(), $normalizePathInZip( $it->getPathname() ) );
+			}
+		}
+		$it->next();
+	}
+
+	sort($zipVerbose);
+
+	echo implode("\n", $zipVerbose) . "\n";
+
+	$zip->close();
+}
+
+$releaseCommand = "gh release create -F $root/.rel $releaseVersion $root/release/$releaseVersion.zip";
 
 echo "Releasing with command: \e[32m" . $releaseCommand . "\e[0m\n\n";
 
