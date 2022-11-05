@@ -1,6 +1,6 @@
 {
-  "name": "lucatume/di52",
-  "description": "A PHP 5.6 compatible dependency injection container.",
+  "name": "luc45/di52",
+  "description": "This is a fork to test the development package.",
   "license": "GPL-3.0",
   "authors": [
     {
