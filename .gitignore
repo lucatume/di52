@@ -6,3 +6,4 @@ composer.lock
 _build/profile/callgrind.out.*
 _build/benchmark/vendor
 .phpunit.result.cache
+release
