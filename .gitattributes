@@ -1,0 +1,8 @@
+/_build export-ignore
+/tests export-ignore
+/.phan export-ignore
+/.github export-ignore
+/makefile export-ignore
+/test-constructor.php export-ignore
+/phpunit.xml export-ignore
+/phpcs.xml export-ignore
