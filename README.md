@@ -24,12 +24,26 @@ A quick overview of the Container features:
 
 ## Table of Contents
 
-* [Code Example](#code-example)
-* [Installation](#installation)
-* [Upgrading from version 2](#upgrading-from-version-2-to-version-3)
-* [Quick and dirty introduction to dependency injection](#quick-and-dirty-introduction-to-dependency-injection)
-* [Binding and getting implementations](#binding-and-getting-implementations)
-* [Usage in WordPress and other event-driven frameworks](#usage-in-wordpress-and-other-event-driven-frameworks)
+- [Code Example](#code-example)
+- [Installation](#installation)
+- [Upgrading from version 2 to version 3](#upgrading-from-version-2-to-version-3)
+- [Quick and dirty introduction to dependency injection](#quick-and-dirty-introduction-to-dependency-injection)
+  * [What is dependency injection?](#what-is-dependency-injection-)
+  * [What is a DI container?](#what-is-a-di-container-)
+  * [What is a Service Locator?](#what-is-a-service-locator-)
+  * [Construction templates](#construction-templates)
+- [The power of `get`](#the-power-of--get-)
+- [Storing variables](#storing-variables)
+- [Binding implementations](#binding-implementations)
+  * [Controlling the resolution of unbound classes](#controlling-the-resolution-of-unbound-classes)
+- [Binding implementations to slugs](#binding-implementations-to-slugs)
+- [Contextual binding](#contextual-binding)
+- [Binding decorator chains](#binding-decorator-chains)
+- [Tagging](#tagging)
+- [The callback method](#the-callback-method)
+- [Service providers](#service-providers)
+  * [Booting service providers](#booting-service-providers)
+  * [Deferred service providers](#deferred-service-providers)
 
 ## Code Example
 
