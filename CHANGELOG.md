@@ -5,10 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
-## [3.0.1] 2022-11-16;
-
 ### Changed
-- Add `.gitattributes` file to exclude development artifacts (thanks @Luc45)
+- Add `.gitattributes` file to exclude development artifacts. (thanks @Luc45)
 
 ## [3.0.0] 2022-02-09;
 
