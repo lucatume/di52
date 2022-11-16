@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.1] 2022-11-16;
+
 ### Changed
 - Add `.gitattributes` file to exclude development artifacts (thanks @Luc45)
 
@@ -403,4 +405,5 @@ org/psr/psr-11/)
 [2.1.4]: https://github.com/lucatume/di52/compare/2.1.3...2.1.4
 [2.1.5]: https://github.com/lucatume/di52/compare/2.1.4...2.1.5
 [3.0.0]: https://github.com/lucatume/di52/compare/2.1.5...3.0.0
-[unreleased]: https://github.com/lucatume/di52/compare/3.0.0...HEAD
+[3.0.1]: https://github.com/lucatume/di52/compare/3.0.0...3.0.1
+[unreleased]: https://github.com/lucatume/di52/compare/3.0.1...HEAD
