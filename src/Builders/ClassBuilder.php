@@ -204,7 +204,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
                 $resolved = $parameterImplementation instanceof BuilderInterface ?
                     $parameterImplementation->build()
                     : $this->resolver->resolve($parameterImplementation);
-            } catch ( NotFoundException $e ) {
+            } catch (NotFoundException $e) {
                 $resolved = $parameter->getDefaultValueOrFail();
             }
         }
