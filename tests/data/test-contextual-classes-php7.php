@@ -30,7 +30,7 @@ class Primitive7ConstructorClass
      */
     protected $optional;
 
-    public function __construct(int $num, Concrete7Dependency $dependency, string $hello, ?string $optional = null)
+    public function __construct(int $num, Concrete7Dependency $dependency, string $hello, $optional = null)
     {
         $this->num = $num;
         $this->dependency = $dependency;
