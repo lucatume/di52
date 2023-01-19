@@ -50,7 +50,10 @@ class Primitive7ConstructorClass
         return $this->hello;
     }
 
-    public function optional(): ?string {
+    /**
+     * @return mixed|string|null
+     */
+    public function optional() {
         return $this->optional;
     }
 }
