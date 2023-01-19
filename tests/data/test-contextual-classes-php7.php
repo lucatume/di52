@@ -9,9 +9,21 @@ class Concrete7Dependency {
 
 class Primitive7ConstructorClass
 {
-    private int $num;
-    private Concrete7Dependency $dependency;
-    protected string $hello;
+
+    /**
+     * @var int
+     */
+    private $num;
+
+    /**
+     * @var Concrete7Dependency
+     */
+    private $dependency;
+
+    /**
+     * @var string
+     */
+    protected $hello;
 
     /**
      * @var string|null
