@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.2] 2023-01-20;
+
 ### Added
 - Add support for resolving primitive values (e.g. int, string, bool etc...) using `Container::when()`, `Container::needs()` and `Container::give()` (thanks @defunctl).
 
@@ -410,4 +412,5 @@ org/psr/psr-11/)
 [3.0.0]: https://github.com/lucatume/di52/compare/2.1.5...3.0.0
 [3.0.1]: https://github.com/lucatume/di52/compare/3.0.0...3.0.1
 [3.0.1]: https://github.com/lucatume/di52/compare/3.0.1...3.0.1
-[unreleased]: https://github.com/lucatume/di52/compare/3.0.1...HEAD
+[3.0.2]: https://github.com/lucatume/di52/compare/3.0.1...3.0.2
+[unreleased]: https://github.com/lucatume/di52/compare/3.0.2...HEAD
