@@ -450,7 +450,7 @@ class Container implements \ArrayAccess, ContainerInterface
     public function register($serviceProviderClass, ...$alias)
     {
         /** @var ServiceProvider $provider */
-        $provider = new $serviceProviderClass($this);
+        $provider = $this->get($serviceProviderClass);
         if (!$provider->isDeferred()) {
             $provider->register();
         } else {
