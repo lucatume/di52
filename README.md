@@ -85,7 +85,7 @@ $container->when(UsersPageRequest::class)
     ->needs(RepositoryInterface::class)
     ->give(UsersRepository::class);
 
-// Bind primitive values, e.g. __construct( int $per_page ) {}
+// Bind primitive values, e.g. public function __construct( int $per_page ) {}
 $container->when(UsersPageRequest::class)
     ->needs('$per_page')
     ->give(10);
