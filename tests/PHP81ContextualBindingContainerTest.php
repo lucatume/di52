@@ -43,11 +43,19 @@ class PHP81ContextualBindingContainerTest extends TestCase {
             ->needs( '$hello' )
             ->give( function () { return 'World'; } );
 
+        $container->when( Primitive81ConstructorClass::class )
+            ->needs( '$list' )
+            ->give( [
+                'one',
+                'two',
+            ] );
+
         $instance = $container->get( Primitive81ConstructorClass::class );
 
         $this->assertSame( 30, $instance->num() );
         $this->assertInstanceOf( Concrete81Dependency::class, $instance->dependency() );
         $this->assertSame( 'World', $instance->hello() );
+        $this->assertSame( [ 'one', 'two' ], $instance->list() );
         $this->assertNull( $instance->optional() );
     }
 

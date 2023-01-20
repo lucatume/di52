@@ -43,11 +43,19 @@ class PHP7ContextualBindingContainerTest extends TestCase {
             ->needs( '$hello' )
             ->give( function () { return 'World'; } );
 
+        $container->when( Primitive7ConstructorClass::class )
+            ->needs( '$list' )
+            ->give( [
+                'one',
+                'two',
+            ] );
+
         $instance = $container->get( Primitive7ConstructorClass::class );
 
         $this->assertSame( 15, $instance->num() );
         $this->assertInstanceOf( Concrete7Dependency::class, $instance->dependency() );
         $this->assertSame( 'World', $instance->hello() );
+        $this->assertSame( [ 'one', 'two' ], $instance->list() );
         $this->assertNull( $instance->optional() );
     }
 

@@ -14,6 +14,7 @@ final class Primitive8ConstructorClass
         private int $num,
         private Concrete8Dependency $dependency,
         protected string $hello,
+        protected array $list,
         private ?string $optional = null
     ) {}
 
@@ -27,6 +28,10 @@ final class Primitive8ConstructorClass
 
     public function hello(): string {
         return $this->hello;
+    }
+
+    public function list(): array {
+        return $this->list;
     }
 
     public function optional(): ?string {

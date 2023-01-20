@@ -25,15 +25,21 @@ class Primitive53ConstructorClass
     protected $hello;
 
     /**
+     * @var string[]
+     */
+    protected $list;
+
+    /**
      * @var null|string
      */
     protected $optional;
 
-    public function __construct($num, Concrete53Dependency $dependency, $hello, $optional = null)
+    public function __construct($num, Concrete53Dependency $dependency, $hello, $list, $optional = null)
     {
         $this->num = $num;
         $this->dependency = $dependency;
         $this->hello = $hello;
+        $this->list = $list;
         $this->optional = $optional;
     }
 
@@ -47,6 +53,10 @@ class Primitive53ConstructorClass
 
     public function hello() {
         return $this->hello;
+    }
+
+    public function getList() {
+        return $this->list;
     }
 
     public function optional() {

@@ -14,6 +14,7 @@ final class Primitive81ConstructorClass
         private readonly int $num,
         private readonly Concrete81Dependency $dependency,
         protected readonly string $hello,
+        protected array $list,
         private readonly ?string $optional = null
     ) {}
 
@@ -27,6 +28,10 @@ final class Primitive81ConstructorClass
 
     final public function hello(): string {
         return $this->hello;
+    }
+
+    final public function list(): array {
+        return $this->list;
     }
 
     final public function optional(): ?string {

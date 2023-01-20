@@ -26,15 +26,21 @@ class Primitive7ConstructorClass
     protected $hello;
 
     /**
+     * @var string[]
+     */
+    protected $list;
+
+    /**
      * @var string|null
      */
     protected $optional;
 
-    public function __construct(int $num, Concrete7Dependency $dependency, string $hello, $optional = null)
+    public function __construct(int $num, Concrete7Dependency $dependency, string $hello, array $list, $optional = null)
     {
         $this->num = $num;
         $this->dependency = $dependency;
         $this->hello = $hello;
+        $this->list = $list;
         $this->optional = $optional;
     }
 
@@ -48,6 +54,10 @@ class Primitive7ConstructorClass
 
     public function hello(): string {
         return $this->hello;
+    }
+
+    public function list(): array {
+        return $this->list;
     }
 
     /**
