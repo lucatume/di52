@@ -6,7 +6,7 @@ to [Semantic Versioning](http://semver.org/).
 ## [unreleased] Unreleased
 
 ### Added
-- Add support for resolving primitive values (e.g. int, string, bool etc...) using `lucatume\DI52\Container::when()`, `lucatume\DI52\Container::needs()` and `lucatume\DI52\Container::give()`.
+- Add support for resolving primitive values (e.g. int, string, bool etc...) using `Container::when()`, `Container::needs()` and `Container::give()` (thanks @defunctl).
 
 ## [3.0.1] 2022-11-16;
 
