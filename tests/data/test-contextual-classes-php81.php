@@ -14,7 +14,7 @@ final class Primitive81ConstructorClass
         private readonly int $num,
         private readonly Concrete81Dependency $dependency,
         protected readonly string $hello,
-        protected array $list,
+        protected readonly array $list,
         private readonly ?string $optional = null
     ) {}
 
