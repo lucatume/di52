@@ -88,7 +88,10 @@ $container->when(UsersPageRequest::class)
 // Bind primitive values, e.g. __construct( int $per_page ) {}
 $container->when(UsersPageRequest::class)
     ->needs('$per_page')
-    ->give( 10 );
+    ->give(10);
+
+// Fetch the above class without any further definitions
+$container->get(UsersPageRequest::class)
 
 // The `UsersRepository` will require a `DbConnection` instance, that
 // should be built at most once (singleton).
