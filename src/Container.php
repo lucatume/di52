@@ -88,7 +88,7 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $this->resolver = new Builders\Resolver($resolveUnboundAsSingletons);
         $this->builders = new Builders\Factory($this, $this->resolver);
-        $this->bind( Container::class, $this );
+        $this->bind(Container::class, $this);
     }
 
     /**
