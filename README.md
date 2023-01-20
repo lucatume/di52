@@ -85,6 +85,11 @@ $container->when(UsersPageRequest::class)
     ->needs(RepositoryInterface::class)
     ->give(UsersRepository::class);
 
+// Bind primitive values, e.g. __construct( int $per_page ) {}
+$container->when(UsersPageRequest::class)
+    ->needs('$per_page')
+    ->give( 10 );
+
 // The `UsersRepository` will require a `DbConnection` instance, that
 // should be built at most once (singleton).
 $container->singleton(DbConnection::class);
@@ -135,7 +140,7 @@ $container = new lucatume\DI52\Container();
 $container->singleton(DbInterface::class, MySqlDb::class);
 ```
 
-If you would prefer using the Dependency Injection Container as a globally-available Service Locator, then you 
+If you would prefer using the Dependency Injection Container as a globally-available Service Locator, then you
 can use the `lucatume\DI52\App`:
 
 ```php
@@ -152,11 +157,11 @@ See the [example above](#code-example) for more usage examples.
 The main change introduced by version `3.0.0` of the library is dropping compatibility with PHP 5.2 to require a minimum
 version of PHP 5.6. The library is tested up to PHP 8.1.
 
-If you're using version 2 of DI52 in your project, then there _should_ be nothing you need to do.  
+If you're using version 2 of DI52 in your project, then there _should_ be nothing you need to do.
 The new, namespaced, classes of version 3 are aliased to their version 2 correspondent, e.g. `tad_DI52_Container` is
 aliased to `lucatume\di52\Container` and `tad_DI52_ServiceProvider` is aliased to `lucatume\di52\ServiceProvider`.
 
-I suggest an update for **a small performance gain**, though, to use the new, namespaced, class names in place of the 
+I suggest an update for **a small performance gain**, though, to use the new, namespaced, class names in place of the
 PHP 5.2
 compatible ones:
 
@@ -164,9 +169,9 @@ compatible ones:
 * replace uses of `tad_DI52_ServiceProvider` with `lucatume\DI52\ServiceProvider`
 
 The new version implemented [PSR-11](https://www.php-fig.org/psr/psr-11/) compatibility and the main method to get hold
-of an object instance from the container changed from `make` to `get`.  
+of an object instance from the container changed from `make` to `get`.
 Do not worry, the `lucatume\di52\Container::make` method is still there: it's just an alias of
-the `lucatume\di52\Container::get` one.  
+the `lucatume\di52\Container::get` one.
 For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\di52\Container::get`.
 
 That should be all of it.
@@ -176,14 +181,14 @@ That should be all of it.
 ### What is dependency injection?
 
 A [Dependency Injection (DI) Container](https://en.wikipedia.org/wiki/Dependency_injection "Dependency injection - Wikipedia")
-is a tool meant to make dependency injection possible and easy to manage.  
-Dependencies are specified by a class constructor method via 
+is a tool meant to make dependency injection possible and easy to manage.
+Dependencies are specified by a class constructor method via
 [**type-hinting**](http://php.net/manual/en/language.oop5.typehinting.php "PHP: Type Hinting - Manual"):
 
 ```php
 class A {
     private $b;
-    private $c; 
+    private $c;
 
     public function __construct(B $b, C $c){
         $this->b = $b;
@@ -192,7 +197,7 @@ class A {
 }
 ```
 
-Any instance of class `A` **depends** on implementations of the `B` and `C` classes.  
+Any instance of class `A` **depends** on implementations of the `B` and `C` classes.
 The "injection" happens when class `A` dependencies are passed to it, "injected" in its constructor method, in place of
 being created inside the class itself.
 
@@ -216,7 +221,7 @@ PHP allows type hinting not just **concrete implementations** (classes) but **in
 ```php
 class A {
     private $b;
-    private $c; 
+    private $c;
 
     public function __construct(BInterface $b, CInterface $c){
         $this->b = $b;
@@ -240,7 +245,7 @@ $a = new a(new B(), new C());
 The `B` and `C` classes are concrete (as in "you can instance them") implementations of interfaces and while the
 interfaces might never change the implementations might and should change in the lifecycle of code: that's
 the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) or "depend upon
-abstractions, non concretions".  
+abstractions, non concretions".
 If the implementation of `BInterface` changes from `B` to `BetterB` then I'd have to update all the code where I'm
 building instances of `A` to use `BetterB` in place of `B`:
 
@@ -254,7 +259,7 @@ $a = new A(new BetterB(), new C());
 ```
 
 On smaller code-bases this might prove to be a quick solution but, as the code grows, it will become less and less an
-applicable solution.  
+applicable solution.
 Adding classes to the mix proves the point when dependencies start to stack:
 
 ```php
@@ -273,8 +278,8 @@ $e = new E($d);
 
 Another issue with this approach is that classes have to be built immediately to be injected, see `$a` and `$d` above to
 feed `$e`, with the immediate cost of "eager" instantiation, if `$e` is never used than the effort put into building it,
-in terms of time and resources spent by PHP to build `$a`, `$b`, `$c`, `$d` and finally `$e`, are wasted.  
-A **dependency injection container**  will take care of building only objects that are needed taking care of 
+in terms of time and resources spent by PHP to build `$a`, `$b`, `$c`, `$d` and finally `$e`, are wasted.
+A **dependency injection container**  will take care of building only objects that are needed taking care of
 **resolving** nested dependencies.
 
 > Need an instance of `E`? I will build instances of `B` and `C` to build an instance of `A` to build an instance of `D`
@@ -292,7 +297,7 @@ In Plain English "I do not care how it's built or where it comes from, give me t
 database service.".
 
 Service Locators are, usually, globally-available DI Containers for obvious reasons: the DI Container knows how to build
-the services the Service Locator will provide when required.  
+the services the Service Locator will provide when required.
 The concept of Service Locators and DI Containers are often conflated as a DI Container, when globally available,
 makes a good implementation of a Service Locator.
 
@@ -332,12 +337,12 @@ $db = App::get('database');
 
 ### Construction templates
 
-The container will need to be told, just once, how objects should be built.  
+The container will need to be told, just once, how objects should be built.
 For the container it's easy to understand that a class type-hinting an instance of the concrete class `A` will require a
 new instance of `A` but loosely coupled code leveraging the use of a DI container will probably type-hint an `interface`
-in place of concrete `class`es.  
+in place of concrete `class`es.
 Telling the container what concrete `class` to instance when a certain `interface` is requested by an
-object `__construct` method is called "binding and implementation to an interface".  
+object `__construct` method is called "binding and implementation to an interface".
 While dependency injection can be made in other methods too beyond the `__construct` one that's what di52 supports at
 the moment; if you want to read more the web is full of good reference
 material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very
@@ -403,7 +408,7 @@ get its result, but we want to get back the function itself.
 ## Binding implementations
 
 Telling the container what should be built and when is done by an API similar to the one exposed by the [Laravel Service container](https://laravel.com/docs/5.3/container "Service Container - Laravel - The PHP Framework For Web ...")
-and while the inner workings are different the good idea (kudos to Laravel's creator and maintainers) is reused.  
+and while the inner workings are different the good idea (kudos to Laravel's creator and maintainers) is reused.
 Reusing the example above:
 
 ```php
@@ -427,7 +432,7 @@ $container->bind(E::interface, new EImplementation());
 $e = $container->get(F::class);
 ```
 
-The `get` method will build the `F` object resolving its requirements to the bound implementations when requested.  
+The `get` method will build the `F` object resolving its requirements to the bound implementations when requested.
 When using the `bind` method a new instance of the bound implementations will be returned on each request; this might
 not be the wanted behaviour especially for object costly to build (like a database driver that needs to connect): in
 that case the `singleton` method should be used:
@@ -444,13 +449,13 @@ $container->get(RepositoryInterface::class);
 ```
 
 Binding an implementation to an interface using the `singleton` methods tells the container the implementations should
-be built just the first time: any later call for that same interface should return the same instance.  
+be built just the first time: any later call for that same interface should return the same instance.
 Implementations can be redefined in any moment simple calling the `bind` or `singleton` methods again specifying a
 different implementation.
 
 ### Controlling the resolution of unbound classes
 The container will use reflection to work out the dependencies of an object, and will not require setup when resolving
-objects with type-hinted object dependencies in the `__construct` method.  
+objects with type-hinted object dependencies in the `__construct` method.
 By default those _unbound_ classes will be resolved **as prototypes**, built new on each `get` request.
 
 To control the mode used to resolve unbound classes, a flag property can be set on the container when constructing it:
@@ -496,7 +501,7 @@ $container['db.connection'] = function($container){
     $user = $container['db.user'],
     $pass = $container['db.pass'],
     $name = $container['db.name'],
-     
+
     $dbDriver = $container['db.driver'];
     $dbDriver->connect($host, $user, $pass, $name);
 
@@ -517,7 +522,7 @@ There is no replacement for the `factory` method offered by Pimple: the `bind` m
 ## Contextual binding
 
 Borrowing an excellent idea from Laravel's container the possibility of contextual binding exists (supporting all the
-binding possibilities above).  
+binding possibilities above).
 Contextual binding solves the problem of different objects requiring different implementations of the same interface (or
 class, see above):
 
@@ -525,7 +530,7 @@ class, see above):
 use lucatume\DI52\Container;
 
 $container = new Container();
-    
+
 /*
  * By default any object requiring an implementation of the `CacheInterface`
  * should be given the same instance of `Array Cache`
@@ -540,7 +545,7 @@ $container->bind(DbCache::class, function($container){
 });
 
 /*
- * but when an implementation of the `CacheInterface` is requested by 
+ * but when an implementation of the `CacheInterface` is requested by
  * `TransactionManager`, then it should be given an instance of `Array Cache`.
  */
 $container->when(TransactionManager::class)
@@ -551,9 +556,9 @@ $container->when(TransactionManager::class)
 ## Binding decorator chains
 
 The [Decorator pattern](https://en.wikipedia.org/wiki/Decorator_pattern "Decorator pattern - Wikipedia") allows
-extending the functionalities of an implementation without creating an extension and leveraging interfaces.  
+extending the functionalities of an implementation without creating an extension and leveraging interfaces.
 The container allows binding "chain of decorators" to an interface (or slug à la Pimple, or class) using
-the `bindDecorators` and `singletonDecorators`.  
+the `bindDecorators` and `singletonDecorators`.
 The two methods are the `bind` and `singleton` equivalents for decorators.
 
 ```php
@@ -566,14 +571,14 @@ $container->bind(CacheInterface::class, ArrayCache::class);
 $container->bind(LoggerInterface::class, FileLogger::class);
 // Decorators are built left to right, outer decorators are listed first.
 $container->bindDecorators(PostEndpoint::class, [
-    LoggingEndpoint::class, 
-    CachingEndpoint::class, 
+    LoggingEndpoint::class,
+    CachingEndpoint::class,
     BaseEndpoint::class
 ]);
 ```
 ## Tagging
 
-Tagging allows grouping similar implementations for the purpose of referencing them by group.  
+Tagging allows grouping similar implementations for the purpose of referencing them by group.
 Grouping implementations makes sense when, as an example, the same method has to be called on each implementation:
 
 ```php
@@ -591,7 +596,7 @@ $container->bind(UnsupportedEndpoint::class, function($container){
 });
 
 $container->tag([
-    HomeEndpoint::class, 
+    HomeEndpoint::class,
     PostEndpoint::class,
     UnsupportedEndpoint::class,
     ], 'endpoints');
@@ -606,10 +611,10 @@ chains and after-build methods.
 
 ## The callback method
 
-Some applications require callbacks (or some form of callable) to be returned in specific pieces of code.  
+Some applications require callbacks (or some form of callable) to be returned in specific pieces of code.
 This is especially the case with WordPress and
 its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex")
-.  
+.
 Using the container does not removes that possibility:
 
 ```php
@@ -621,7 +626,7 @@ add_filter('some_filter', [$container->get(SomeFilteringClass::class), 'filter']
 ```
 
 This code suffers from an eager instantiation problem: `SomeFilteringClass` is built for the purpose of binding it but
-might never be used.  
+might never be used.
 The problem is easy to solve using the `Container::callback` method:
 
 ```php
@@ -633,7 +638,7 @@ $container->singleton(SomeFilteringClass::class);
 add_filter('some_filter', $container->callback(SomeFilteringClass::class, 'filter'));
 ```
 
-The advantage of this solution is the container will return the same callback every time it's called with the same 
+The advantage of this solution is the container will return the same callback every time it's called with the same
 arguments when the called class is a singleton:
 
 ```php
@@ -646,7 +651,7 @@ remove_filter('some_filter', App::callback(SomeFilteringClass::class, 'filter'))
 To avoid passing the container instance around (
 see [Service Locator pattern](https://en.wikipedia.org/wiki/Service_locator_pattern "Service locator pattern - Wikipedia"))
 or globalising it all the binding should happen in the same PHP file: this could lead, as the application grows, to a
-thousand lines monster.  
+thousand lines monster.
 To avoid that the container supports service providers: those are classes extending
 the `lucatume\DI52\ServiceProvider` class, that
 allow organizing the binding registrations into logical, self-contained and manageable units:
@@ -677,9 +682,9 @@ $container->register(ProviderFour::class);
 ### Booting service providers
 
 The container implements a `boot` method that will, in turn, call the `boot` method on any service provider that
-overloads it.  
+overloads it.
 Some applications might define constants and environment variables at "boot" time (e.g. WordPress `plugins_loaded`
-action) that might make an immediate registration futile.  
+action) that might make an immediate registration futile.
 In that case service providers can overload the `boot` method:
 
 ```php
@@ -719,9 +724,9 @@ $container->boot();
 ### Deferred service providers
 
 Sometimes even just setting up the implementations might require such an up-front cost to make it undesirable unless
-it's needed.  
+it's needed.
 This might happen with non-autoloading code that will require a tangle of files to load (and side load) to grab a simple
-class instance.  
+class instance.
 To "defer" that cost service providers can overload the `deferred` property and the `provides` method:
 
 ```php
@@ -753,7 +758,7 @@ class ProviderOne extends ServiceProvider {
 use lucatume\DI52\Container;
 
 $container = new Container();
-    
+
 // The provider `register` method will not be called immediately...
 $container->register(ProviderOne::class);
 
