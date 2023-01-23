@@ -554,6 +554,14 @@ $container->bind(DbCache::class, function($container){
 $container->when(TransactionManager::class)
     ->needs(CacheInterface::class)
     ->give(DbCache::class);
+
+/*
+ * We can also bind primitives where the container doesn't know how to autowire
+ * them.
+ */
+$container->when(PaginationManager::class)
+    ->needs('$per_page')
+    ->give(25);
 ```
 
 ## Binding decorator chains
