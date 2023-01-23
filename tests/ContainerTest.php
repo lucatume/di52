@@ -129,4 +129,25 @@ class ContainerTest extends TestCase
             $this->assertInstanceOf(NotFoundException::class, $e);
         }
     }
+
+    /**
+     * The container now registers itself inside itself (containerception).
+     *
+     * @test
+     */
+    public function it_should_contain_the_containers_own_instance()
+    {
+        $container = new Container();
+
+        $this->assertTrue($container->has(Container::class));
+        $this->assertSame($container, $container->get(Container::class));
+
+        $container->get(ClassOne::class);
+        $container->get(ClassOneOne::class);
+
+        $this->assertTrue($container->has(ClassOne::class));
+        $this->assertTrue($container->has(ClassOneOne::class));
+        $this->assertSame($container, $container->get(Container::class));
+    }
+
 }
