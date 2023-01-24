@@ -5,6 +5,16 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+- PHP8.2 support.
+- Parameter detection support for PHP Union Types.
+- Parameter Enum detection/Enum container resolving.
+- (thanks @defunctl).
+
+### Fixed
+- Use the correct PHP version ID to ensure `PHP81ContextualBindingContainerTest` runs under PHP8.1 (thanks @defunctl).
+
+
 ## [3.0.3] 2023-01-24;
 
 ### Added
