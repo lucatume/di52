@@ -12,7 +12,9 @@ to [Semantic Versioning](http://semver.org/).
 - (thanks @defunctl).
 
 ### Fixed
-- Use the correct PHP version ID to ensure `PHP81ContextualBindingContainerTest` runs under PHP8.1 (thanks @defunctl).
+- Use the correct PHP version ID to ensure `PHP81ContextualBindingContainerTest` runs under PHP8.1.
+- Fatal Error Handling snapshots.
+- (thanks @defunctl).
 
 
 ## [3.0.3] 2023-01-24;
