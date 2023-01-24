@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.0.3] 2023-01-24;
+
 ### Added
 - The container now registers Service Providers using its own `Container::get()` method, instead of the `new` keyword. This allows Service Providers to utilize dependency injection. (thanks @defunctl).
 - Additional contextual binding examples for primitives + service provider documentation in the README.
@@ -417,4 +419,5 @@ org/psr/psr-11/)
 [3.0.1]: https://github.com/lucatume/di52/compare/3.0.0...3.0.1
 [3.0.1]: https://github.com/lucatume/di52/compare/3.0.1...3.0.1
 [3.0.2]: https://github.com/lucatume/di52/compare/3.0.1...3.0.2
-[unreleased]: https://github.com/lucatume/di52/compare/3.0.2...HEAD
+[3.0.3]: https://github.com/lucatume/di52/compare/3.0.2...3.0.3
+[unreleased]: https://github.com/lucatume/di52/compare/3.0.3...HEAD
