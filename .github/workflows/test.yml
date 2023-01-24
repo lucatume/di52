@@ -19,6 +19,6 @@ jobs:
         with:
           dependency-versions: "highest" # same as running composer update
       - name: Migrate PHPUnit configuration
-        run: vendor/bin/phpunit --migrate-configuration
+        run: vendor/bin/phpunit --migrate-configuration || true
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit --bootstrap=tests/bootstrap.php --no-coverage
