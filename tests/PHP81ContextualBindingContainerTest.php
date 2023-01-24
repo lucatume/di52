@@ -11,7 +11,7 @@ class PHP81ContextualBindingContainerTest extends TestCase {
      */
     public static function before_all()
     {
-        if (PHP_VERSION_ID < 81000) {
+        if (PHP_VERSION_ID < 80100) {
             return;
         }
 
@@ -23,7 +23,7 @@ class PHP81ContextualBindingContainerTest extends TestCase {
      */
     public function before_each()
     {
-        if (PHP_VERSION_ID < 81000) {
+        if (PHP_VERSION_ID < 80100) {
             $this->markTestSkipped();
         }
     }
