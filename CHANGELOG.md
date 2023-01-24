@@ -20,6 +20,7 @@ to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Use the correct PHP version ID to ensure `PHP81ContextualBindingContainerTest` runs under PHP8.1.
+- Fixed the phpunit.xml schema to validate against phpunit 5.7.
 - Fatal Error Handling snapshots.
 - thanks @defunctl.
 
