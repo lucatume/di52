@@ -199,7 +199,7 @@ class Parameter
         }
 
         if (function_exists('enum_exists')) {
-            // @suppress PhanUndeclaredFunction
+            /** @suppress PhanUndeclaredFunction */
             if (enum_exists($this->type)) {
                 return false;
             }
