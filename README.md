@@ -554,6 +554,14 @@ $container->bind(DbCache::class, function($container){
 $container->when(TransactionManager::class)
     ->needs(CacheInterface::class)
     ->give(DbCache::class);
+
+/*
+ * We can also bind primitives where the container doesn't know how to auto-wire
+ * them.
+ */
+$container->when(PaginationManager::class)
+    ->needs('$per_page')
+    ->give(25);
 ```
 
 ## Binding decorator chains
@@ -770,4 +778,88 @@ $legacyOne = $container->get(LegacyClassOne::class);
 
 // Will not be called again here, done already.
 $legacyTwo = $container->get(LegacyInterfaceTwo::class);
+```
+
+### Dependency injection with service providers
+
+The container now supports additional dependency injection for service providers. Auto-wiring
+will work the same as any class, simply override the service provider's constructor and add any additional concrete dependencies (don't forget to call the parent!):
+
+```php
+// file ProviderOne.php
+
+use lucatume\DI52\ServiceProvider;
+
+class ProviderOne extends ServiceProvider {
+
+    /**
+     * @var ConfigHelper
+     */
+    protected $config;
+
+    public function __construct(\lucatume\DI52\Container $container, ConfigHelper $config)
+    {
+        parent::__construct($container);
+
+        $this->config = $config;
+    }
+
+    public function register()
+    {
+        $this->container->when(ClassFour::class)
+            ->needs('$value')
+            ->give($this->config->get('value'));
+    }
+
+}
+
+// Application bootstrap file.
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+$container->register(ProviderOne::class);
+```
+If you want to inject primitives into a service provider, you need to utilize the `when`, `needs`, `gives` methods **_before_** registering the provider in the container:
+
+```php
+// file ProviderOne.php
+
+use lucatume\DI52\ServiceProvider;
+
+class ProviderOne extends ServiceProvider {
+
+    /**
+     * @var bool
+     */
+    protected $service_enabled;
+
+    public function __construct(\lucatume\DI52\Container $container, $service_enabled)
+    {
+        parent::__construct($container);
+
+        $this->service_enabled = $service_enabled;
+    }
+
+    public function register()
+    {
+        if (!$this->service_enabled) {
+            return;
+        }
+
+        $this->container->bind(InterfaceOne::class, ClassOne::class);
+    }
+
+}
+
+// Application bootstrap file.
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+$container->when(ProviderOne::class)
+    ->needs('$service_enabled')
+    ->give(true);
+
+$container->register(ProviderOne::class);
 ```

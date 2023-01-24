@@ -88,6 +88,7 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $this->resolver = new Builders\Resolver($resolveUnboundAsSingletons);
         $this->builders = new Builders\Factory($this, $this->resolver);
+        $this->singleton(Container::class, $this);
     }
 
     /**
@@ -450,7 +451,7 @@ class Container implements \ArrayAccess, ContainerInterface
     public function register($serviceProviderClass, ...$alias)
     {
         /** @var ServiceProvider $provider */
-        $provider = new $serviceProviderClass($this);
+        $provider = $this->get($serviceProviderClass);
         if (!$provider->isDeferred()) {
             $provider->register();
         } else {

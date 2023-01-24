@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+- The container now registers Service Providers using its own `Container::get()` method, instead of the `new` keyword. This allows Service Providers to utilize dependency injection. (thanks @defunctl).
+- Additional contextual binding examples for primitives + service provider documentation in the README.
+
 ## [3.0.2] 2023-01-20;
 
 ### Added
