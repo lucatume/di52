@@ -16,6 +16,9 @@ to [Semantic Versioning](http://semver.org/).
 - Fatal Error Handling snapshots.
 - (thanks @defunctl).
 
+### Changed
+- Separated tests into a `unit` suite and a `php81` suite to avoid fatal parse errors when asserting enums (thanks @defunctl).
+
 
 ## [3.0.3] 2023-01-24;
 
