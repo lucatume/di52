@@ -5,11 +5,11 @@
         colors='true'
 >
     <testsuites>
+        <testsuite name='php81'>
+            <directory phpVersion="8.1.0" suffix="Test.php">tests/php81</directory>
+        </testsuite>
         <testsuite name='unit'>
             <directory suffix="Test.php">tests/unit</directory>
-        </testsuite>
-        <testsuite name='php81'>
-            <directory phpVersion="8.1.0" phpVersionOperator="ge" suffix="Test.php">tests/php81</directory>
         </testsuite>
     </testsuites>
     <filter>
