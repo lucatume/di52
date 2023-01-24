@@ -19,4 +19,4 @@ jobs:
         with:
           dependency-versions: "highest" # same as running composer update
       - name: Run PHPUnit tests
-        run: vendor/bin/phpunit --bootstrap=tests/bootstrap.php --no-coverage tests
+        run: vendor/bin/phpunit --bootstrap=tests/bootstrap.php --no-coverage
