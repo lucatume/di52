@@ -186,6 +186,8 @@ class Parameter
     /**
      * Check if the parameter type is a class.
      *
+     * @suppress PhanUndeclaredFunction
+     *
      * @return bool
      */
     protected function isClass()
@@ -199,7 +201,6 @@ class Parameter
         }
 
         if (function_exists('enum_exists')) {
-            /** @suppress PhanUndeclaredFunction */
             if (enum_exists($this->type)) {
                 return false;
             }
