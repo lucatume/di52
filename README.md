@@ -782,7 +782,7 @@ $legacyTwo = $container->get(LegacyInterfaceTwo::class);
 
 ### Dependency injection with service providers
 
-The container now supports additional dependency injection for service providers. Auto-wiring
+The container supports additional dependency injection for service providers. Auto-wiring
 will work the same as any class, simply override the service provider's constructor and add any additional concrete dependencies (don't forget to call the parent!):
 
 ```php
