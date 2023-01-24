@@ -4,6 +4,9 @@ use lucatume\DI52\Container;
 use lucatume\DI52\ContainerException;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @requires PHP >= 8.1
+ */
 class PHP81ContextualBindingContainerTest extends TestCase
 {
 
