@@ -44,6 +44,7 @@ A quick overview of the Container features:
 - [Service providers](#service-providers)
   * [Booting service providers](#booting-service-providers)
   * [Deferred service providers](#deferred-service-providers)
+  * [Dependency injection with service providers](#dependency-injection-with-service-providers)
 
 ## Code Example
 
@@ -782,7 +783,7 @@ $legacyTwo = $container->get(LegacyInterfaceTwo::class);
 
 ### Dependency injection with service providers
 
-The container supports additional dependency injection for service providers. Auto-wiring
+The container supports additional dependency injection for service providers (version 3.0.3+). Auto-wiring
 will work the same as any class, simply override the service provider's constructor and add any additional concrete dependencies (don't forget to call the parent!):
 
 ```php
@@ -820,7 +821,7 @@ $container = new Container();
 
 $container->register(ProviderOne::class);
 ```
-If you want to inject primitives into a service provider, you need to utilize the `when`, `needs`, `gives` methods **_before_** registering the provider in the container:
+If you want to inject primitives into a service provider, you need to utilize the `when`, `needs`, `give` methods **_before_** registering the provider in the container:
 
 ```php
 // file ProviderOne.php
