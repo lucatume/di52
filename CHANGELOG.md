@@ -9,15 +9,17 @@ to [Semantic Versioning](http://semver.org/).
 - PHP8.2 support.
 - Parameter detection support for PHP Union Types.
 - Parameter Enum detection/Enum container resolving.
-- (thanks @defunctl).
+- thanks @defunctl.
 
 ### Fixed
 - Use the correct PHP version ID to ensure `PHP81ContextualBindingContainerTest` runs under PHP8.1.
 - Fatal Error Handling snapshots.
-- (thanks @defunctl).
+- thanks @defunctl.
 
 ### Changed
-- Separated tests into a `unit` suite and a `php81` suite to avoid fatal parse errors when asserting enums (thanks @defunctl).
+- Separated tests into a `unit` suite and a `php81` suite to avoid fatal parse errors when asserting enums.
+- Updated GitHub workflows to remove deprecated functionality and run composer install via https://github.com/ramsey/composer-install.
+- thanks @defunctl.
 
 
 ## [3.0.3] 2023-01-24;
