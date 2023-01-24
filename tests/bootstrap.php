@@ -4,10 +4,10 @@ use lucatume\DI52\Tests\TestCase;
 use PHPUnit\Framework\Assert;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once __DIR__ . '/data/test-classes.php';
-require_once __DIR__ . '/data/test-car-classes.php';
-require_once __DIR__ . '/data/namespaced-test-classes.php';
-require_once __DIR__ . '/data/test-providers.php';
+require_once __DIR__ . '/unit/data/test-classes.php';
+require_once __DIR__ . '/unit/data/test-car-classes.php';
+require_once __DIR__ . '/unit/data/namespaced-test-classes.php';
+require_once __DIR__ . '/unit/data/test-providers.php';
 require_once __DIR__ . '/TestCase.php';
 
 function assertMatchesSnapshots($actual, $prefix = null)
