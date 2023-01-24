@@ -36,11 +36,16 @@ function assertMatchesSnapshots($actual, $prefix = null)
     static $counts;
     $counts = $counts === null ? [] : $counts;
 
-    $counts["{$testCase}-{$testMethod}"] = isset($counts["{$testCase}-{$testMethod}"]) ?
-        $counts["{$testCase}-{$testMethod}"] + 1
+    $counts["$testCase-$testMethod"] = isset($counts["$testCase-$testMethod"]) ?
+        $counts["$testCase-$testMethod"] + 1
         : 1;
-    $count = $counts["{$testCase}-{$testMethod}"];
-    $snapshot = $root . "/__snapshots__/{$testCase}-{$testMethod}.{$prefix}snapshot-{$count}";
+    $count = $counts["$testCase-$testMethod"];
+    $snapshot = $root."/__snapshots__/$testCase-$testMethod.{$prefix}snapshot-$count";
+
+    // Try the major PHP version if the minor doesn't exist.
+    if (!is_file($snapshot)) {
+        $snapshot = $root."/__snapshots__/$testCase-$testMethod.".PHP_MAJOR_VERSION."-snapshot-$count";
+    }
 
     if (!is_file($snapshot)) {
         if (! is_dir(dirname($snapshot)) && ! mkdir(

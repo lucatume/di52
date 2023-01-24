@@ -15,7 +15,7 @@ class FatalErrorHandlingTest extends TestCase
     {
         spl_autoload_register(static function ($class) {
             if (strpos($class, 'FatalErrorClass') === 0) {
-                require_once __DIR__ . "/data/{$class}.php";
+                require_once __DIR__ . "/data/$class.php";
             }
         });
     }
@@ -63,11 +63,11 @@ class FatalErrorHandlingTest extends TestCase
     }
 
     /**
-     * It should correcly format fatal error in nested dependency
+     * It should correctly format fatal error in nested dependency
      *
      * @test
      */
-    public function should_correcly_format_fatal_error_in_nested_dependency()
+    public function should_correctly_format_fatal_error_in_nested_dependency()
     {
         $container = new Container();
 
@@ -76,7 +76,7 @@ class FatalErrorHandlingTest extends TestCase
         } catch (Exception $e) {
             $this->assertInstanceOf(ContainerException::class, $e);
             $this->assertNotInstanceOf(NotFoundException::class, $e);
-            assertMatchesSnapshots($e->getMessage(), PHP_MAJOR_VERSION.'-');
+            assertMatchesSnapshots($e->getMessage(), PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION.'-');
         }
     }
 
@@ -94,7 +94,7 @@ class FatalErrorHandlingTest extends TestCase
         } catch (Exception $e) {
             $this->assertInstanceOf(ContainerException::class, $e);
             $this->assertNotInstanceOf(NotFoundException::class, $e);
-            assertMatchesSnapshots($e->getMessage(), PHP_MAJOR_VERSION.'-');
+            assertMatchesSnapshots($e->getMessage(), PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION.'-');
         }
     }
 
