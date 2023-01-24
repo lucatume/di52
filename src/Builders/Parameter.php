@@ -57,6 +57,7 @@ class Parameter
         'resource',
         'callable',
         'iterable',
+        'union',
     ];
     /**
      * A map relating the string output type to the internal, type-hintable, type.
@@ -66,7 +67,7 @@ class Parameter
     protected static $conversionMap = [
         'integer' => 'int',
         'boolean' => 'bool',
-        'double' => 'float'
+        'double' => 'float',
     ];
 
     /**
@@ -79,23 +80,32 @@ class Parameter
     /**
      * Parameter constructor.
      *
-     * @param int                 $index               The parameter position in the list of parameters.
-     * @param ReflectionParameter $reflectionParameter The parameter reflection to extract the information from.
+     * @param  int  $index  The parameter position in the list of parameters.
+     * @param  ReflectionParameter  $reflectionParameter  The parameter reflection to extract the information from.
+     *
+     * @throws \ReflectionException
      */
     public function __construct($index, ReflectionParameter $reflectionParameter)
     {
         $string = $reflectionParameter->__toString();
-        $s = trim(str_replace('Parameter #' . $index, '', $string), '[ ]');
+        $s = trim(str_replace('Parameter #'.$index, '', $string), '[ ]');
         $frags = explode(' ', $s);
 
         $this->name = $reflectionParameter->name;
         $this->type = strpos($frags[1], '$') === 0 ? null : $frags[1];
+
         // PHP 8.0 nullables.
-        $this->type = str_replace('?', '', (string)$this->type);
+        $this->type = str_replace('?', '', (string) $this->type);
+
+        // PHP 8.0 Union types.
+        if (strpos($this->type, '|') !== false) {
+            $this->type = 'union';
+        }
+
         if (isset(static::$conversionMap[$this->type])) {
             $this->type = static::$conversionMap[$this->type]; // @codeCoverageIgnore
         }
-        $this->isClass = $this->type && !in_array($this->type, static::$nonClassTypes, true);
+        $this->isClass = $this->isClass();
         $this->isOptional = $frags[0] === '<optional>';
         $this->defaultValue = $this->isOptional ? $reflectionParameter->getDefaultValue() : null;
     }
@@ -171,5 +181,29 @@ class Parameter
             );
         }
         return $this->defaultValue;
+    }
+
+    /**
+     * Check if the parameter type is a class.
+     *
+     * @return bool
+     */
+    protected function isClass()
+    {
+        if (!$this->type) {
+            return false;
+        }
+
+        if (in_array($this->type, static::$nonClassTypes, true)) {
+            return false;
+        }
+
+        if (function_exists('enum_exists')) {
+            if (enum_exists($this->type)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
