@@ -203,7 +203,7 @@ class ParameterTest extends TestCase
                         'defaultValue' => null
                     ],
                     [
-                        'type' => ( PHP_VERSION_ID < 80200 ) ? 'union' : 'iterable',
+                        'type' => ( PHP_VERSION_ID < 80200 ) ? 'iterable' : 'union',
                         'isOptional' => false,
                         'defaultValue' => null
                     ],
@@ -213,7 +213,7 @@ class ParameterTest extends TestCase
                         'defaultValue' => null
                     ],
                     [
-                        'type' => ( PHP_VERSION_ID < 80200 ) ? 'union' : 'iterable',
+                        'type' => ( PHP_VERSION_ID < 80200 ) ? 'iterable' : 'union',
                         'isOptional' => true,
                         'defaultValue' => null
                     ]
