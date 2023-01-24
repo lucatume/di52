@@ -1,49 +1,33 @@
 <?php
 
-namespace Builders;
+namespace php81;
 
-use ClassWithEnumDependency;
 use lucatume\DI52\Builders\Parameter;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
-use TestBackedEnum;
-use UnionTypeEnumClass;
+use UnionTypeClass;
+use UnionTypePromotedClass;
 
-class EnumParameterTest extends TestCase
-{
+class UnionTypeParameterTest extends TestCase {
 
     /**
      * @beforeClass
      */
     public static function before_all()
     {
-        if (PHP_VERSION_ID < 80100) {
-            return;
-        }
-
-        require_once __DIR__.'/parameter-test-enum-classes.php';
+        require_once __DIR__.'/data/parameter-test-union-type-classes.php';
     }
 
-    /**
-     * @before
-     */
-    public function before_each()
-    {
-        if (PHP_VERSION_ID < 80100) {
-            $this->markTestSkipped();
-        }
-    }
-
-    public function test_it_should_detect_enum_types()
+    public function test_it_should_detect_union_types()
     {
         $expectedData = [
             [
-                'type' => TestBackedEnum::class,
+                'type' => 'union',
                 'isOptional' => false,
                 'defaultValue' => null,
             ]
         ];
-        $reflectionConstructor = new ReflectionMethod(ClassWithEnumDependency::class, '__construct');
+        $reflectionConstructor = new ReflectionMethod(UnionTypeClass::class, '__construct');
         foreach ($reflectionConstructor->getParameters() as $i => $p) {
             $parameter = new Parameter($i, $p);
             $data = $parameter->getData();
@@ -54,7 +38,7 @@ class EnumParameterTest extends TestCase
         }
     }
 
-    public function test_it_should_detect_union_types_with_enums()
+    public function test_it_should_detect_union_types_with_constructor_promotion()
     {
         $expectedData = [
             [
@@ -63,7 +47,7 @@ class EnumParameterTest extends TestCase
                 'defaultValue' => null,
             ]
         ];
-        $reflectionConstructor = new ReflectionMethod(UnionTypeEnumClass::class, '__construct');
+        $reflectionConstructor = new ReflectionMethod(UnionTypePromotedClass::class, '__construct');
         foreach ($reflectionConstructor->getParameters() as $i => $p) {
             $parameter = new Parameter($i, $p);
             $data = $parameter->getData();
