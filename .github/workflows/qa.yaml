@@ -2,7 +2,7 @@ name: Code Quality
 on: push
 jobs:
   sniff:
-    name: phpcs, phpstan, phan on PHP 5.6
+    name: phpcs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -15,7 +15,31 @@ jobs:
         uses: "ramsey/composer-install@v2"
       - name: Run phpcs
         run: make code_sniff
+  phpstan:
+    name: phpstan on PHP 5.6
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP 5.6
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 5.6
+      - name: Install dependencies
+        uses: "ramsey/composer-install@v2"
       - name: Run phpcs
         run: make phpstan
+  phan:
+    name: phan on PHP 5.6
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup PHP 5.6
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 5.6
+      - name: Install dependencies
+        uses: "ramsey/composer-install@v2"
       - name: Run phan
         run: make phan
