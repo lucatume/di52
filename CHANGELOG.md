@@ -16,6 +16,7 @@ to [Semantic Versioning](http://semver.org/).
 - Separated tests into a `unit` suite and a `php81` suite to avoid fatal parse errors when asserting enums.
 - Updated GitHub workflows to remove deprecated functionality and run composer install via https://github.com/ramsey/composer-install.
 - Updated GitHub workflows to attempt to automatically migrate the phpunit configuration file based on the current version being run.
+- Updated deprecated "actions/checkout" GitHub action from v2 to v3.
 - thanks @defunctl.
 
 ### Fixed
