@@ -130,7 +130,6 @@ class TestProviderInjection extends ServiceProvider
 
     public function register()
     {
-        // TODO: Implement register() method.
     }
 
     public function getContainer() {
@@ -160,7 +159,6 @@ class TestProviderPrimitiveInjection extends ServiceProvider
 
     public function register()
     {
-        // TODO: Implement register() method.
     }
 
     public function getValue()
