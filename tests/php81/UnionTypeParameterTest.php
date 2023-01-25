@@ -8,7 +8,8 @@ use ReflectionMethod;
 use UnionTypeClass;
 use UnionTypePromotedClass;
 
-class UnionTypeParameterTest extends TestCase {
+class UnionTypeParameterTest extends TestCase
+{
 
     /**
      * @beforeClass
