@@ -5,7 +5,7 @@ PWD ?= pwd_unknown
 # PROJECT_NAME defaults to name of the current directory.
 PROJECT_NAME = $(notdir $(PWD))
 # Suppress `make` own output.
-.SILENT:
+#.SILENT:
 # Make `help` the default target to make sure it will display when make is called without a target.
 .DEFAULT_GOAL := help
 # Create a script to support command line arguments for targets.
@@ -70,8 +70,9 @@ composer_install: ## Runs the Composer install command on a target PHP version. 
 	-e FIXUID=1 \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
+	-w /project \
 	-t \
-	lucatume/composer:php$(TARGET_ARGS)-composer-v2 install
+	lucatume/di52-dev:php-v$(TARGET_ARGS) composer install
 .PHONY: composer_install
 
 composer_update: ## Runs the Composer install command on a target PHP version. Example: `make composer_update 7.2`
@@ -80,8 +81,9 @@ composer_update: ## Runs the Composer install command on a target PHP version. E
 	-e FIXUID=1 \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
+	-w /project \
 	-t \
-	lucatume/composer:php$(TARGET_ARGS)-composer-v2 update
+	lucatume/di52-dev:php-v$(TARGET_ARGS) composer update
 .PHONY: composer_update
 
 build_php_versions_lt_72 = '5.6' '7.0' '7.1'
