@@ -105,7 +105,7 @@ class Parameter
         if (isset(static::$conversionMap[$this->type])) {
             $this->type = static::$conversionMap[$this->type]; // @codeCoverageIgnore
         }
-        $this->isClass = $this->isClass();
+        $this->isClass = $this->type && $this->isClass();
         $this->isOptional = $frags[0] === '<optional>';
         $this->defaultValue = $this->isOptional ? $reflectionParameter->getDefaultValue() : null;
     }
@@ -190,20 +190,14 @@ class Parameter
      *
      * @return bool
      */
-    protected function isClass()
+    private function isClass()
     {
-        if (!$this->type) {
-            return false;
-        }
-
         if (in_array($this->type, static::$nonClassTypes, true)) {
             return false;
         }
 
-        if (function_exists('enum_exists')) {
-            if (enum_exists($this->type)) {
-                return false;
-            }
+        if (function_exists('enum_exists') && enum_exists($this->type)) {
+            return false;
         }
 
         return true;
