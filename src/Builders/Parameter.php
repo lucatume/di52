@@ -8,6 +8,9 @@
 namespace lucatume\DI52\Builders;
 
 use lucatume\DI52\ContainerException;
+use lucatume\DI52\NestedParseError;
+use ParseError;
+use ReflectionException;
 use ReflectionParameter;
 
 /**
@@ -57,6 +60,7 @@ class Parameter
         'resource',
         'callable',
         'iterable',
+        'union',
     ];
     /**
      * A map relating the string output type to the internal, type-hintable, type.
@@ -66,7 +70,7 @@ class Parameter
     protected static $conversionMap = [
         'integer' => 'int',
         'boolean' => 'bool',
-        'double' => 'float'
+        'double' => 'float',
     ];
 
     /**
@@ -79,8 +83,10 @@ class Parameter
     /**
      * Parameter constructor.
      *
-     * @param int                 $index               The parameter position in the list of parameters.
+     * @param int $index The parameter position in the list of parameters.
      * @param ReflectionParameter $reflectionParameter The parameter reflection to extract the information from.
+     *
+     * @throws ReflectionException
      */
     public function __construct($index, ReflectionParameter $reflectionParameter)
     {
@@ -90,12 +96,19 @@ class Parameter
 
         $this->name = $reflectionParameter->name;
         $this->type = strpos($frags[1], '$') === 0 ? null : $frags[1];
+
         // PHP 8.0 nullables.
         $this->type = str_replace('?', '', (string)$this->type);
+
+        // PHP 8.0 Union types.
+        if (strpos($this->type, '|') !== false) {
+            $this->type = 'union';
+        }
+
         if (isset(static::$conversionMap[$this->type])) {
             $this->type = static::$conversionMap[$this->type]; // @codeCoverageIgnore
         }
-        $this->isClass = $this->type && !in_array($this->type, static::$nonClassTypes, true);
+        $this->isClass = $this->type && $this->isClass();
         $this->isOptional = $frags[0] === '<optional>';
         $this->defaultValue = $this->isOptional ? $reflectionParameter->getDefaultValue() : null;
     }
@@ -171,5 +184,31 @@ class Parameter
             );
         }
         return $this->defaultValue;
+    }
+
+    /**
+     * Check if the parameter type is a class.
+     *
+     * @suppress PhanUndeclaredFunction
+     *
+     * @return bool
+     *
+     * @throws NestedParseError If a parsing error occurs while assessing the parameter type.
+     */
+    private function isClass()
+    {
+        if (in_array($this->type, static::$nonClassTypes, true)) {
+            return false;
+        }
+
+        try {
+            if (function_exists('enum_exists') && enum_exists($this->type)) {
+                return false;
+            }
+        } catch (ParseError $e) {
+            throw new NestedParseError($e->getMessage(), $e->getCode(), $e, (string)$this->type, $this->name);
+        }
+
+        return true;
     }
 }

@@ -1,7 +1,7 @@
 # Read the PHP version to build for from the build arguments.
 ARG PHP_VERSION
 
-FROM composer:2 as composer
+FROM composer:2.2 as composer
 
 FROM php:${PHP_VERSION}-cli-alpine
 

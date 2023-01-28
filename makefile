@@ -5,7 +5,7 @@ PWD ?= pwd_unknown
 # PROJECT_NAME defaults to name of the current directory.
 PROJECT_NAME = $(notdir $(PWD))
 # Suppress `make` own output.
-.SILENT:
+#.SILENT:
 # Make `help` the default target to make sure it will display when make is called without a target.
 .DEFAULT_GOAL := help
 # Create a script to support command line arguments for targets.
@@ -70,8 +70,9 @@ composer_install: ## Runs the Composer install command on a target PHP version. 
 	-e FIXUID=1 \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
+	-w /project \
 	-t \
-	lucatume/composer:php$(TARGET_ARGS)-composer-v2 install
+	lucatume/di52-dev:php-v$(TARGET_ARGS) composer install
 .PHONY: composer_install
 
 composer_update: ## Runs the Composer install command on a target PHP version. Example: `make composer_update 7.2`
@@ -80,8 +81,9 @@ composer_update: ## Runs the Composer install command on a target PHP version. E
 	-e FIXUID=1 \
 	-v "${HOME}/.composer/auth.json:/composer/auth.json" \
 	-v "${PWD}:/project" \
+	-w /project \
 	-t \
-	lucatume/composer:php$(TARGET_ARGS)-composer-v2 update
+	lucatume/di52-dev:php-v$(TARGET_ARGS) composer update
 .PHONY: composer_update
 
 build_php_versions_lt_72 = '5.6' '7.0' '7.1'
@@ -100,7 +102,7 @@ $(build_php_versions_lt_72): %:
 		--tag lucatume/di52-profile:php-v$@
 	docker run --rm lucatume/di52-profile:php-v$@ -v
 
-build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0' '8.1'
+build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0' '8.1' '8.2'
 $(build_php_versions_gte_72): %:
 	docker build \
 		--build-arg PHP_VERSION=$@ \
@@ -119,7 +121,7 @@ $(build_php_versions_gte_72): %:
 build: $(build_php_versions_lt_72) $(build_php_versions_gte_72) ## Builds the project PHP images.
 .PHONY: build
 
-test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0'
+test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0' 'php-v8.1' 'php-v8.2'
 $(test_php_versions): %:
 	echo "Running tests on $@"
 	docker run --rm \

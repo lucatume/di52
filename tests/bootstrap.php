@@ -3,11 +3,10 @@
 use lucatume\DI52\Tests\TestCase;
 use PHPUnit\Framework\Assert;
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once __DIR__ . '/data/test-classes.php';
-require_once __DIR__ . '/data/test-car-classes.php';
-require_once __DIR__ . '/data/namespaced-test-classes.php';
-require_once __DIR__ . '/data/test-providers.php';
+require_once __DIR__ . '/unit/data/test-classes.php';
+require_once __DIR__ . '/unit/data/test-car-classes.php';
+require_once __DIR__ . '/unit/data/namespaced-test-classes.php';
+require_once __DIR__ . '/unit/data/test-providers.php';
 require_once __DIR__ . '/TestCase.php';
 
 function assertMatchesSnapshots($actual, $prefix = null)
@@ -36,11 +35,16 @@ function assertMatchesSnapshots($actual, $prefix = null)
     static $counts;
     $counts = $counts === null ? [] : $counts;
 
-    $counts["{$testCase}-{$testMethod}"] = isset($counts["{$testCase}-{$testMethod}"]) ?
-        $counts["{$testCase}-{$testMethod}"] + 1
+    $counts["$testCase-$testMethod"] = isset($counts["$testCase-$testMethod"]) ?
+        $counts["$testCase-$testMethod"] + 1
         : 1;
-    $count = $counts["{$testCase}-{$testMethod}"];
-    $snapshot = $root . "/__snapshots__/{$testCase}-{$testMethod}.{$prefix}snapshot-{$count}";
+    $count = $counts["$testCase-$testMethod"];
+    $snapshot = $root."/__snapshots__/$testCase-$testMethod.{$prefix}snapshot-$count";
+
+    // Try the major PHP version if the minor doesn't exist.
+    if (!is_file($snapshot)) {
+        $snapshot = $root."/__snapshots__/$testCase-$testMethod.".PHP_MAJOR_VERSION."-snapshot-$count";
+    }
 
     if (!is_file($snapshot)) {
         if (! is_dir(dirname($snapshot)) && ! mkdir(
