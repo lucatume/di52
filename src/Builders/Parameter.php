@@ -8,6 +8,9 @@
 namespace lucatume\DI52\Builders;
 
 use lucatume\DI52\ContainerException;
+use lucatume\DI52\NestedParseError;
+use ParseError;
+use ReflectionException;
 use ReflectionParameter;
 
 /**
@@ -80,22 +83,22 @@ class Parameter
     /**
      * Parameter constructor.
      *
-     * @param  int  $index  The parameter position in the list of parameters.
-     * @param  ReflectionParameter  $reflectionParameter  The parameter reflection to extract the information from.
+     * @param int $index The parameter position in the list of parameters.
+     * @param ReflectionParameter $reflectionParameter The parameter reflection to extract the information from.
      *
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct($index, ReflectionParameter $reflectionParameter)
     {
         $string = $reflectionParameter->__toString();
-        $s = trim(str_replace('Parameter #'.$index, '', $string), '[ ]');
+        $s = trim(str_replace('Parameter #' . $index, '', $string), '[ ]');
         $frags = explode(' ', $s);
 
         $this->name = $reflectionParameter->name;
         $this->type = strpos($frags[1], '$') === 0 ? null : $frags[1];
 
         // PHP 8.0 nullables.
-        $this->type = str_replace('?', '', (string) $this->type);
+        $this->type = str_replace('?', '', (string)$this->type);
 
         // PHP 8.0 Union types.
         if (strpos($this->type, '|') !== false) {
@@ -189,6 +192,8 @@ class Parameter
      * @suppress PhanUndeclaredFunction
      *
      * @return bool
+     *
+     * @throws NestedParseError If a parsing error occurs while assessing the parameter type.
      */
     private function isClass()
     {
@@ -196,8 +201,12 @@ class Parameter
             return false;
         }
 
-        if (function_exists('enum_exists') && enum_exists($this->type)) {
-            return false;
+        try {
+            if (function_exists('enum_exists') && enum_exists($this->type)) {
+                return false;
+            }
+        } catch (ParseError $e) {
+            throw new NestedParseError($e->getMessage(), $e->getCode(), $e, $this->type, $this->name);
         }
 
         return true;

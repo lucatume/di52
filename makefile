@@ -102,7 +102,7 @@ $(build_php_versions_lt_72): %:
 		--tag lucatume/di52-profile:php-v$@
 	docker run --rm lucatume/di52-profile:php-v$@ -v
 
-build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0' '8.1'
+build_php_versions_gte_72 = '7.2' '7.3' '7.4' '8.0' '8.1' '8.2'
 $(build_php_versions_gte_72): %:
 	docker build \
 		--build-arg PHP_VERSION=$@ \
@@ -121,7 +121,7 @@ $(build_php_versions_gte_72): %:
 build: $(build_php_versions_lt_72) $(build_php_versions_gte_72) ## Builds the project PHP images.
 .PHONY: build
 
-test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0'
+test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0' 'php-v8.1' 'php-v8.2'
 $(test_php_versions): %:
 	echo "Running tests on $@"
 	docker run --rm \

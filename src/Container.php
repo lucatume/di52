@@ -7,13 +7,19 @@
 
 namespace lucatume\DI52;
 
+use ArrayAccess;
 use Closure;
+use Exception;
 use lucatume\DI52\Builders\BuilderInterface;
 use lucatume\DI52\Builders\ValueBuilder;
+use ParseError;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReturnTypeWillChange;
+use Throwable;
+use function spl_object_hash;
 
 /**
  * Class Container
@@ -21,9 +27,9 @@ use ReflectionMethod;
  * @since   TBD
  *
  * @package lucatume\DI52
- * @implements \ArrayAccess<string,object>
+ * @implements ArrayAccess<string,object>
  */
-class Container implements \ArrayAccess, ContainerInterface
+class Container implements ArrayAccess, ContainerInterface
 {
     /**
      * An array cache to store the results of the class exists checks.
@@ -117,7 +123,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @throws ContainerException If the closure building fails.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->singleton($offset, $value);
@@ -178,7 +184,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @throws ContainerException Error while retrieving the entry.
      * @throws NotFoundException  No entry was found for **this** identifier.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset);
@@ -197,10 +203,10 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         try {
             return $this->resolver->resolve($id, [$id]);
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             throw $this->castThrown($throwable, $id);
             // @codeCoverageIgnoreStart
-        } catch (\Exception $exception) { // @phan-suppress-current-line PhanUnreachableCatch @phpstan-ignore-line
+        } catch (Exception $exception) { // @phan-suppress-current-line PhanUnreachableCatch @phpstan-ignore-line
             throw $this->castThrown($exception, $id);
             // @codeCoverageIgnoreEnd
         }
@@ -209,7 +215,7 @@ class Container implements \ArrayAccess, ContainerInterface
     /**
      * Builds an instance of the exception with a pretty message.
      *
-     * @param \Exception|\Throwable $thrown The exception to cast.
+     * @param Exception|Throwable $thrown The exception to cast.
      * @param string|object         $id     The top identifier the containe was attempting to build, or object.
      *
      * @return ContainerException The cast exception.
@@ -226,7 +232,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * Formats an error message to provide a useful debug message.
      *
      * @param string|object         $id     The id of what is actually being built or the object that is being built.
-     * @param \Exception|\Throwable $thrown The original exception thrown while trying to make the target.
+     * @param Exception|Throwable $thrown The original exception thrown while trying to make the target.
      *
      * @return string The formatted make error message.
      */
@@ -234,7 +240,11 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $buildLine = $this->resolver->getBuildLine();
         $idString = is_string($id) ? $id : gettype($id);
-        $last = array_pop($buildLine) ?: $idString;
+        if ($thrown instanceof NestedParseError ) {
+            $last = $thrown->getType() . ' $' . $thrown->getName();
+        } else {
+            $last = array_pop($buildLine) ?: $idString;
+        }
         $lastEntry = "Error while making {$last}: " . lcfirst(
             rtrim(
                 str_replace('"', '', $thrown->getMessage()),
@@ -275,7 +285,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return boolean true on success or false on failure.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->has($offset);
@@ -393,7 +403,7 @@ class Container implements \ArrayAccess, ContainerInterface
             $isInstantiatable = $this->checkClassIsInstantiatable($class);
             $this->classIsInstantiatableCache[$class] = $isInstantiatable;
             return $isInstantiatable;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->classIsInstantiatableCache[$class] = false;
             throw new ContainerException($e->getMessage());
         }
@@ -631,7 +641,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @return void The method does not return any value.
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if (!is_string($offset)) {
@@ -727,7 +737,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function callback($id, $method)
     {
-        $callbackIdPrefix = is_object($id) ? \spl_object_hash($id) : $id;
+        $callbackIdPrefix = is_object($id) ? spl_object_hash($id) : $id;
 
         if (!is_string($callbackIdPrefix)) {
             $typeOfId = gettype($id);
