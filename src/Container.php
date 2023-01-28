@@ -239,7 +239,7 @@ class Container implements ArrayAccess, ContainerInterface
     {
         $buildLine = $this->resolver->getBuildLine();
         $idString = is_string($id) ? $id : gettype($id);
-        if ($thrown instanceof NestedParseError ) {
+        if ($thrown instanceof NestedParseError) {
             $last = $thrown->getType() . ' $' . $thrown->getName();
         } else {
             $last = array_pop($buildLine) ?: $idString;
