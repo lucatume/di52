@@ -12,7 +12,6 @@ use Closure;
 use Exception;
 use lucatume\DI52\Builders\BuilderInterface;
 use lucatume\DI52\Builders\ValueBuilder;
-use ParseError;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
