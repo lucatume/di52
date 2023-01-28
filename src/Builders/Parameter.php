@@ -206,7 +206,7 @@ class Parameter
                 return false;
             }
         } catch (ParseError $e) {
-            throw new NestedParseError($e->getMessage(), $e->getCode(), $e, $this->type, $this->name);
+            throw new NestedParseError($e->getMessage(), $e->getCode(), $e, (string)$this->type, $this->name);
         }
 
         return true;
