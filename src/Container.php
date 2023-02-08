@@ -16,6 +16,7 @@ use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
+use ReflectionProperty;
 use ReturnTypeWillChange;
 use Throwable;
 use function spl_object_hash;
@@ -222,9 +223,21 @@ class Container implements ArrayAccess, ContainerInterface
     private function castThrown($thrown, $id)
     {
         $exceptionClass = $thrown instanceof ContainerException ? get_class($thrown) : ContainerException::class;
-        $thrown = new $exceptionClass($this->makeBuildLineErrorMessage($id, $thrown));
+        $thrownTraceProperty = $this->getTraceReflectionProperty($thrown);
+        $throwTraceValue = $thrownTraceProperty instanceof ReflectionProperty ?
+            $thrownTraceProperty->getValue($thrown) : null;
 
-        return $thrown;
+        $rethrown = new $exceptionClass($this->makeBuildLineErrorMessage($id, $thrown));
+
+        if (is_array($throwTraceValue)) {
+            $rethrownTraceProperty = $this->getTraceReflectionProperty($rethrown);
+            if ($rethrownTraceProperty instanceof ReflectionProperty) {
+                $rethrownTraceProperty->setAccessible(true);
+                $rethrownTraceProperty->setValue($rethrown, $throwTraceValue);
+            }
+        }
+
+        return $rethrown;
     }
 
     /**
@@ -870,5 +883,30 @@ class Container implements ArrayAccess, ContainerInterface
     public function isBound($id)
     {
         return is_string($id) && $this->resolver->isBound($id);
+    }
+
+    /**
+     * Extracts the trace property from a throwable.
+     *
+     * @param Throwable|Exception $throwable The throwable to extract the trace from.
+     *
+     * @return ReflectionProperty|null The trace property or `null` if not found on the throwable.
+     */
+    private function getTraceReflectionProperty($throwable)
+    {
+        $traceProperty = null;
+        $reflectionClass = new ReflectionClass($throwable);
+
+        do {
+            if ($reflectionClass->hasProperty('trace')) {
+                $traceProperty = $reflectionClass->getProperty('trace');
+                $traceProperty->setAccessible(true);
+                break;
+            }
+
+            $reflectionClass = $reflectionClass->getParentClass();
+        } while ($reflectionClass instanceof ReflectionClass);
+
+        return $traceProperty;
     }
 }
