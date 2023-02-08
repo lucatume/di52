@@ -22,6 +22,6 @@
     "ext-json": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "*"
+    "phpunit/phpunit": "<10.*"
   }
 }
