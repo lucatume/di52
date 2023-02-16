@@ -10,8 +10,6 @@ namespace lucatume\DI52\Builders;
 /**
  * Interface ReinitializableBuilderInterface
  *
- * @since   TBD
- *
  * @package lucatume\DI52\Builders
  */
 interface ReinitializableBuilderInterface

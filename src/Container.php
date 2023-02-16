@@ -23,8 +23,6 @@ use function spl_object_hash;
 /**
  * Class Container
  *
- * @since   TBD
- *
  * @package lucatume\DI52
  * @implements ArrayAccess<string,object>
  */

@@ -5,6 +5,9 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+- Removed leftover `@since TBD` comments.
+
 ## [3.1.0] 2023-01-28;
 
 ### Added
