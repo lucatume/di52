@@ -5,6 +5,11 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.1.1] 2023-02-16;
+
+### Changed
+- Removed leftover `@since TBD` comments.
+
 ## [3.1.0] 2023-01-28;
 
 ### Added
@@ -444,4 +449,5 @@ org/psr/psr-11/)
 [3.0.2]: https://github.com/lucatume/di52/compare/3.0.1...3.0.2
 [3.0.3]: https://github.com/lucatume/di52/compare/3.0.2...3.0.3
 [3.1.0]: https://github.com/lucatume/di52/compare/3.0.3...3.1.0
-[unreleased]: https://github.com/lucatume/di52/compare/3.1.0...HEAD
+[3.1.1]: https://github.com/lucatume/di52/compare/3.1.0...3.1.1
+[unreleased]: https://github.com/lucatume/di52/compare/3.1.1...HEAD

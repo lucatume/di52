@@ -1,11 +1,4 @@
 <?php
-/**
- * ${CARET}
- *
- * @since   TBD
- *
- * @package Builders
- */
 
 namespace Builders;
 

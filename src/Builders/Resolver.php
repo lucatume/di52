@@ -2,8 +2,6 @@
 /**
  * Resolves ids (string, class names or mixed values) to values with auto-wiring.
  *
- * @since   TBD
- *
  * @package lucatume\DI52\Builders
  */
 
