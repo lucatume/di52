@@ -16,7 +16,6 @@ use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use ReflectionProperty;
 use ReturnTypeWillChange;
 use Throwable;
 use function spl_object_hash;
@@ -29,6 +28,10 @@ use function spl_object_hash;
  */
 class Container implements ArrayAccess, ContainerInterface
 {
+    const EXCEPTION_MASK_NONE = 0;
+    const EXCEPTION_MASK_MESSAGE = 1;
+    const EXCEPTION_MASK_FILE_LINE = 2;
+
     /**
      * An array cache to store the results of the class exists checks.
      *
@@ -81,6 +84,12 @@ class Container implements ArrayAccess, ContainerInterface
      * @var Builders\Factory
      */
     protected $builders;
+    /**
+     * What kind of masking should be applied to throwables catched by the container during resolution.
+     *
+     * @var int
+     */
+    private $maskThrowables = self::EXCEPTION_MASK_MESSAGE | self::EXCEPTION_MASK_FILE_LINE;
 
     /**
      * Container constructor.
@@ -214,56 +223,22 @@ class Container implements ArrayAccess, ContainerInterface
      * Builds an instance of the exception with a pretty message.
      *
      * @param Exception|Throwable $thrown The exception to cast.
-     * @param string|object         $id     The top identifier the containe was attempting to build, or object.
+     * @param string|object $id The top identifier the containe was attempting to build, or object.
      *
-     * @return ContainerException The cast exception.
+     * @return ContainerException|Exception|Throwable The cast exception.
      */
     private function castThrown($thrown, $id)
     {
-        $exceptionClass = $thrown instanceof ContainerException ? get_class($thrown) : ContainerException::class;
-        $thrownTraceProperty = $this->getTraceReflectionProperty($thrown);
-        $throwTraceValue = $thrownTraceProperty instanceof ReflectionProperty ?
-            $thrownTraceProperty->getValue($thrown) : null;
-
-        $rethrown = new $exceptionClass($this->makeBuildLineErrorMessage($id, $thrown));
-
-        if (is_array($throwTraceValue)) {
-            $rethrownTraceProperty = $this->getTraceReflectionProperty($rethrown);
-            if ($rethrownTraceProperty instanceof ReflectionProperty) {
-                $rethrownTraceProperty->setAccessible(true);
-                $rethrownTraceProperty->setValue($rethrown, $throwTraceValue);
-            }
+        if ($this->maskThrowables === self::EXCEPTION_MASK_NONE) {
+            return $thrown;
         }
 
-        return $rethrown;
-    }
-
-    /**
-     * Formats an error message to provide a useful debug message.
-     *
-     * @param string|object         $id     The id of what is actually being built or the object that is being built.
-     * @param Exception|Throwable $thrown The original exception thrown while trying to make the target.
-     *
-     * @return string The formatted make error message.
-     */
-    private function makeBuildLineErrorMessage($id, $thrown)
-    {
-        $buildLine = $this->resolver->getBuildLine();
-        $idString = is_string($id) ? $id : gettype($id);
-        if ($thrown instanceof NestedParseError) {
-            $last = $thrown->getType() . ' $' . $thrown->getName();
-        } else {
-            $last = array_pop($buildLine) ?: $idString;
-        }
-        $lastEntry = "Error while making {$last}: " . lcfirst(
-            rtrim(
-                str_replace('"', '', $thrown->getMessage()),
-                '.'
-            )
-        ) . '.';
-        $frags = array_merge($buildLine, [$lastEntry]);
-
-        return implode("\n\t=> ", $frags);
+        return ContainerException::fromThrowable(
+            $id,
+            $thrown,
+            $this->maskThrowables,
+            $this->resolver->getBuildLine()
+        );
     }
 
     /**
@@ -884,27 +859,16 @@ class Container implements ArrayAccess, ContainerInterface
     }
 
     /**
-     * Extracts the trace property from a throwable.
+     * Sets the mask for the throwables that should be caught and re-thrown as container exceptions.
      *
-     * @param Throwable|Exception $throwable The throwable to extract the trace from.
+     * @param int $maskThrowables The mask for the throwables that should be caught and re-thrown as container
      *
-     * @return ReflectionProperty|null The trace property or `null` if not found on the throwable.
+     * @return $this This instance.
      */
-    private function getTraceReflectionProperty($throwable)
+    public function setExceptionMask($maskThrowables)
     {
-        $traceProperty = null;
-        $reflectionClass = new ReflectionClass($throwable);
+        $this->maskThrowables = (int)$maskThrowables;
 
-        do {
-            if ($reflectionClass->hasProperty('trace')) {
-                $traceProperty = $reflectionClass->getProperty('trace');
-                $traceProperty->setAccessible(true);
-                break;
-            }
-
-            $reflectionClass = $reflectionClass->getParentClass();
-        } while ($reflectionClass instanceof ReflectionClass);
-
-        return $traceProperty;
+        return $this;
     }
 }

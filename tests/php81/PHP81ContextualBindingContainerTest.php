@@ -200,5 +200,4 @@ class PHP81ContextualBindingContainerTest extends TestCase
         $this->assertSame('published', $statusBacked->value);
         $this->assertSame('PUBLISHED', $statusBacked->name);
     }
-
 }

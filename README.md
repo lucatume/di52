@@ -35,7 +35,6 @@ A quick overview of the Container features:
 - [The power of `get`](#the-power-of--get-)
 - [Storing variables](#storing-variables)
 - [Binding implementations](#binding-implementations)
-  * [Controlling the resolution of unbound classes](#controlling-the-resolution-of-unbound-classes)
 - [Binding implementations to slugs](#binding-implementations-to-slugs)
 - [Contextual binding](#contextual-binding)
 - [Binding decorator chains](#binding-decorator-chains)
@@ -45,6 +44,9 @@ A quick overview of the Container features:
   * [Booting service providers](#booting-service-providers)
   * [Deferred service providers](#deferred-service-providers)
   * [Dependency injection with service providers](#dependency-injection-with-service-providers)
+- [Customizing the container](#customizing-the-container)
+  * [Unbound classes resolution](#unbound-classes-resolution)
+  * [Exception masking](#exception-masking)
 
 ## Code Example
 
@@ -457,27 +459,7 @@ be built just the first time: any later call for that same interface should retu
 Implementations can be redefined in any moment simple calling the `bind` or `singleton` methods again specifying a
 different implementation.
 
-### Controlling the resolution of unbound classes
-The container will use reflection to work out the dependencies of an object, and will not require setup when resolving
-objects with type-hinted object dependencies in the `__construct` method.
-By default those _unbound_ classes will be resolved **as prototypes**, built new on each `get` request.
-
-To control the mode used to resolve unbound classes, a flag property can be set on the container when constructing it:
-
-```php
-use lucatume\DI52\Container;
-
-$container1 = new Container();
-$container2 = new Container(true);
-
-// Default resolution of unbound classes is prototype.
-assert($container1->get(A::class) !== $container1->get(A::class));
-// The second container will resolve unbound classes once, then store them as singletons.
-assert($container2->get(A::class) === $container2->get(A::class));
-```
-
-This will only apply to unbound classes! Whatever the flag used to build the container instance, the mode set in the
-binding phase using `Container::bind()` or `Container::singleton()` methods will **always** be respected.
+You can customize how unbound classes are resolved by the container, check the [unbound classes](#unbound-classes-resolution) section.
 
 ## Binding implementations to slugs
 
@@ -863,4 +845,57 @@ $container->when(ProviderOne::class)
     ->give(true);
 
 $container->register(ProviderOne::class);
+```
+
+## Customizing the container
+
+The container will be built with some opinionated defaults; those are not set in stone and you can customize the
+container to your needs.
+
+### Unbound classes resolution
+The container will use reflection to work out the dependencies of an object, and will not require setup when resolving
+objects with type-hinted object dependencies in the `__construct` method.
+By default those _unbound_ classes will be resolved **as prototypes**, built new on **each** `get` request.
+
+To control the mode used to resolve unbound classes, a flag property can be set on the container when constructing it:
+
+```php
+use lucatume\DI52\Container;
+
+$container1 = new Container();
+$container2 = new Container(true);
+
+// Default resolution of unbound classes is prototype.
+assert($container1->get(A::class) !== $container1->get(A::class));
+// The second container will resolve unbound classes once, then store them as singletons.
+assert($container2->get(A::class) === $container2->get(A::class));
+```
+
+This will only apply to unbound classes! Whatever the flag used to build the container instance, the mode set in the
+binding phase using `Container::bind()` or `Container::singleton()` methods will **always** be respected.
+
+### Exception masking
+
+By default the container will catch any exception thrown during a service resolution and wrap into a `ContainerException`
+instance.  
+The container will modify the exception message and the trace file and line to provide information about the nested
+resolution tree and point your debug to the file and line that caused the issue.  
+You can customize how the container will handle exceptions by using the `Container::setExceptionMask()` method:
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// The container will throw any exception thrown during a service resolution without any modification.
+$container->setExceptionMask(Container::EXCEPTION_MASK_NONE);
+
+// Wrap any exception thrown during a service resolution in a `ContainerException` instance, modify the message.
+$container->setExceptionMask(Container::EXCEPTION_MASK_MESSAGE);
+
+// Wrap any exception thrown during a service resolution in a `ContainerException` instance, modify the trace file and line.
+$container->setExceptionMask(Container::EXCEPTION_MASK_FILE_LINE);
+
+// You can combine the options, this is the default value.
+$container->setExceptionMask(Container::EXCEPTION_MASK_MESSAGE | Container::EXCEPTION_MASK_FILE_LINE);
 ```

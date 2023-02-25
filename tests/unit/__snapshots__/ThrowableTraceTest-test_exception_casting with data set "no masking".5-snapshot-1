@@ -1,0 +1,7 @@
+Array
+(
+    [classFQN] => Exception
+    [message] => !!! Exception while building class unit\data\ThrowExceptionOnConstructClass
+    [file] => /tests/unit/data/ThrowExceptionOnConstructClass.php
+    [line] => 9
+)

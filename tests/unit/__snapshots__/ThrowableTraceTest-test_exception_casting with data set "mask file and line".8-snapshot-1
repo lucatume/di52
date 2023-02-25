@@ -1,0 +1,7 @@
+Array
+(
+    [classFQN] => lucatume\DI52\ContainerException
+    [message] => !!! Exception while building class unit\data\ThrowExceptionOnConstructClass
+    [file] => /tests/unit/data/ThrowExceptionOnConstructClass.php
+    [line] => 9
+)

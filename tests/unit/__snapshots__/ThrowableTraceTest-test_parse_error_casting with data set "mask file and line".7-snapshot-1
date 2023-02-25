@@ -1,0 +1,7 @@
+Array
+(
+    [classFQN] => lucatume\DI52\ContainerException
+    [message] => !!! Parse error while building class unit\data\ThrowParseErrorOnConstructClass
+    [file] => /tests/unit/data/ThrowParseErrorOnConstructClass.php
+    [line] => 9
+)

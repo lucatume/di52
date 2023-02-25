@@ -3,7 +3,8 @@
  * PHP7+ contextual binding test classes.
  */
 
-class Concrete7Dependency {
+class Concrete7Dependency
+{
 
 }
 
@@ -44,26 +45,31 @@ class Primitive7ConstructorClass
         $this->optional = $optional;
     }
 
-    public function num(): int {
+    public function num(): int
+    {
         return $this->num;
     }
 
-    public function dependency(): Concrete7Dependency {
+    public function dependency(): Concrete7Dependency
+    {
         return $this->dependency;
     }
 
-    public function hello(): string {
+    public function hello(): string
+    {
         return $this->hello;
     }
 
-    public function list(): array {
+    public function list(): array
+    {
         return $this->list;
     }
 
     /**
      * @return mixed|string|null
      */
-    public function optional() {
+    public function optional()
+    {
         return $this->optional;
     }
 }

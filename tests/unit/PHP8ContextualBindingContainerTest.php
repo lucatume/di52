@@ -73,5 +73,4 @@ class PHP8ContextualBindingContainerTest extends TestCase
 
         $container->get(Primitive8ConstructorClass::class);
     }
-
 }

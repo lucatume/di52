@@ -119,7 +119,12 @@ $(build_php_versions_gte_72): %:
 	docker run --rm lucatume/di52-profile:php-v$@ -v
 
 build: $(build_php_versions_lt_72) $(build_php_versions_gte_72) ## Builds the project PHP images.
+	mkdir -p var/cache/composer
 .PHONY: build
+
+clean:
+	rm -rf var/cache/composer
+.PHONY: clean
 
 test_php_versions = 'php-v5.6' 'php-v7.0' 'php-v7.1' 'php-v7.2' 'php-v7.3' 'php-v7.4' 'php-v8.0' 'php-v8.1' 'php-v8.2'
 $(test_php_versions): %:
@@ -152,7 +157,7 @@ else
 			-qrr ${PWD}/vendor/bin/phpunit -c ${PWD}/phpunit.xml \
 			${PWD}/tests
 endif
-	open tests/coverage/index.html
+	open var/coverage/index.html
 .PHONY: test_coverage
 
 test_run: ## Run the test on the specified PHP version with XDebug support. Example `make test_run 7.2`.
@@ -178,7 +183,7 @@ code_sniff: ## Run PHP Code Sniffer on the project source files.
 		--colors \
 		-p \
 		-s \
-		--standard=${PWD}/phpcs.xml \
+		--standard=${PWD}/config/phpcs.xml \
 		${PWD}/src ${PWD}/aliases.php
 .PHONY: code_sniff
 
@@ -189,8 +194,8 @@ code_fix: ## Run PHP Code Sniffer Beautifier on the project source files.
 		--colors \
 		-p \
 		-s \
-		--standard=${PWD}/phpcs.xml \
-		${PWD}/src ${PWD}/tests ${PWD}/aliases.php ${PWD}/docs/examples
+		--standard=${PWD}/config/phpcs.xml \
+		${PWD}/src ${PWD}/tests ${PWD}/aliases.php
 .PHONY: code_fix
 
 PHPSTAN_LEVEL?=max
@@ -199,7 +204,7 @@ phpstan: ## Run phpstan on the project source files.
 		-v ${PWD}:${PWD} \
 		-u "$$(id -u):$$(id -g)" \
 		ghcr.io/phpstan/phpstan analyze \
-		-c ${PWD}/_build/phpstan.neon \
+		-c ${PWD}/config/phpstan.neon \
 		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/aliases.php
 .PHONY: phpstan
 
@@ -207,7 +212,7 @@ phan: ## Run phan on the project source files.
 	docker run --rm \
 		-v ${PWD}:/mnt/src \
 		-u "$$(id -u):$$(id -g)" \
-		phanphp/phan
+		phanphp/phan -k config/phan-config.php
 .PHONY: phan
 
 pre_commit: code.lint code.fix code.sniff test phpstan phan ## Run pre-commit checks: code.lint, code.fix, code.sniff, test, phpstan, phan.
@@ -260,8 +265,8 @@ php_shell: ## Opens a shell in a PHP container.
 	docker run --rm -it \
 	   -u "$(shell id -u):$(shell id -g)" \
 	   -v "${PWD}:${PWD}" \
-	   -v "${PWD}/.cache/composer:${PWD}/.cache/composer" \
-	   -e COMPOSER_CACHE_DIR="${PWD}/.cache/composer" \
+	   -v "${PWD}/var/cache/composer:${PWD}/var/cache/composer" \
+	   -e COMPOSER_CACHE_DIR="${PWD}/var/cache/composer" \
 	   -w "${PWD}" \
 	   --entrypoint sh \
 	   lucatume/di52-dev:php-v$(TARGET_ARGS)

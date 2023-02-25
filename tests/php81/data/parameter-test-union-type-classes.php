@@ -8,7 +8,6 @@ class UnionTypeClass
     {
         $this->status = $status;
     }
-
 }
 
 class UnionTypePromotedClass
@@ -16,6 +15,6 @@ class UnionTypePromotedClass
 
     public function __construct(
         private int|float|string $status
-    ) {}
-
+    ) {
+    }
 }

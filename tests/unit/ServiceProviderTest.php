@@ -132,7 +132,8 @@ class TestProviderInjection extends ServiceProvider
     {
     }
 
-    public function getContainer() {
+    public function getContainer()
+    {
         return $this->container;
     }
 
