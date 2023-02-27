@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.2.0] 2023-02-27;
+
 ### Changed
 
 - Allow customization of rethrown exceptions catpured during container resolution; alter message, file and line by default.
@@ -458,4 +460,5 @@ org/psr/psr-11/)
 [3.0.3]: https://github.com/lucatume/di52/compare/3.0.2...3.0.3
 [3.1.0]: https://github.com/lucatume/di52/compare/3.0.3...3.1.0
 [3.1.1]: https://github.com/lucatume/di52/compare/3.1.0...3.1.1
-[unreleased]: https://github.com/lucatume/di52/compare/3.1.1...HEAD
+[3.2.0]: https://github.com/lucatume/di52/compare/3.1.1...3.2.0
+[unreleased]: https://github.com/lucatume/di52/compare/3.2.0...HEAD
