@@ -5,6 +5,14 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Allow customization of rethrown exceptions catpured during container resolution; alter message, file and line by default.
+
+### Fixed
+
+- Some `App` generated methods signatures.
+
 ## [3.1.1] 2023-02-16;
 
 ### Changed
