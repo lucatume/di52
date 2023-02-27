@@ -4,7 +4,8 @@ use lucatume\DI52\Container;
 use lucatume\DI52\ContainerException;
 use PHPUnit\Framework\TestCase;
 
-class ContextualBindingContainerTest extends TestCase {
+class ContextualBindingContainerTest extends TestCase
+{
 
     /**
      * @beforeClass
@@ -21,28 +22,30 @@ class ContextualBindingContainerTest extends TestCase {
     {
         $container = new Container();
 
-        $container->when( Primitive53ConstructorClass::class )
-            ->needs( '$num' )
-            ->give( 15 );
+        $container->when(Primitive53ConstructorClass::class)
+            ->needs('$num')
+            ->give(15);
 
-        $container->when( Primitive53ConstructorClass::class )
-            ->needs( '$hello' )
-            ->give( function () { return 'World'; } );
+        $container->when(Primitive53ConstructorClass::class)
+            ->needs('$hello')
+            ->give(function () {
+                return 'World';
+            });
 
-        $container->when( Primitive53ConstructorClass::class )
-            ->needs( '$list' )
-            ->give( [
+        $container->when(Primitive53ConstructorClass::class)
+            ->needs('$list')
+            ->give([
                 'one',
                 'two',
-            ] );
+            ]);
 
-        $instance = $container->get( Primitive53ConstructorClass::class );
+        $instance = $container->get(Primitive53ConstructorClass::class);
 
-        $this->assertSame( 15, $instance->num() );
-        $this->assertInstanceOf( Concrete53Dependency::class, $instance->dependency() );
-        $this->assertSame( 'World', $instance->hello() );
-        $this->assertSame( [ 'one', 'two' ], $instance->getList() );
-        $this->assertNull( $instance->optional() );
+        $this->assertSame(15, $instance->num());
+        $this->assertInstanceOf(Concrete53Dependency::class, $instance->dependency());
+        $this->assertSame('World', $instance->hello());
+        $this->assertSame([ 'one', 'two' ], $instance->getList());
+        $this->assertNull($instance->optional());
     }
 
     /**
@@ -56,5 +59,4 @@ class ContextualBindingContainerTest extends TestCase {
 
         $container->get(Primitive53ConstructorClass::class);
     }
-
 }

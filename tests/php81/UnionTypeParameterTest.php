@@ -58,5 +58,4 @@ class UnionTypeParameterTest extends TestCase
             $this->assertEquals($expectedData[$i], $data, 'Parameter #'.$i." ($p->name)");
         }
     }
-
 }

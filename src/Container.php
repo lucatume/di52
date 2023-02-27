@@ -28,6 +28,10 @@ use function spl_object_hash;
  */
 class Container implements ArrayAccess, ContainerInterface
 {
+    const EXCEPTION_MASK_NONE = 0;
+    const EXCEPTION_MASK_MESSAGE = 1;
+    const EXCEPTION_MASK_FILE_LINE = 2;
+
     /**
      * An array cache to store the results of the class exists checks.
      *
@@ -80,6 +84,12 @@ class Container implements ArrayAccess, ContainerInterface
      * @var Builders\Factory
      */
     protected $builders;
+    /**
+     * What kind of masking should be applied to throwables catched by the container during resolution.
+     *
+     * @var int
+     */
+    private $maskThrowables = self::EXCEPTION_MASK_MESSAGE | self::EXCEPTION_MASK_FILE_LINE;
 
     /**
      * Container constructor.
@@ -213,44 +223,22 @@ class Container implements ArrayAccess, ContainerInterface
      * Builds an instance of the exception with a pretty message.
      *
      * @param Exception|Throwable $thrown The exception to cast.
-     * @param string|object         $id     The top identifier the containe was attempting to build, or object.
+     * @param string|object $id The top identifier the containe was attempting to build, or object.
      *
-     * @return ContainerException The cast exception.
+     * @return ContainerException|Exception|Throwable The cast exception.
      */
     private function castThrown($thrown, $id)
     {
-        $exceptionClass = $thrown instanceof ContainerException ? get_class($thrown) : ContainerException::class;
-        $thrown = new $exceptionClass($this->makeBuildLineErrorMessage($id, $thrown));
-
-        return $thrown;
-    }
-
-    /**
-     * Formats an error message to provide a useful debug message.
-     *
-     * @param string|object         $id     The id of what is actually being built or the object that is being built.
-     * @param Exception|Throwable $thrown The original exception thrown while trying to make the target.
-     *
-     * @return string The formatted make error message.
-     */
-    private function makeBuildLineErrorMessage($id, $thrown)
-    {
-        $buildLine = $this->resolver->getBuildLine();
-        $idString = is_string($id) ? $id : gettype($id);
-        if ($thrown instanceof NestedParseError) {
-            $last = $thrown->getType() . ' $' . $thrown->getName();
-        } else {
-            $last = array_pop($buildLine) ?: $idString;
+        if ($this->maskThrowables === self::EXCEPTION_MASK_NONE) {
+            return $thrown;
         }
-        $lastEntry = "Error while making {$last}: " . lcfirst(
-            rtrim(
-                str_replace('"', '', $thrown->getMessage()),
-                '.'
-            )
-        ) . '.';
-        $frags = array_merge($buildLine, [$lastEntry]);
 
-        return implode("\n\t=> ", $frags);
+        return ContainerException::fromThrowable(
+            $id,
+            $thrown,
+            $this->maskThrowables,
+            $this->resolver->getBuildLine()
+        );
     }
 
     /**
@@ -868,5 +856,17 @@ class Container implements ArrayAccess, ContainerInterface
     public function isBound($id)
     {
         return is_string($id) && $this->resolver->isBound($id);
+    }
+
+    /**
+     * Sets the mask for the throwables that should be caught and re-thrown as container exceptions.
+     *
+     * @param int $maskThrowables The mask for the throwables that should be caught and re-thrown as container
+     *
+     * @return void
+     */
+    public function setExceptionMask($maskThrowables)
+    {
+        $this->maskThrowables = (int)$maskThrowables;
     }
 }

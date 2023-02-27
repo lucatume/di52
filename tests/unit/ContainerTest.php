@@ -149,5 +149,4 @@ class ContainerTest extends TestCase
         $this->assertTrue($container->has(ClassOneOne::class));
         $this->assertSame($container, $container->get(Container::class));
     }
-
 }

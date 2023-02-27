@@ -1,9 +1,9 @@
-/_build export-ignore
-/tests export-ignore
-/.phan export-ignore
-/.github export-ignore
-/makefile export-ignore
-/phpunit.xml export-ignore
-/phpcs.xml export-ignore
 /.gitattributes export-ignore
-/.gitignore export-ignore
+/.github        export-ignore
+/.gitignore     export-ignore
+/bin            export-ignore
+/composer.lock  export-ignore
+/config         export-ignore
+/makefile       export-ignore
+/phpunit.xml    export-ignore
+/tests          export-ignore

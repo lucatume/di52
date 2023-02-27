@@ -73,5 +73,4 @@ class PHP7ContextualBindingContainerTest extends TestCase
 
         $container->get(Primitive7ConstructorClass::class);
     }
-
 }

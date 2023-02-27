@@ -3,7 +3,8 @@
  * PHP5.3+ contextual binding test classes.
  */
 
-class Concrete53Dependency {
+class Concrete53Dependency
+{
 
 }
 
@@ -43,24 +44,28 @@ class Primitive53ConstructorClass
         $this->optional = $optional;
     }
 
-    public function num() {
+    public function num()
+    {
         return $this->num;
     }
 
-    public function dependency() {
+    public function dependency()
+    {
         return $this->dependency;
     }
 
-    public function hello() {
+    public function hello()
+    {
         return $this->hello;
     }
 
-    public function getList() {
+    public function getList()
+    {
         return $this->list;
     }
 
-    public function optional() {
+    public function optional()
+    {
         return $this->optional;
     }
-
 }

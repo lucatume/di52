@@ -38,7 +38,7 @@ class App
 
         return static::$container;
     }
-
+    
     /**
      * Sets the container instance the Application should use as a Service Locator.
      *
@@ -54,8 +54,8 @@ class App
     {
         static::$container = $container;
     }
-
-    /**
+    
+        /**
      * Sets a variable on the container.
      *
      * @param string $key   The alias the container will use to reference the variable.
@@ -518,5 +518,17 @@ class App
     public static function isBound($id)
     {
         return static::container()->isBound($id);
+    }
+
+    /**
+     * Sets the mask for the throwables that should be caught and re-thrown as container exceptions.
+     *
+     * @param int $maskThrowables The mask for the throwables that should be caught and re-thrown as container
+     *
+     * @return void
+     */
+    public static function setExceptionMask($maskThrowables)
+    {
+        static::container()->setExceptionMask($maskThrowables);
     }
 }

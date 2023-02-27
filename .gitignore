@@ -1,8 +1,6 @@
 .idea
-.cache
+var
 vendor/
-tests/coverage
 composer.lock
 _build/profile/callgrind.out.*
 _build/benchmark/vendor
-.phpunit.result.cache
