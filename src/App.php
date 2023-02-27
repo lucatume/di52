@@ -7,8 +7,6 @@
 
 namespace lucatume\DI52;
 
-use lucatume\DI52\Builders\ValueBuilder;
-
 /**
  * Class App
  *
@@ -38,7 +36,7 @@ class App
 
         return static::$container;
     }
-
+    
     /**
      * Sets the container instance the Application should use as a Service Locator.
      *
@@ -54,8 +52,8 @@ class App
     {
         static::$container = $container;
     }
-
-    /**
+    
+        /**
      * Sets a variable on the container.
      *
      * @param string $key   The alias the container will use to reference the variable.
@@ -284,7 +282,7 @@ class App
      */
     public static function register($serviceProviderClass, ...$alias)
     {
-        static::container()->register($serviceProviderClass, ...$alias);
+        static::container()->register($serviceProviderClass, $alias);
     }
 
     /**
@@ -518,5 +516,17 @@ class App
     public static function isBound($id)
     {
         return static::container()->isBound($id);
+    }
+
+    /**
+     * Sets the mask for the throwables that should be caught and re-thrown as container exceptions.
+     *
+     * @param int $maskThrowables The mask for the throwables that should be caught and re-thrown as container
+     *
+     * @return $this This instance.
+     */
+    public static function setExceptionMask($maskThrowables)
+    {
+        return static::container()->setExceptionMask($maskThrowables);
     }
 }
