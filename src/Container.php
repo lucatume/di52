@@ -863,12 +863,10 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @param int $maskThrowables The mask for the throwables that should be caught and re-thrown as container
      *
-     * @return $this This instance.
+     * @return void
      */
     public function setExceptionMask($maskThrowables)
     {
         $this->maskThrowables = (int)$maskThrowables;
-
-        return $this;
     }
 }

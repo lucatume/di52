@@ -43,6 +43,8 @@ $appFacadeContentsTemplate = <<< PHP_CODE
 
 namespace lucatume\DI52;
 
+use lucatume\DI52\Builders\ValueBuilder;
+
 /**
  * Class App
  *
@@ -117,6 +119,10 @@ foreach ($containerPublicMethods as $method) {
             ', ',
             array_map(
                 static function (ReflectionParameter $p) {
+                    if($p->isVariadic()){
+                        return '...$' . $p->getName();
+                    }
+
                     return '$' . $p->getName();
                 },
                 $method->getParameters()

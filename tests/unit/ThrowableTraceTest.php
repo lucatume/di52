@@ -51,8 +51,8 @@ class ThrowableTraceTest extends TestCase
         $this->expectException($expectedExceptionClass);
 
         try {
-            $container = (new Container())
-                ->setExceptionMask($maskThrowables);
+            $container = new Container();
+            $container->setExceptionMask($maskThrowables);
             $container->get(ThrowExceptionOnConstructClass::class);
         } catch (Exception $e) {
             assertMatchesSnapshots(dumpThrowable($e));
@@ -104,8 +104,8 @@ class ThrowableTraceTest extends TestCase
         $this->expectException($expectedExceptionClass);
 
         try {
-            $container = (new Container())
-                ->setExceptionMask($maskThrowables);
+            $container = new Container();
+            $container->setExceptionMask($maskThrowables);
             $container->get(ThrowErrorOnConstructClass::class);
         } catch (Exception $e) {
             assertMatchesSnapshots(dumpThrowable($e));
@@ -157,8 +157,8 @@ class ThrowableTraceTest extends TestCase
         $this->expectException($expectedExceptionClass);
 
         try {
-            $container = (new Container())
-                ->setExceptionMask($maskThrowables);
+            $container = new Container();
+            $container->setExceptionMask($maskThrowables);
             $container->get(ThrowParseErrorOnConstructClass::class);
         } catch (Exception $e) {
             assertMatchesSnapshots(dumpThrowable($e));

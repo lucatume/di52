@@ -7,6 +7,8 @@
 
 namespace lucatume\DI52;
 
+use lucatume\DI52\Builders\ValueBuilder;
+
 /**
  * Class App
  *
@@ -282,7 +284,7 @@ class App
      */
     public static function register($serviceProviderClass, ...$alias)
     {
-        static::container()->register($serviceProviderClass, $alias);
+        static::container()->register($serviceProviderClass, ...$alias);
     }
 
     /**
@@ -523,10 +525,10 @@ class App
      *
      * @param int $maskThrowables The mask for the throwables that should be caught and re-thrown as container
      *
-     * @return $this This instance.
+     * @return void
      */
     public static function setExceptionMask($maskThrowables)
     {
-        return static::container()->setExceptionMask($maskThrowables);
+        static::container()->setExceptionMask($maskThrowables);
     }
 }

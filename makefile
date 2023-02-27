@@ -13,15 +13,15 @@ build: $(build_php_versions) ## Builds the project PHP images.
 	mkdir -p var/cache/composer
 	mkdir -p var/log
 	# Foreach PHP version build a Docker image.
-	$(foreach version,$(php_versions), \
+	for version in $(php_versions); do \
 		docker build \
-			--build-arg PHP_VERSION=$(version) \
+			--build-arg PHP_VERSION=$${version} \
 			--build-arg XDEBUG_REMOTE_HOST=$${XDEBUG_REMOTE_HOST:-host.docker.internal} \
 			--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
 			--build-arg WORKDIR=${PWD} \
 			config/containers/php \
-			--tag lucatume/di52-dev:php-v$(version); \
-			)
+			--tag lucatume/di52-dev:php-v$${version}; \
+	done
 .PHONY: build
 
 lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
@@ -54,7 +54,6 @@ phpcbf: ## Run PHP Code Sniffer Beautifier on the project source files.
 
 PHPSTAN_LEVEL?=max
 phpstan: ## Run phpstan on the project source files, PHP 5.6 version.
-	PHP_VERSION=5.6 $(MAKE) composer_update
 	docker run --rm \
 		-v ${PWD}:${PWD} \
 		-u "$$(id -u):$$(id -g)" \
@@ -64,7 +63,6 @@ phpstan: ## Run phpstan on the project source files, PHP 5.6 version.
 .PHONY: phpstan
 
 phan: ## Run phan on the project source files, PHP 5.6 version.
-	PHP_VERSION=5.6 $(MAKE) composer_update
 	docker run --rm \
 		-v ${PWD}:/mnt/src \
 		-u "$$(id -u):$$(id -g)" \
@@ -80,6 +78,15 @@ composer_update:
 		lucatume/di52-dev:php-v${PHP_VERSION} update -W
 .PHONY: composer_update
 
+composer_update_56:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v5.6 update -W
+.PHONY: composer_update_56
+
 test_run: ## Run the test on the specified PHP version with XDebug support. Example `PHP_VERSION=7.2 make test_run`.
 	docker run --rm \
 	  -e COMPOSER_CACHE_DIR="${PWD}/var/cache/composer" \
@@ -88,14 +95,14 @@ test_run: ## Run the test on the specified PHP version with XDebug support. Exam
 	  "lucatume/di52-dev:php-v${PHP_VERSION}" run_tests --no-coverage
 .PHONY: test_run
 
-test: lint phpcbf phpcs phpstan phan ## Runs the project PHPUnit tests on all PHP versions.
-	$(foreach version,$(php_versions), \
+test: composer_update_56 lint phpcs phpstan phan ## Runs the project PHPUnit tests on all PHP versions.
+	for version in $(php_versions); do \
 		docker run --rm \
         	  -e COMPOSER_CACHE_DIR="${PWD}/var/cache/composer" \
         	  -v "${PWD}:${PWD}" \
         	  -w "${PWD}" \
-        	  "lucatume/di52-dev:php-v$(version)" run_tests --no-coverage; \
-	)
+        	  lucatume/di52-dev:php-v$${version} run_tests --no-coverage || exit 1; \
+	done
 .PHONY: test
 
 clean:
@@ -130,5 +137,7 @@ app_facade: ## Creates or updates the src/App.php file from the current Containe
 		  -v "${PWD}:${PWD}" \
 		  -w "${PWD}" \
 		  lucatume/di52-dev:php-v8.0 php bin/create-app-facade;
-	$(MAKE) phpcbf
+	$(MAKE) phpstan
+	$(MAKE) phpcbf || exit 0
+	$(MAKE) phpcs
 .PHONY: app_facade
