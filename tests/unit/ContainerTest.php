@@ -89,7 +89,7 @@ class ContainerTest extends TestCase
     /** @test */
     public function it_should_resolve_contextual_binding_without_an_early_bind()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->when('ClassSix')
             ->needs('One')
@@ -101,7 +101,7 @@ class ContainerTest extends TestCase
     /** @test */
     public function it_should_resolve_contextual_binding_with_an_early_bind_of_different_type()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'foo');
 

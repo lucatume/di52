@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Breaking change
+
+- Removed the `aliases.php` file from the package autoloading. Take a look at the README.md file to see how to gracefully upgrade to version 3.3
+
 ## [3.2.1] 2023-02-28;
 
 ### Fixed

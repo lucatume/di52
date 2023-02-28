@@ -27,6 +27,7 @@ A quick overview of the Container features:
 - [Code Example](#code-example)
 - [Installation](#installation)
 - [Upgrading from version 2 to version 3](#upgrading-from-version-2-to-version-3)
+- [Upgrading from version 3.2 to version 3.3](#upgrading-from-version-32-to-version-33)
 - [Quick and dirty introduction to dependency injection](#quick-and-dirty-introduction-to-dependency-injection)
   * [What is dependency injection?](#what-is-dependency-injection-)
   * [What is a DI container?](#what-is-a-di-container-)
@@ -181,6 +182,26 @@ the `lucatume\di52\Container::get` one.
 For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\di52\Container::get`.
 
 That should be all of it.
+
+## Upgrading from version 3.2 to version 3.3
+
+Version `3.3.0` of the library removed the `aliases.php` file that would take care to route the auto-loading of the
+non-PSR namespaced class names. If you're using the `tad_DI52_Container` and `tad_DI52_ServiceProvider` classes in your
+project, you can add the following code to your project bootstrap file to make sure the aliases are set:
+
+```php
+<?php
+
+$aliases = [
+    ['lucatume\DI52\Container', 'tad_DI52_Container'],
+    ['lucatume\DI52\ServiceProvider', 'tad_DI52_ServiceProvider']
+];
+foreach ($aliases as list($class, $alias)) {
+    if (!class_exists($alias)) {
+        class_alias($class, $alias);
+    }
+}
+```
 
 ## Quick and dirty introduction to dependency injection
 

@@ -1,6 +1,8 @@
 <?php
 
-class ProviderOne extends tad_DI52_ServiceProvider
+use lucatume\DI52\ServiceProvider as Provider;
+
+class ProviderOne extends Provider
 {
     /**
      * Binds and sets up implementations.
@@ -11,7 +13,7 @@ class ProviderOne extends tad_DI52_ServiceProvider
     }
 }
 
-class DeferredProviderOne extends tad_DI52_ServiceProvider
+class DeferredProviderOne extends Provider
 {
 
     protected $deferred = true;
@@ -25,7 +27,7 @@ class DeferredProviderOne extends tad_DI52_ServiceProvider
     }
 }
 
-class DeferredProviderTwo extends tad_DI52_ServiceProvider
+class DeferredProviderTwo extends Provider
 {
 
     protected static $wasRegistered = false;
@@ -57,7 +59,7 @@ class DeferredProviderTwo extends tad_DI52_ServiceProvider
     }
 }
 
-class ProviderThree extends tad_DI52_ServiceProvider
+class ProviderThree extends Provider
 {
 
     /**

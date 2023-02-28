@@ -25,9 +25,7 @@ build: $(build_php_versions) ## Builds the project PHP images.
 .PHONY: build
 
 lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
-	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors \
-			${PWD}/src \
-			${PWD}/aliases.php
+	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors ${PWD}/src
 .PHONY: lint
 
 phpcs: ## Run PHP Code Sniffer on the project source files.
@@ -38,7 +36,7 @@ phpcs: ## Run PHP Code Sniffer on the project source files.
 		-p \
 		-s \
 		--standard=${PWD}/config/phpcs.xml \
-		${PWD}/src ${PWD}/aliases.php
+		${PWD}/src
 .PHONY: phpcs
 
 phpcbf: ## Run PHP Code Sniffer Beautifier on the project source files.
@@ -49,7 +47,7 @@ phpcbf: ## Run PHP Code Sniffer Beautifier on the project source files.
 		-p \
 		-s \
 		--standard=${PWD}/config/phpcs.xml \
-		${PWD}/src ${PWD}/tests ${PWD}/aliases.php
+		${PWD}/src ${PWD}/tests
 .PHONY: phpcbf
 
 PHPSTAN_LEVEL?=max
@@ -59,7 +57,7 @@ phpstan: ## Run phpstan on the project source files, PHP 5.6 version.
 		-u "$$(id -u):$$(id -g)" \
 		ghcr.io/phpstan/phpstan analyze \
 		-c ${PWD}/config/phpstan.neon \
-		-l ${PHPSTAN_LEVEL} ${PWD}/src ${PWD}/aliases.php
+		-l ${PHPSTAN_LEVEL} ${PWD}/src
 .PHONY: phpstan
 
 phan: ## Run phan on the project source files, PHP 5.6 version.

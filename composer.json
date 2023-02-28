@@ -11,10 +11,7 @@
   "autoload": {
     "psr-4": {
       "lucatume\\DI52\\": "src/"
-    },
-    "files": [
-      "aliases.php"
-    ]
+    }
   },
   "require": {
     "php": ">=5.6",

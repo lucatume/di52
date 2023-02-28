@@ -3,6 +3,7 @@
 use lucatume\DI52\ContainerException;
 use lucatume\DI52\NotFoundException;
 use lucatume\DI52\ObservableContainer;
+use lucatume\DI52\Container;
 
 class TestObject
 {
@@ -69,7 +70,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_setting_a_var_on_the_container($value)
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->setVar('foo', $value);
 
@@ -83,7 +84,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_setting_a_var_on_the_container_with_array_access_api($value)
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container['foo'] = $value;
 
@@ -96,7 +97,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_return_null_when_trying_to_get_non_existing_var()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->assertNull($container->getVar('foo'));
     }
@@ -107,7 +108,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_return_throw_when_using_array_access_api_to_get_non_set_var()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->expectException(ContainerException::class);
 
@@ -120,7 +121,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_implementation_with_no_constructor_to_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -133,7 +134,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_return_a_different_instance_of_a_bound_interface_implementation_on_each_build()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -146,7 +147,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_implementation_with_constructor_to_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOneOne');
 
@@ -159,7 +160,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_implementation_with_constructor_arguments()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOneTwo');
 
@@ -172,7 +173,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_implementation_to_a_string_slug()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('foo', 'ClassOneTwo');
 
@@ -185,7 +186,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_implementation_to_a_class()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('ClassOne', 'ClassOneOne');
 
@@ -198,7 +199,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_unbound_class_with_no_constructor()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->assertInstanceOf('ClassOne', $container->make('ClassOne'));
     }
@@ -209,7 +210,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_an_unbound_class_with_a_defaulted_scalar_dependency()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->assertInstanceOf('ClassOneTwo', $container->make('ClassOneTwo'));
     }
@@ -222,7 +223,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         $this->expectException(ContainerException::class);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->make('ClassTwo');
     }
@@ -233,7 +234,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_an_unbound_class_with_an_interface_dependency()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -246,7 +247,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_an_unbound_class_with_a_class_dependency()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->assertInstanceOf('ClassTwoOne', $container->make('ClassTwoOne'));
     }
@@ -257,7 +258,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_an_unbound_class_with_plus_one_interface_dependencies()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
         $container->bind('Two', 'ClassTwo');
@@ -271,7 +272,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_an_unbound_class_with_plus_one_class_dependencies()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -284,7 +285,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_resolve_an_unbound_class_with_plus_one_interface_and_class_dependencies()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->assertInstanceOf('ClassThreeTwo', $container->make('ClassThreeTwo'));
     }
@@ -295,7 +296,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_throw_if_trying_to_resolve_class_with_non_type_hinted_dependency_without_default()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->expectException(ContainerException::class);
 
@@ -308,7 +309,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_class_to_an_interface_as_a_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', 'ClassOne');
 
@@ -322,7 +323,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_class_to_a_class_as_a_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('ClassOne', 'ClassOneOne');
 
@@ -336,7 +337,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_class_to_a_string_slug_as_a_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('one.foo', 'ClassOne');
 
@@ -359,7 +360,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_bind_an_implementation_as_singleton_when_using_array_access_api($key, $value)
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container[$key] = $value;
 
@@ -373,7 +374,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_decorator_chain_to_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ]);
 
@@ -387,7 +388,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_specifying_after_build_methods_to_call_on_a_decorator_chain_base()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bindDecorators(
             'Four',
@@ -410,7 +411,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_chain_as_a_singleton_to_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singletonDecorators(
             'Four',
@@ -427,7 +428,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_complex_chain_to_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Four', 'FourTwo');
         $container->bind('One', 'ClassOne');
@@ -445,7 +446,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_a_complex_chain_as_a_singleton_to_an_interface()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Four', 'FourTwo');
         $container->bind('One', 'ClassOne');
@@ -466,7 +467,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_tagging_and_resolving_tagged_classes()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->tag([ 'ClassOne', 'ClassOneOne', 'ClassOneTwo' ], 'foo');
         $made = $container->tagged('foo');
@@ -482,7 +483,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_throw_if_trying_to_resolve_non_existing_tag()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->expectException(NotFoundException::class);
 
@@ -495,7 +496,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_tagging_mixed_values()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->tag([ 'ClassOne', new ClassOneOne(), 'ClassOneTwo' ], 'foo');
         $made = $container->tagged('foo');
@@ -511,7 +512,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_call_register_method_on_on_deferred_service_providers_when_registering()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->register('ProviderOne');
 
@@ -526,7 +527,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         DeferredProviderTwo::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->register('DeferredProviderTwo');
 
@@ -539,7 +540,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_throw_if_deferred_provider_is_not_providing_anything()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->expectException(ContainerException::class);
 
@@ -554,7 +555,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         DeferredProviderTwo::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->register('DeferredProviderTwo');
 
@@ -571,7 +572,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_call_boot_method_on_providers_when_booting_the_container()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->register('ProviderThree');
 
@@ -588,7 +589,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_call_after_build_methods_on_implementations()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOneThree', [ 'methodOne', 'methodTwo' ]);
 
@@ -603,7 +604,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_bind_an_object_implementation_as_a_singleton_even_when_using_bind()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $object = new stdClass();
 
@@ -619,7 +620,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_object_to_an_interface_as_a_singleton_and_resolving_it_using_bind()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $object = new ClassOne();
 
@@ -636,7 +637,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_object_to_an_interface_as_a_singleton_and_resolving_it()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $object = new ClassOne();
 
@@ -653,7 +654,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_support_contextual_binding_of_interfaces()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -676,7 +677,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_support_contextual_binding_of_classes()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->when('ClassSixOne')
             ->needs('ClassOne')
@@ -697,7 +698,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_throw_when_trying_to_make_non_existing_class()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->expectException(NotFoundException::class);
 
@@ -710,7 +711,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_replace_a_binding_when_re_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -727,7 +728,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_replace_a_singleton_bind_when_re_binding_a_singleton_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', 'ClassOne');
 
@@ -745,7 +746,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_replace_bind_with_singleton_if_re_binding_as_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', 'ClassOne');
 
@@ -764,7 +765,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_replace_singleton_with_simple_bind_if_re_binding_as_non_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', 'ClassOne');
 
@@ -783,7 +784,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_tagging_non_concrete_implementations()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('foo', 'ClassOne');
         $container->bind('One', 'ClassOne');
@@ -804,7 +805,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_building_an_interface_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('Eight', 'ClassEight');
         $f = $container->callback('Eight', 'methodOne');
@@ -821,7 +822,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_building_an_class_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('ClassEight', 'ClassEightExtension');
         $f = $container->callback('ClassEight', 'methodOne');
@@ -838,7 +839,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_building_an_slug_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('foo', 'ClassEight');
         $f = $container->callback('foo', 'methodOne');
@@ -855,7 +856,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_binding_a_singleton_interface_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('Eight', 'ClassEight');
         $f = $container->callback('Eight', 'methodOne');
@@ -872,7 +873,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_binding_a_singleton_class_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('ClassEight', 'ClassEightExtension');
         $f = $container->callback('ClassEight', 'methodOne');
@@ -889,7 +890,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_binding_a_singleton_slug_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('foo', 'ClassEight');
         $f = $container->callback('foo', 'methodOne');
@@ -906,7 +907,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_pass_the_calling_arguments_to_the_lazy_made_instance()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('foo', 'ClassEight');
         $f = $container->callback('foo', 'methodFour');
@@ -921,7 +922,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_making_a_decorator_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bindDecorators('Four', [ 'FourDecoratorOne', 'FourDecoratorTwo', 'FourDecoratorThree', 'FourBase' ]);
 
@@ -935,7 +936,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_making_a_decorator_singleton_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singletonDecorators(
             'Four',
@@ -953,7 +954,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_making_an_unbound_class()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $f = $container->callback('FourBase', 'methodThree');
 
@@ -966,7 +967,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_throw_if_trying_to_lazy_make_a_non_string_method()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $this->expectException(ContainerException::class);
 
@@ -979,7 +980,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_apply_contextual_binding_to_unbound_classes()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
         $container->bind('Two', 'ClassTwo');
@@ -995,7 +996,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_lazy_making_contextually_bound_interfaces()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
         $container->bind('Two', 'ClassTwo');
@@ -1012,7 +1013,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_return_same_instance_when_lazy_making_contextually_bound_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
         $container->bind('Two', 'ClassTwo');
@@ -1031,7 +1032,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_not_build_lazy_made_object_immediately()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         ClassNine::reset();
         $f = $container->callback('ClassNine', 'methodOne');
@@ -1052,7 +1053,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         DeferredProviderTwo::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->register('DeferredProviderTwo');
 
@@ -1067,7 +1068,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassTen::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $f = $container->instance('ClassTen', [ 'foo', 'baz', 'bar' ]);
 
@@ -1103,7 +1104,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassEleven::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOneTwo');
         $container->bind('Two', 'ClassTwo');
@@ -1145,7 +1146,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -1165,7 +1166,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOne');
 
@@ -1185,7 +1186,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('foo', 'ClassOne');
 
@@ -1205,7 +1206,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', 'ClassOne');
 
@@ -1223,7 +1224,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     {
         ClassTwelve::reset();
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $one = new ClassOne;
         $container->singleton('One', $one);
@@ -1240,7 +1241,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_instance_in_the_container()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ]));
 
@@ -1255,7 +1256,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_binding_an_instance_as_a_singleton_in_the_container()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', $container->instance('ClassOneTwo', [ 'sudo-foo' ]));
 
@@ -1270,7 +1271,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_build_the_instance_with_the_container_if_not_specifying_arguments()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOneTwo');
         $f = $container->instance('One');
@@ -1286,7 +1287,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_use_container_binding_settings_when_instancing()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->singleton('One', 'ClassOneTwo');
         $f = $container->instance('One');
@@ -1302,7 +1303,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_fetch_correct_objects_when_re_binding()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', 'ClassOneOne');
 
@@ -1323,7 +1324,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_re_binding_objects()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $container->bind('One', new ClassOneOne());
 
@@ -1344,7 +1345,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_for_built_objects_to_passed_to_instance()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $obj = new ClassFour('foo');
         $instance = $container->instance($obj);
@@ -1358,7 +1359,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_for_built_objects_to_be_passed_in_callback()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $obj = new ClassFour('foo');
         $callback = $container->callback($obj, 'methodTwo');
@@ -1372,7 +1373,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_for_callback_to_be_fed_to_instance()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $callback = $container->callback('Factory', 'build');
 
@@ -1387,7 +1388,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_for_instance_to_be_fed_to_callback()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $instance = $container->instance('Factory');
 
@@ -1402,7 +1403,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_registering_instance_callbacks_on_class_names()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $instance = $container->instance('ClassThirteen');
 
@@ -1415,7 +1416,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_registering_instance_callbacks_on_classes_with_constructor_arguments()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         $container->bind('One', 'ClassOne');
 
         $instance = $container->instance('ClassFifteen');
@@ -1429,7 +1430,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_registering_callback_callbacks_on_class_names()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $callback = $container->callback('ClassThirteen', 'doSomething');
 
@@ -1442,7 +1443,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_allow_registering_callback_callbacks_on_classes_with_constructor_arguments()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         $container->bind('One', 'ClassOne');
 
         $callback = $container->callback('ClassFifteen', 'doSomething');
@@ -1457,7 +1458,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function it_should_build_not_registered_class_dependencies_anew_each_time()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $d1 = $container->make('Depending');
         $d2 = $container->make('Depending');
@@ -1476,7 +1477,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
         $o1 = new TestObject(23);
         $o2 = new TestObject(89);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $o1Callback = $container->callback($o1, 'getNum');
         $o2Callback = $container->callback($o2, 'getNum');
@@ -1497,7 +1498,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
 
         $o1 = new TestObject(23);
 
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $callback1 = $container->callback($o1, 'getNum');
         $callback2 = $container->callback($o1, 'getNum');
@@ -1514,7 +1515,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
      */
     public function should_return_the_same_callback_when_building_for_same_class_and_static_method()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
 
         $callback1 = $container->callback('TestObject', 'staticOne');
         $callback2 = $container->callback('TestObject', 'staticOne');
@@ -1585,7 +1586,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     /** @test */
     public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         try {
             $container->make('Car');
         } catch (Exception $e) {
@@ -1596,7 +1597,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     /** @test */
     public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor_and_nested_dependency_singleton()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         $container->bind('Car');
         $container->singleton('Engine');
         try {
@@ -1609,7 +1610,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     /** @test */
     public function should_throw_correct_exception_when_injecting_missing_class_in_the_constructor_2()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         $container->singleton('Engine');
         try {
             $container->make('Engine');
@@ -1621,7 +1622,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     /** @test */
     public function should_throw_correct_exception_when_injecting_class_with_private_constructor()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         try {
             $container->make('LowerEngine');
         } catch (Exception $e) {
@@ -1632,7 +1633,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     /** @test */
     public function should_throw_correct_exception_when_making_class_with_private_constructor_as_a_dependency()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         try {
             $container->make('Clutch');
         } catch (Exception $e) {
@@ -1643,7 +1644,7 @@ class PrefixedTest extends \lucatume\DI52\Tests\TestCase
     /** @test */
     public function should_throw_correct_exception_when_making_class_with_invalid_class_as_dependency()
     {
-        $container = new tad_DI52_Container();
+        $container = new Container();
         try {
             $container->make('Valve');
         } catch (Exception $e) {
