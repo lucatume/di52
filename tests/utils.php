@@ -40,7 +40,9 @@ function assertMatchesSnapshots($actual, $prefix = null)
         $snapshot = $root . "/__snapshots__/$testCase-$testMethod." . PHP_MAJOR_VERSION . "-snapshot-$count";
     }
 
-    if (!is_file($snapshot)) {
+    $updateSnapshots = getenv('UPDATE_SNAPSHOTS');
+
+    if ($updateSnapshots || !is_file($snapshot)) {
         if (!is_dir(dirname($snapshot)) && !mkdir(
             dirname($snapshot),
             0777,

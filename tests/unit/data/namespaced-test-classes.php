@@ -169,3 +169,11 @@ class Factory
         return new ClassOne();
     }
 }
+
+class DependingOnOneInterfaceWithoutDefault{
+    public function __construct(One $one){}
+}
+
+class DependingOnOneInterfaceWithDefault{
+    public function __construct(One $one = null){}
+}

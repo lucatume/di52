@@ -128,7 +128,7 @@ shell: ## Opens a shell in a PHP container. Example `PHP_VERSION=7.2 make shell`
 	   -e COMPOSER_CACHE_DIR="${PWD}/var/cache/composer" \
 	   -w "${PWD}" \
 	   --entrypoint sh \
-	   lucatume/di52-dev:php-${PHP_VERSION}
+	   lucatume/di52-dev:php-v${PHP_VERSION}
 .PHONY: shell
 
 app_facade: ## Creates or updates the src/App.php file from the current Container API.
