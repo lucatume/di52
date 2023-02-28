@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Correctly resolve unbound parameters to default value when available.
+
 ## [3.2.0] 2023-02-27;
 
 ### Changed
