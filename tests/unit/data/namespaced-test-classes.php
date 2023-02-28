@@ -170,10 +170,16 @@ class Factory
     }
 }
 
-class DependingOnOneInterfaceWithoutDefault{
-    public function __construct(One $one){}
+class DependingOnOneInterfaceWithoutDefault
+{
+    public function __construct(One $one)
+    {
+    }
 }
 
-class DependingOnOneInterfaceWithDefault{
-    public function __construct(One $one = null){}
+class DependingOnOneInterfaceWithDefault
+{
+    public function __construct(One $one = null)
+    {
+    }
 }
