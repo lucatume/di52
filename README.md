@@ -185,9 +185,8 @@ That should be all of it.
 
 ## Upgrading from version 3.2 to version 3.3
 
-Version `3.3.0` of the library removed the `aliases.php` file that would take care to route the auto-loading of the
-non-PSR namespaced class names. If you're using the `tad_DI52_Container` and `tad_DI52_ServiceProvider` classes in your
-project, you can add the following code to your project bootstrap file to make sure the aliases are set:
+Version 3.3.0 of the library removed the `aliases.php` file, which previously helped to load non-PSR namespaced class names.
+However, if you're using the `tad_DI52_Container` and `tad_DI52_ServiceProvider` classes in your project, you can set up the aliases by adding a few lines of code to your project's bootstrap file to ensure your code continues to work as expected:
 
 ```php
 <?php
