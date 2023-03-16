@@ -5,6 +5,21 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Allow bound interfaces to properly resolve their concrete class when the concrete class has contextual bindings (thanks @defunctl). e.g. the following will now work properly:
+
+```php
+$container = new \lucatume\DI52\Container();
+$container->bind(SomeInterface::class, SomeClass::class);
+$container->when(Someclass:class)
+    ->needs('$num')
+    ->give(20);
+
+// This now works, properly resolving SomeClass::class.
+$instance = $container->get(SomeInterface::class);
+```
+
 ## [3.3.0] 2023-02-28;
 
 ### Breaking change
