@@ -82,9 +82,9 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
             );
         }
 
-        $interfaces = class_implements( $className );
+        $interfaces = class_implements($className);
 
-        if ($interfaces && isset($interfaces[$id]) ) {
+        if ($interfaces && isset($interfaces[$id])) {
             $this->isInterface = true;
         }
 
