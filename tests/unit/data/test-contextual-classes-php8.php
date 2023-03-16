@@ -3,12 +3,17 @@
  * PHP8+ contextual binding test classes.
  */
 
+interface Test8Interface
+{
+
+}
+
 final class Concrete8Dependency
 {
 
 }
 
-final class Primitive8ConstructorClass
+final class Primitive8ConstructorClass implements Test8Interface
 {
 
     public function __construct(
