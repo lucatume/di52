@@ -65,6 +65,41 @@ class PHP7ContextualBindingContainerTest extends TestCase
     /**
      * @test
      */
+    public function it_should_resolve_primitive_contextual_bindings_in_a_php7_class_when_its_bound_interface_is_resolved()
+    {
+        $container = new Container();
+
+        $container->bind( Test7Interface::class, Primitive7ConstructorClass::class );
+
+        $container->when(Primitive7ConstructorClass::class)
+            ->needs('$num')
+            ->give(15);
+
+        $container->when(Primitive7ConstructorClass::class)
+            ->needs('$hello')
+            ->give(function () {
+                return 'World';
+            });
+
+        $container->when(Primitive7ConstructorClass::class)
+            ->needs('$list')
+            ->give([
+                'one',
+                'two',
+            ]);
+
+        $instance = $container->get(Test7Interface::class);
+
+        $this->assertSame(15, $instance->num());
+        $this->assertInstanceOf(Concrete7Dependency::class, $instance->dependency());
+        $this->assertSame('World', $instance->hello());
+        $this->assertSame(['one', 'two'], $instance->list());
+        $this->assertNull($instance->optional());
+    }
+
+    /**
+     * @test
+     */
     public function it_should_throw_container_exception_when_missing_bindings_in_a_php7_class()
     {
         $this->expectException(ContainerException::class);

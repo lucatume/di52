@@ -551,7 +551,7 @@ $container->bind(DbCache::class, function($container){
 });
 
 /*
- * but when an implementation of the `CacheInterface` is requested by
+ * But when an implementation of the `CacheInterface` is requested by
  * `TransactionManager`, then it should be given an instance of `Array Cache`.
  */
 $container->when(TransactionManager::class)
@@ -562,9 +562,18 @@ $container->when(TransactionManager::class)
  * We can also bind primitives where the container doesn't know how to auto-wire
  * them.
  */
-$container->when(PaginationManager::class)
-    ->needs('$per_page')
-    ->give(25);
+$container->when(MysqlOrm:class)
+    ->needs('$dbUrl')
+    ->give('mysql://user:password@127.0.0.1:3306/app');
+
+/*
+ * When primitives are bound to a class the container will correctly resolve them when building the class
+ * bound to an interface.
+ */
+$container->bind(ORMInterface::class, MysqlOrm::class);
+
+// The `ORMInterface` will be resolved an instance of the `MysqlOrm` class, with the `$dbUrl` argument set correctly.
+$orm = $container->get(ORMInterface::class);
 ```
 
 ## Binding decorator chains

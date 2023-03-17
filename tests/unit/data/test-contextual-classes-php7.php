@@ -3,12 +3,17 @@
  * PHP7+ contextual binding test classes.
  */
 
+interface Test7Interface
+{
+
+}
+
 class Concrete7Dependency
 {
 
 }
 
-class Primitive7ConstructorClass
+class Primitive7ConstructorClass implements Test7Interface
 {
 
     /**

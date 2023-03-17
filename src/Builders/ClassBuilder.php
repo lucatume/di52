@@ -55,6 +55,14 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     protected $resolver;
 
     /**
+     * Whether the $className is an implementation of $id
+     * and $id is an interface.
+     *
+     * @var bool
+     */
+    protected $isInterface = false;
+
+    /**
      * ClassBuilder constructor.
      *
      * @param string             $id                The identifier associated with this builder.
@@ -73,6 +81,13 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
                 "nothing is bound to the '{$className}' id and it's not an existing or instantiable class."
             );
         }
+
+        $interfaces = class_implements($className);
+
+        if ($interfaces && isset($interfaces[$id])) {
+            $this->isInterface = true;
+        }
+
         $this->id = $id;
         $this->className = $className;
         $this->afterBuildMethods = $afterBuildMethods;
@@ -194,10 +209,15 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
 
         if ($paramClass) {
             $parameterImplementation = $this->resolver->whenNeedsGive($this->id, $paramClass);
+        } elseif ($this->isInterface) {
+            $name = $parameter->getName();
+            // If an interface was requested, resolve the underlying concrete class instead.
+            $parameterImplementation = $this->resolver->whenNeedsGive($this->className, "\$$name");
         } else {
             $name = $parameter->getName();
             $parameterImplementation = $this->resolver->whenNeedsGive($this->id, "\$$name");
         }
+
         try {
             return $parameterImplementation instanceof BuilderInterface ?
                 $parameterImplementation->build()

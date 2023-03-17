@@ -3,12 +3,17 @@
  * PHP5.3+ contextual binding test classes.
  */
 
+interface Test5Interface
+{
+
+}
+
 class Concrete53Dependency
 {
 
 }
 
-class Primitive53ConstructorClass
+class Primitive53ConstructorClass implements Test5Interface
 {
     /**
      * @var int
