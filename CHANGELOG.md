@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.3.1] 2023-03-17;
+
 ### Fixed
 
 - Allow bound interfaces to properly resolve their concrete class when the concrete class has contextual bindings (thanks @defunctl). e.g. the following will now work properly:
@@ -490,4 +492,5 @@ org/psr/psr-11/)
 [3.2.0]: https://github.com/lucatume/di52/compare/3.1.1...3.2.0
 [3.2.1]: https://github.com/lucatume/di52/compare/3.2.0...3.2.1
 [3.3.0]: https://github.com/lucatume/di52/compare/3.2.1...3.3.0
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.0...HEAD
+[3.3.1]: https://github.com/lucatume/di52/compare/3.3.0...3.3.1
+[unreleased]: https://github.com/lucatume/di52/compare/3.3.1...HEAD
