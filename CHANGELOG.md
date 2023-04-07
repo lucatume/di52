@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Set the correct return type for the `Container::callback` function (thanks @estevao90).
+
 ## [3.3.1] 2023-03-17;
 
 ### Fixed
