@@ -716,7 +716,7 @@ class Container implements ArrayAccess, ContainerInterface
      * @param string        $method           The method that should be called on the resolved implementation with the
      *                                        specified array arguments.
      *
-     * @return mixed The called method return value.
+     * @return callable The callback function.
      *
      * @throws ContainerException If the id is not a bound implementation or valid class name.
      */
