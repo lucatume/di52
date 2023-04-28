@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Return value of the `App::callback` method to be `callable` (thanks @estevao90).
+
 ## [3.3.2] 2023-04-07;
 
 ### Fixed
