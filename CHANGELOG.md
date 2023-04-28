@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.3.3] 2023-04-28;
+
 ### Fixed
 
 - Return value of the `App::callback` method to be `callable` (thanks @estevao90).
@@ -504,4 +506,5 @@ org/psr/psr-11/)
 [3.3.0]: https://github.com/lucatume/di52/compare/3.2.1...3.3.0
 [3.3.1]: https://github.com/lucatume/di52/compare/3.3.0...3.3.1
 [3.3.2]: https://github.com/lucatume/di52/compare/3.3.1...3.3.2
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.2...HEAD
+[3.3.3]: https://github.com/lucatume/di52/compare/3.3.2...3.3.3
+[unreleased]: https://github.com/lucatume/di52/compare/3.3.3...HEAD
