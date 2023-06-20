@@ -69,7 +69,7 @@ class PHP7ContextualBindingContainerTest extends TestCase
     {
         $container = new Container();
 
-        $container->bind( Test7Interface::class, Primitive7ConstructorClass::class );
+        $container->bind(Test7Interface::class, Primitive7ConstructorClass::class);
 
         $container->when(Primitive7ConstructorClass::class)
             ->needs('$num')

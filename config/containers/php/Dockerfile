@@ -6,6 +6,7 @@ FROM php:${PHP_VERSION}-cli-alpine
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 RUN install-php-extensions xdebug && apk add gettext && rm -rf /var/cache/apk/*
+RUN rm /usr/bin/install-php-extensions
 
 ARG XDEBUG_REMOTE_HOST='host.docker.internal'
 ARG XDEBUG_REMOTE_PORT='9009'

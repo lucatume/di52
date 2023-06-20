@@ -101,7 +101,7 @@ class Container implements ArrayAccess, ContainerInterface
     {
         $this->resolver = new Builders\Resolver($resolveUnboundAsSingletons);
         $this->builders = new Builders\Factory($this, $this->resolver);
-        $this->singleton(Container::class, $this);
+        $this->bindThis();
     }
 
     /**
@@ -868,5 +868,31 @@ class Container implements ArrayAccess, ContainerInterface
     public function setExceptionMask($maskThrowables)
     {
         $this->maskThrowables = (int)$maskThrowables;
+    }
+
+    /**
+     * Binds the container to the base class name, the current class name and the container interface.
+     *
+     * @return void
+     */
+    private function bindThis()
+    {
+        $this->singleton(ContainerInterface::class, $this);
+        $this->singleton(Container::class, $this);
+        if (get_class($this) !== Container::class) {
+            $this->singleton(get_class($this), $this);
+        }
+    }
+
+    /**
+     * Upon cloning, clones the resolver and builders instances.
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $this->resolver = clone $this->resolver;
+        $this->builders = clone $this->builders;
+        $this->bindThis();
     }
 }
