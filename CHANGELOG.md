@@ -5,6 +5,15 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- Implement the `Container::__clone` method to clone the container accessory classes correctly upon cloning.
+
+### Changed
+
+- The `Container::__construct` method will bind itself to the `Psr\Container\ContainerInterface` interface as a singleton.
+- If the `Container` class is extended, it will bind itself to the extended class in the `__construct` and `__clone` methods.
+
 ## [3.3.3] 2023-04-28;
 
 ### Fixed

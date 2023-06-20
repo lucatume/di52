@@ -51,8 +51,7 @@ class ContextualBindingContainerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_resolve_primitive_contextual_bindings_in_a_php7_class_when_its_bound_interface_is_resolved(
-    )
+    public function it_should_resolve_primitive_contextual_bindings_in_a_php7_class_when_its_bound_interface_is_resolved()
     {
         $container = new Container();
 
