@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.3.4] 2023-06-20;
+
 ### Added
 
 - Implement the `Container::__clone` method to clone the container accessory classes correctly upon cloning.
@@ -516,4 +518,5 @@ org/psr/psr-11/)
 [3.3.1]: https://github.com/lucatume/di52/compare/3.3.0...3.3.1
 [3.3.2]: https://github.com/lucatume/di52/compare/3.3.1...3.3.2
 [3.3.3]: https://github.com/lucatume/di52/compare/3.3.2...3.3.3
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.3...HEAD
+[3.3.4]: https://github.com/lucatume/di52/compare/3.3.3...3.3.4
+[unreleased]: https://github.com/lucatume/di52/compare/3.3.4...HEAD
