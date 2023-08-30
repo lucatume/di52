@@ -206,7 +206,7 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @throws ContainerException Error while retrieving the entry.
      */
-    public function get($id)
+    public function get(string $id)
     {
         try {
             return $this->resolver->resolve($id, [$id]);
@@ -287,7 +287,7 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @return bool Whether the container contains a binding for an id or not.
      */
-    public function has($id)
+    public function has(string $id): bool
     {
         return $this->resolver->isBound($id) || class_exists($id);
     }
