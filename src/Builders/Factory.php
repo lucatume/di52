@@ -45,13 +45,12 @@ class Factory
     /**
      * Returns the correct builder for a value.
      *
-     * @param string|mixed       $id                 The string id to provide a builder for, or a value.
-     * @param mixed              $implementation     The implementation to build the builder for.
-     * @param array<string>|null $afterBuildMethods  A list of methods that should be called on the built instance
-     *                                               after
-     *                                               it's been built.
-     * @param mixed              ...$buildArgs       A set of arguments to pass that should be used to build the
-     *                                               instance, if any.
+     * @param  string|class-string|mixed  $id                 The string id to provide a builder for, or a value.
+     * @param  mixed                      $implementation     The implementation to build the builder for.
+     * @param  string[]|null              $afterBuildMethods  A list of methods that should be called on the built
+     *                                                        instance after it's been built.
+     * @param  mixed                      ...$buildArgs       A set of arguments to pass that should be used to build
+     *                                                        the instance, if any.
      *
      * @return BuilderInterface A builder instance.
      *

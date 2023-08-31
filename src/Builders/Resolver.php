@@ -64,8 +64,8 @@ class Resolver
     /**
      * Binds an implementation for an id, or class name, as prototype (build new each time).
      *
-     * @param string           $id             The id to register the implementation for.
-     * @param BuilderInterface $implementation The builder that will provide the implementation for the id.
+     * @param  string|class-string  $id              The id to register the implementation for.
+     * @param  BuilderInterface     $implementation  The builder that will provide the implementation for the id.
      *
      * @return void This method does not return any value.
      */
@@ -78,9 +78,9 @@ class Resolver
     /**
      * Registers an implementation for an id, or class name, as singleton (build at most once).
      *
-     * @param string           $id             The id to register the implementation for.
-     * @param BuilderInterface $implementation The builder that will provide the implementation for
-     *                                         the id.
+     * @param  string|class-string  $id              The id to register the implementation for.
+     * @param  BuilderInterface     $implementation  The builder that will provide the implementation for
+     *                                               the id.
      *
      * @return void This method does not return any value.
      */
@@ -105,7 +105,7 @@ class Resolver
     /**
      * Removes the relation between an id and a bound implementation from the resolver.
      *
-     * @param string $id The id to unregister the implementation for.
+     * @param string|class-string $id The id to unregister the implementation for.
      *
      * @return void This method does not return any value.
      */
@@ -117,7 +117,7 @@ class Resolver
     /**
      * Returns whether a specific id is bound as singleton (build at most once), or not.
      *
-     * @param string $id The id to check.
+     * @param string|class-string $id The id to check.
      *
      * @return bool Whether a specific id is bound as singleton (build at most once), or not.
      */
@@ -129,8 +129,8 @@ class Resolver
     /**
      * Transform the canonical class to the class part of a when-needs-give specification, if required.
      *
-     * @param string $id         The ID to resolve the when-needs-give case for.
-     * @param string $paramClass The class of the parameter to solve the when-needs-give case for.
+     * @param  string|class-string  $id          The ID to resolve the when-needs-give case for.
+     * @param  string               $paramClass  The class of the parameter to solve the when-needs-give case for.
      *
      * @return BuilderInterface|string Either the builder for the when-needs-give replacement, or the input parameter
      *                                 class if not found.
@@ -145,10 +145,10 @@ class Resolver
     /**
      * Sets an entry in the when->needs->give chain.
      *
-     * @param string           $whenClass  The "when" part of the chain, a class name or id.
-     * @param string           $needsClass The "needs" part of the chain, a class name or id.
-     * @param BuilderInterface $builder    The Builder instance that should be returned when a class needs the
-     *                                     specified id.
+     * @param  string|class-string  $whenClass   The "when" part of the chain, a class name or id.
+     * @param  string|class-string  $needsClass  The "needs" part of the chain, a class name or id.
+     * @param  BuilderInterface     $builder     The Builder instance that should be returned when a class needs the
+     *                                           specified id.
      *
      * @return void This method does not return any value.
      */
@@ -160,11 +160,12 @@ class Resolver
     /**
      * Resolves an ide to an implementation with the input arguments.
      *
-     * @param string|mixed       $id                                  The id, class name or built value to resolve.
-     * @param array<string>|null $afterBuildMethods                   A list of methods that should run on the built
+     * @param  string|class-string|mixed  $id                         The id, class name or built value to resolve.
+     * @param  string[]|null              $afterBuildMethods          A list of methods that should run on the built
      *                                                                instance.
-     * @param mixed              ...$buildArgs                        A set of build arguments that will be passed to
+     * @param  mixed                      ...$buildArgs               A set of build arguments that will be passed to
      *                                                                the implementation constructor.
+     *
      * @return BuilderInterface|ReinitializableBuilderInterface|mixed The builder, set up to use the specified set of
      *                                                                build arguments.
      * @throws NotFoundException If the id is a string that does not resolve to an existing, concrete, class.
@@ -184,11 +185,15 @@ class Resolver
     /**
      * Resolves an id or input value to a value or object instance.
      *
-     * @param string|mixed       $id        Either the id of a bound implementation, a class name or an object
-     *                                      to resolve.
-     * @param array<string>|null $buildLine The build line to append the resolution leafs to, or `null` to use the
-     *                                      current one.
-     * @return mixed The resolved value or instance.
+     * @template T
+     *
+     * @param  string|class-string<T>|mixed  $id         Either the id of a bound implementation, a class name or an
+     *                                                   object to resolve.
+     * @param  string[]|null                 $buildLine  The build line to append the resolution leafs to, or `null` to
+     *                                                   use the current one.
+     *
+     * @return T|mixed The resolved value or instance.
+     * @phpstan-return ($id is class-string ? T : mixed)
      *
      * @throws NotFoundException If the id is a string that is not bound and is not an existing, concrete, class.
      */
@@ -218,7 +223,7 @@ class Resolver
     /**
      * Builds, with auto-wiring, an instance of a not bound class.
      *
-     * @param string $id The class name to build an instance of.
+     * @param string|class-string $id The class name to build an instance of.
      *
      * @return object The built class instance.
      *
@@ -239,7 +244,7 @@ class Resolver
     /**
      * Resolves a bound implementation to a value or object.
      *
-     * @param string $id The id to resolve the implementation for.
+     * @param string|class-string $id The id to resolve the implementation for.
      *
      * @return mixed The resolved instance.
      */
@@ -255,15 +260,14 @@ class Resolver
 
     /**
      * Clones the builder assigned to an id and re-initializes it.
-     *
      * The clone operation leverages the already resolved dependencies of a builder to create an up-to-date instance.
      *
-     * @param string             $id                The id to clone the builder of.
-     * @param array<string>|null $afterBuildMethods A set of methods to run on the built instance.
-     * @param mixed              ...$buildArgs      An optional set of arguments that will be passed to the instance
-     *                                              constructor.
-     * @return BuilderInterface A new instance of the builder currently related to the id.
+     * @param  string|class-string  $id                 The id to clone the builder of.
+     * @param  string[]|null        $afterBuildMethods  A set of methods to run on the built instance.
+     * @param  mixed                ...$buildArgs       An optional set of arguments that will be passed to the instance
+     *                                                  constructor.
      *
+     * @return BuilderInterface A new instance of the builder currently related to the id.
      * @throws NotFoundException If trying to clone the builder for a non existing id or an id that does not map to a
      *                           concrete class name.
      */
@@ -291,7 +295,7 @@ class Resolver
      */
     public function addToBuildLine($type, $parameterName)
     {
-        $this->buildLine[] = trim("{$type} \${$parameterName}");
+        $this->buildLine[] = trim("$type \$$parameterName");
     }
 
     /**
@@ -300,7 +304,7 @@ class Resolver
      * The build line will return a straight path from the current resolution root to the leaf
      * currently being resolved. Used for error logging and formatting.
      *
-     * @return array<string> A set of consecutive items the resolver is currently trying to build.
+     * @return string[] A set of consecutive items the resolver is currently trying to build.
      */
     public function getBuildLine()
     {
