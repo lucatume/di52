@@ -187,6 +187,7 @@ class Container implements ArrayAccess, ContainerInterface
      * @param string|class-string<T> $offset Identifier of the entry to look for.
      *
      * @return T|mixed The value for the offset.
+     * @phpstan-return ($offset is class-string ? T : mixed)
      *
      * @throws ContainerException Error while retrieving the entry.
      * @throws NotFoundException  No entry was found for **this** identifier.
@@ -205,6 +206,7 @@ class Container implements ArrayAccess, ContainerInterface
      * @param  string|class-string<T>  $id  A fully qualified class or interface name or an already built object.
      *
      * @return T|mixed The entry for an id.
+     * @phpstan-return ($id is class-string ? T : mixed)
      *
      * @throws ContainerException Error while retrieving the entry.
      */
@@ -255,6 +257,7 @@ class Container implements ArrayAccess, ContainerInterface
      * @param string|class-string<T> $id A fully qualified class or interface name or an already built object.
      *
      * @return T|mixed
+     * @phpstan-return ($id is class-string ? T : mixed)
      *
      * @throws ContainerException If the target of the make is not bound and is not a valid,
      *                                              concrete, class name or there's any issue making the target.

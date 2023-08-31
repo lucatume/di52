@@ -127,9 +127,10 @@ class App
      *
      * @template T
      *
-     * @param string|class-string<T> $offset Identifier of the entry to look for.
+     * @param  string|class-string<T>  $offset  Identifier of the entry to look for.
      *
      * @return T|mixed The value for the offset.
+     * @phpstan-return ($offset is class-string ? T : mixed)
      *
      * @throws ContainerException Error while retrieving the entry.
      * @throws NotFoundException  No entry was found for **this** identifier.
@@ -147,6 +148,7 @@ class App
      * @param string|class-string<T> $id A fully qualified class or interface name or an already built object.
      *
      * @return T|mixed The entry for an id.
+     * @phpstan-return ($id is class-string ? T : mixed)
      *
      * @throws ContainerException Error while retrieving the entry.
      */
@@ -167,6 +169,7 @@ class App
      * @param string|class-string<T> $id A fully qualified class or interface name or an already built object.
      *
      * @return T|mixed
+     * @phpstan-return ($id is class-string ? T : mixed)
      *
      * @throws ContainerException If the target of the make is not bound and is not a valid,
      *                                              concrete, class name or there's any issue making the target.
@@ -454,7 +457,7 @@ class App
      * @param  string                      $method  The method that should be called on the resolved implementation
      *                                              with the specified array arguments.
      *
-     * @return callable|Closure The callback function.
+     * @return callable The callback function.
      * @throws ContainerException If the id is not a bound implementation or valid class name.
      */
     public static function callback($id, $method)
@@ -474,7 +477,7 @@ class App
      * @param  string[]|null              $afterBuildMethods  An array of methods that should be called on the built
      *                                                        implementation after resolving it.
      *
-     * @return callable|Closure  A callable function that will return an instance of the specified class when
+     * @return callable  A callable function that will return an instance of the specified class when
      *                   called.
      */
     public static function instance($id, array $buildArgs = [], array $afterBuildMethods = null)

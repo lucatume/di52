@@ -37,7 +37,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     /**
      * The fully-qualified class name the builder should build instances of.
      *
-     * @var string
+     * @var class-string
      */
     protected $className;
     /**

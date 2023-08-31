@@ -193,6 +193,7 @@ class Resolver
      *                                                   use the current one.
      *
      * @return T|mixed The resolved value or instance.
+     * @phpstan-return ($id is class-string ? T : mixed)
      *
      * @throws NotFoundException If the id is a string that is not bound and is not an existing, concrete, class.
      */
@@ -294,7 +295,7 @@ class Resolver
      */
     public function addToBuildLine($type, $parameterName)
     {
-        $this->buildLine[] = trim("{$type} \${$parameterName}");
+        $this->buildLine[] = trim("$type \$$parameterName");
     }
 
     /**
