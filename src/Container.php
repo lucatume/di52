@@ -197,17 +197,17 @@ class Container implements ArrayAccess, ContainerInterface
         return $this->get($offset);
     }
 
-	/**
-	 * Finds an entry of the container by its identifier and returns it.
-	 *
-	 * @template T
-	 *
-	 * @param  string|class-string<T>  $id  A fully qualified class or interface name or an already built object.
-	 *
-	 * @return T|mixed The entry for an id.
-	 *
-	 * @throws ContainerException Error while retrieving the entry.
-	 */
+    /**
+     * Finds an entry of the container by its identifier and returns it.
+     *
+     * @template T
+     *
+     * @param  string|class-string<T>  $id  A fully qualified class or interface name or an already built object.
+     *
+     * @return T|mixed The entry for an id.
+     *
+     * @throws ContainerException Error while retrieving the entry.
+     */
     public function get($id)
     {
         try {
@@ -508,21 +508,21 @@ class Container implements ArrayAccess, ContainerInterface
         };
     }
 
-	/**
-	 * Binds an interface, a class or a string slug to an implementation.
-	 *
-	 * Existing implementations are replaced.
-	 *
-	 * @param  string|class-string  $id                 A class or interface fully qualified name or a string slug.
-	 * @param  mixed                $implementation     The implementation that should be bound to the alias(es); can be a
-	 *                                                  class name, an object or a closure.
-	 * @param  string[]|null        $afterBuildMethods  An array of methods that should be called on the built
-	 *                                                  implementation after resolving it.
-	 *
-	 * @return void The method does not return any value.
-	 *
-	 * @throws ContainerException      If there's an issue while trying to bind the implementation.
-	 */
+    /**
+     * Binds an interface, a class or a string slug to an implementation.
+     *
+     * Existing implementations are replaced.
+     *
+     * @param  string|class-string  $id                 A class or interface fully qualified name or a string slug.
+     * @param  mixed                $implementation     The implementation that should be bound to the alias(es); can be a
+     *                                                  class name, an object or a closure.
+     * @param  string[]|null        $afterBuildMethods  An array of methods that should be called on the built
+     *                                                  implementation after resolving it.
+     *
+     * @return void The method does not return any value.
+     *
+     * @throws ContainerException      If there's an issue while trying to bind the implementation.
+     */
     public function bind($id, $implementation = null, array $afterBuildMethods = null)
     {
         if ($implementation === null) {
@@ -554,21 +554,21 @@ class Container implements ArrayAccess, ContainerInterface
         }
     }
 
-	/**
-	 * Binds a class, interface or string slug to a chain of implementations decorating a base
-	 * object; the chain will be lazily resolved only on the first call.
-	 * The base decorated object must be the last element of the array.
-	 *
-	 * @param  string|class-string            $id                 The class, interface or slug the decorator chain should
-	 *                                                            be bound to.
-	 * @param  array<string|object|callable>  $decorators         An array of implementations that decorate an object.
-	 * @param  string[]|null                  $afterBuildMethods  An array of methods that should be called on the
-	 *                                                            instance after it has been built; the methods should not
-	 *                                                            require any argument.
-	 *
-	 * @return void This method does not return any value.
-	 * @throws ContainerException
-	 */
+    /**
+     * Binds a class, interface or string slug to a chain of implementations decorating a base
+     * object; the chain will be lazily resolved only on the first call.
+     * The base decorated object must be the last element of the array.
+     *
+     * @param  string|class-string            $id                 The class, interface or slug the decorator chain should
+     *                                                            be bound to.
+     * @param  array<string|object|callable>  $decorators         An array of implementations that decorate an object.
+     * @param  string[]|null                  $afterBuildMethods  An array of methods that should be called on the
+     *                                                            instance after it has been built; the methods should not
+     *                                                            require any argument.
+     *
+     * @return void This method does not return any value.
+     * @throws ContainerException
+     */
     public function singletonDecorators($id, $decorators, array $afterBuildMethods = null)
     {
         $this->resolver->singleton($id, $this->getDecoratorBuilder($decorators, $id, $afterBuildMethods));
@@ -603,22 +603,22 @@ class Container implements ArrayAccess, ContainerInterface
         return $builder;
     }
 
-	/**
-	 * Binds a class, interface or string slug to a chain of implementations decorating a
-	 * base object.
-	 *
-	 * The base decorated object must be the last element of the array.
-	 *
-	 * @param  string|class-string            $id                 The class, interface or slug the decorator chain should
-	 *                                                            be bound to.
-	 * @param  array<string|object|callable>  $decorators         An array of implementations that decorate an object.
-	 * @param  string[]|null                  $afterBuildMethods  An array of methods that should be called on the
-	 *                                                            instance after it has been built; the methods should not
-	 *                                                            require any argument.
-	 *
-	 * @return void This method does not return any value.
-	 * @throws ContainerException If there's any issue binding the decorators.
-	 */
+    /**
+     * Binds a class, interface or string slug to a chain of implementations decorating a
+     * base object.
+     *
+     * The base decorated object must be the last element of the array.
+     *
+     * @param  string|class-string            $id                 The class, interface or slug the decorator chain should
+     *                                                            be bound to.
+     * @param  array<string|object|callable>  $decorators         An array of implementations that decorate an object.
+     * @param  string[]|null                  $afterBuildMethods  An array of methods that should be called on the
+     *                                                            instance after it has been built; the methods should not
+     *                                                            require any argument.
+     *
+     * @return void This method does not return any value.
+     * @throws ContainerException If there's any issue binding the decorators.
+     */
     public function bindDecorators($id, array $decorators, array $afterBuildMethods = null)
     {
         $this->resolver->bind($id, $this->getDecoratorBuilder($decorators, $id, $afterBuildMethods));
@@ -712,18 +712,18 @@ class Container implements ArrayAccess, ContainerInterface
         unset($this->whenClass, $this->needsClass);
     }
 
-	/**
-	 * Returns a lambda function suitable to use as a callback; when called the function will build the implementation
-	 * bound to `$id` and return the value of a call to `$method` method with the call arguments.
-	 *
-	 * @param  string|class-string|object  $id      A fully-qualified class name, a bound slug or an object o call the
-	 *                                              callback on.
-	 * @param  string                      $method  The method that should be called on the resolved implementation with the
-	 *                                              specified array arguments.
-	 *
-	 * @return callable|Closure The callback function.
-	 * @throws ContainerException If the id is not a bound implementation or valid class name.
-	 */
+    /**
+     * Returns a lambda function suitable to use as a callback; when called the function will build the implementation
+     * bound to `$id` and return the value of a call to `$method` method with the call arguments.
+     *
+     * @param  string|class-string|object  $id      A fully-qualified class name, a bound slug or an object o call the
+     *                                              callback on.
+     * @param  string                      $method  The method that should be called on the resolved implementation with the
+     *                                              specified array arguments.
+     *
+     * @return callable|Closure The callback function.
+     * @throws ContainerException If the id is not a bound implementation or valid class name.
+     */
     public function callback($id, $method)
     {
         $callbackIdPrefix = is_object($id) ? spl_object_hash($id) : $id;
@@ -760,14 +760,14 @@ class Container implements ArrayAccess, ContainerInterface
         return $callbackClosure;
     }
 
-	/**
-	 * Whether a method of an id, possibly not a class, is static or not.
-	 *
-	 * @param  object|string|class-string  $object  A class name, instance or something that does not map to a class.
-	 * @param  string                      $method  The method to check.
-	 *
-	 * @return bool Whether a method of an id or class is static or not.
-	 */
+    /**
+     * Whether a method of an id, possibly not a class, is static or not.
+     *
+     * @param  object|string|class-string  $object  A class name, instance or something that does not map to a class.
+     * @param  string                      $method  The method to check.
+     *
+     * @return bool Whether a method of an id or class is static or not.
+     */
     protected function isStaticMethod($object, $method)
     {
         $key = is_string($object) ? $object . '::' . $method : get_class($object) . '::' . $method;

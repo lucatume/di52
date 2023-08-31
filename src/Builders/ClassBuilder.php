@@ -62,18 +62,18 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
      */
     protected $isInterface = false;
 
-	/**
-	 * ClassBuilder constructor.
-	 *
-	 * @param  string|class-string  $id                 The identifier associated with this builder.
-	 * @param  Resolver             $resolver           A reference to the resolver currently using the builder.
-	 * @param  string               $className          The fully-qualified class name to build instances for.
-	 * @param  string[]|null        $afterBuildMethods  An optional set of methods to call on the built object.
-	 * @param  mixed                ...$buildArgs       An optional set of build arguments that should be provided to the
-	 *                                                  class constructor method.
-	 *
-	 * @throws NotFoundException If the class does not exist.
-	 */
+    /**
+     * ClassBuilder constructor.
+     *
+     * @param  string|class-string  $id                 The identifier associated with this builder.
+     * @param  Resolver             $resolver           A reference to the resolver currently using the builder.
+     * @param  string               $className          The fully-qualified class name to build instances for.
+     * @param  string[]|null        $afterBuildMethods  An optional set of methods to call on the built object.
+     * @param  mixed                ...$buildArgs       An optional set of build arguments that should be provided to the
+     *                                                  class constructor method.
+     *
+     * @throws NotFoundException If the class does not exist.
+     */
     public function __construct($id, Resolver $resolver, $className, array $afterBuildMethods = null, ...$buildArgs)
     {
         if (!class_exists($className)) {
@@ -142,15 +142,15 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
         return $constructorArgs;
     }
 
-	/**
-	 * Returns a set of resolved constructor parameters.
-	 *
-	 * @param  class-string  $className  The fully-qualified class name to get the resolved constructor parameters yet.
-	 *
-	 * @return array<Parameter> A set of resolved constructor parameters.
-	 *
-	 * @throws ContainerException If the resolution of any constructor parameters is problematic.
-	 */
+    /**
+     * Returns a set of resolved constructor parameters.
+     *
+     * @param  class-string  $className  The fully-qualified class name to get the resolved constructor parameters yet.
+     *
+     * @return array<Parameter> A set of resolved constructor parameters.
+     *
+     * @throws ContainerException If the resolution of any constructor parameters is problematic.
+     */
     protected function getResolvedConstructorParameters($className)
     {
         if (isset(self::$constructorParametersCache[$className])) {

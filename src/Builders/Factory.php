@@ -42,21 +42,21 @@ class Factory
         $this->resolver = $resolver;
     }
 
-	/**
-	 * Returns the correct builder for a value.
-	 *
-	 * @param  string|class-string|mixed  $id                 The string id to provide a builder for, or a value.
-	 * @param  mixed                      $implementation     The implementation to build the builder for.
-	 * @param  string[]|null              $afterBuildMethods  A list of methods that should be called on the built instance
-	 *                                                        after
-	 *                                                        it's been built.
-	 * @param  mixed                      ...$buildArgs       A set of arguments to pass that should be used to build the
-	 *                                                        instance, if any.
-	 *
-	 * @return BuilderInterface A builder instance.
-	 *
-	 * @throws NotFoundException If a builder cannot find its implementation target.
-	 */
+    /**
+     * Returns the correct builder for a value.
+     *
+     * @param  string|class-string|mixed  $id                 The string id to provide a builder for, or a value.
+     * @param  mixed                      $implementation     The implementation to build the builder for.
+     * @param  string[]|null              $afterBuildMethods  A list of methods that should be called on the built instance
+     *                                                        after
+     *                                                        it's been built.
+     * @param  mixed                      ...$buildArgs       A set of arguments to pass that should be used to build the
+     *                                                        instance, if any.
+     *
+     * @return BuilderInterface A builder instance.
+     *
+     * @throws NotFoundException If a builder cannot find its implementation target.
+     */
     public function getBuilder($id, $implementation = null, array $afterBuildMethods = null, ...$buildArgs)
     {
         if ($implementation === null) {
