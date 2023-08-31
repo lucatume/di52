@@ -187,10 +187,10 @@ class Resolver
      *
      * @template T
      *
-     * @param  string|class-string<T>|mixed  $id         Either the id of a bound implementation, a class name or an object
-     *                                                   to resolve.
-     * @param  string[]|null                 $buildLine  The build line to append the resolution leafs to, or `null` to use the
-     *                                                   current one.
+     * @param  string|class-string<T>|mixed  $id         Either the id of a bound implementation, a class name or an
+     *                                                   object to resolve.
+     * @param  string[]|null                 $buildLine  The build line to append the resolution leafs to, or `null` to
+     *                                                   use the current one.
      *
      * @return T|mixed The resolved value or instance.
      *

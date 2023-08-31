@@ -69,8 +69,8 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
      * @param  Resolver             $resolver           A reference to the resolver currently using the builder.
      * @param  string               $className          The fully-qualified class name to build instances for.
      * @param  string[]|null        $afterBuildMethods  An optional set of methods to call on the built object.
-     * @param  mixed                ...$buildArgs       An optional set of build arguments that should be provided to the
-     *                                                  class constructor method.
+     * @param  mixed                ...$buildArgs       An optional set of build arguments that should be provided to
+     *                                                  the class constructor method.
      *
      * @throws NotFoundException If the class does not exist.
      */

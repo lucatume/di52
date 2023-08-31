@@ -90,8 +90,8 @@ class App
      * Binds an interface a class or a string slug to an implementation and will always return the same instance.
      *
      * @param  string|class-string  $id                 A class or interface fully qualified name or a string slug.
-     * @param  mixed                $implementation     The implementation that should be bound to the alias(es); can be a
-     *                                                  class name, an object or a closure.
+     * @param  mixed                $implementation     The implementation that should be bound to the alias(es); can
+     *                                                  be a class name, an object or a closure.
      * @param  string[]|null        $afterBuildMethods  An array of methods that should be called on the built
      *                                                  implementation after resolving it.
      *
@@ -299,8 +299,8 @@ class App
      * Existing implementations are replaced.
      *
      * @param  string|class-string  $id                 A class or interface fully qualified name or a string slug.
-     * @param  mixed                $implementation     The implementation that should be bound to the alias(es); can be a
-     *                                                  class name, an object or a closure.
+     * @param  mixed                $implementation     The implementation that should be bound to the alias(es); can
+     *                                                  be a class name, an object or a closure.
      * @param  string[]|null        $afterBuildMethods  An array of methods that should be called on the built
      *                                                  implementation after resolving it.
      *
@@ -333,12 +333,12 @@ class App
      * object; the chain will be lazily resolved only on the first call.
      * The base decorated object must be the last element of the array.
      *
-     * @param  string|class-string            $id                 The class, interface or slug the decorator chain should
-     *                                                            be bound to.
+     * @param  string|class-string            $id                 The class, interface or slug the decorator chain
+     *                                                            should be bound to.
      * @param  array<string|object|callable>  $decorators         An array of implementations that decorate an object.
      * @param  string[]|null                  $afterBuildMethods  An array of methods that should be called on the
-     *                                                            instance after it has been built; the methods should not
-     *                                                            require any argument.
+     *                                                            instance after it has been built; the methods should
+     *                                                            not require any argument.
      *
      * @return void This method does not return any value.
      * @throws ContainerException
@@ -354,12 +354,12 @@ class App
      *
      * The base decorated object must be the last element of the array.
      *
-     * @param  string|class-string            $id                 The class, interface or slug the decorator chain should
-     *                                                            be bound to.
+     * @param  string|class-string            $id                 The class, interface or slug the decorator chain
+     *                                                            should be bound to.
      * @param  array<string|object|callable>  $decorators         An array of implementations that decorate an object.
      * @param  string[]|null                  $afterBuildMethods  An array of methods that should be called on the
-     *                                                            instance after it has been built; the methods should not
-     *                                                            require any argument.
+     *                                                            instance after it has been built; the methods should
+     *                                                            not require any argument.
      *
      * @return void This method does not return any value.
      * @throws ContainerException If there's any issue binding the decorators.
@@ -451,8 +451,8 @@ class App
      *
      * @param  string|class-string|object  $id      A fully-qualified class name, a bound slug or an object o call the
      *                                              callback on.
-     * @param  string                      $method  The method that should be called on the resolved implementation with the
-     *                                              specified array arguments.
+     * @param  string                      $method  The method that should be called on the resolved implementation
+     *                                              with the specified array arguments.
      *
      * @return callable|Closure The callback function.
      * @throws ContainerException If the id is not a bound implementation or valid class name.
@@ -468,9 +468,9 @@ class App
      * The callable will be a closure on PHP 5.3+ or a lambda function on PHP 5.2.
      *
      * @param  string|class-string|mixed  $id                 The fully qualified name of a class or an interface.
-     * @param  array<mixed>               $buildArgs          An array of arguments that should be used to build the instance;
-     *                                                        note that any argument will be resolved using the container itself
-     *                                                        and bindings will apply.
+     * @param  array<mixed>               $buildArgs          An array of arguments that should be used to build the
+     *                                                        instance; note that any argument will be resolved using
+     *                                                        the container itself and bindings will apply.
      * @param  string[]|null              $afterBuildMethods  An array of methods that should be called on the built
      *                                                        implementation after resolving it.
      *
