@@ -8,17 +8,37 @@ PROJECT_NAME = $(notdir $(PWD))
 #.SILENT:
 PHP_VERSION ?= 5.6
 
+# Create a function that will return the xdebug source depending on the PHP version.
+define xdebug_src
+	@if [ "$(1)" = 5.6 ]; \
+		then echo "https://pecl.php.net/get/xdebug-2.5.5.tgz"; \
+	elif [ "$(1)" = 7.0 ]; \
+		then echo "https://pecl.php.net/get/xdebug-2.7.2.tgz"; \
+	else \
+		echo "xdebug"; \
+	fi
+endef
+
 php_versions :=5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2
 build: $(build_php_versions) ## Builds the project PHP images.
 	mkdir -p var/cache/composer
 	mkdir -p var/log
 	# Foreach PHP version build a Docker image.
 	for version in $(php_versions); do \
+		if [ "$${version}" = 5.6 ]; \
+			then export XDEBUG_SRC="https://pecl.php.net/get/xdebug-2.5.5.tgz"; \
+		elif [ "$${version}" = 7.0 ]; \
+			then export XDEBUG_SRC="https://pecl.php.net/get/xdebug-2.7.2.tgz"; \
+		else \
+			export XDEBUG_SRC="xdebug"; \
+		fi; \
 		docker build \
 			--build-arg PHP_VERSION=$${version} \
 			--build-arg XDEBUG_REMOTE_HOST=$${XDEBUG_REMOTE_HOST:-host.docker.internal} \
 			--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
 			--build-arg WORKDIR=${PWD} \
+			--build-arg XDEBUG_SRC=$${XDEBUG_SRC} \
+			--progress plain \
 			config/containers/php \
 			--tag lucatume/di52-dev:php-v$${version}; \
 	done

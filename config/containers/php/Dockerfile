@@ -4,9 +4,23 @@ FROM composer:2.2 as composer
 
 FROM php:${PHP_VERSION}-cli-alpine
 
+ARG XDEBUG_SRC='xdebug'
+
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
-RUN install-php-extensions xdebug && apk add gettext && rm -rf /var/cache/apk/*
-RUN rm /usr/bin/install-php-extensions
+# If the XDEBUG_SRC starts with http, download, extract and prepare it.
+RUN if echo ${XDEBUG_SRC} | grep -Eq '^http'; then \
+        curl -k -o /tmp/xdebug.tgz ${XDEBUG_SRC} && \
+        XDEBUG_VERSION=$(echo ${XDEBUG_SRC} | sed -e 's/.*xdebug-\(.*\)\.tgz/\1/') && \
+        tar xzf /tmp/xdebug.tgz -C /tmp && \
+        mv /tmp/package.xml /tmp/xdebug-${XDEBUG_VERSION} && \
+        rm /tmp/xdebug.tgz && \
+        XDEBUG_SRC=/tmp/xdebug-${XDEBUG_VERSION}; \
+    fi \
+    && install-php-extensions ${XDEBUG_SRC} \
+    && apk add gettext \
+    && rm -rf /var/cache/apk/* \
+    && rm /usr/bin/install-php-extensions \
+    && rm -rf /tmp/xdebug.tgz /tmp/xdebug-${XDEBUG_VERSION}
 
 ARG XDEBUG_REMOTE_HOST='host.docker.internal'
 ARG XDEBUG_REMOTE_PORT='9009'

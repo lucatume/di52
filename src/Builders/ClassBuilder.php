@@ -9,6 +9,7 @@ namespace lucatume\DI52\Builders;
 
 use lucatume\DI52\ContainerException;
 use lucatume\DI52\NotFoundException;
+use ReflectionException;
 use ReflectionMethod;
 
 /**
@@ -37,7 +38,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     /**
      * The fully-qualified class name the builder should build instances of.
      *
-     * @var string
+     * @var class-string
      */
     protected $className;
     /**
@@ -65,12 +66,12 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     /**
      * ClassBuilder constructor.
      *
-     * @param string             $id                The identifier associated with this builder.
-     * @param Resolver           $resolver          A reference to the resolver currently using the builder.
-     * @param string             $className         The fully-qualified class name to build instances for.
-     * @param array<string>|null $afterBuildMethods An optional set of methods to call on the built object.
-     * @param mixed              ...$buildArgs      An optional set of build arguments that should be provided to the
-     *                                              class constructor method.
+     * @param string|class-string $id                   The identifier associated with this builder.
+     * @param Resolver            $resolver             A reference to the resolver currently using the builder.
+     * @param string              $className            The fully-qualified class name to build instances for.
+     * @param array<string>|null  $afterBuildMethods    An optional set of methods to call on the built object.
+     * @param mixed               ...$buildArgs         An optional set of build arguments that should be provided to
+     *                                                  the class constructor method.
      *
      * @throws NotFoundException If the class does not exist.
      */
@@ -78,7 +79,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     {
         if (!class_exists($className)) {
             throw new NotFoundException(
-                "nothing is bound to the '{$className}' id and it's not an existing or instantiable class."
+                "nothing is bound to the '$className' id and it's not an existing or instantiable class."
             );
         }
 
@@ -99,6 +100,8 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
      * Builds and returns an instance of the class.
      *
      * @return object An instance of the class.
+     *
+     * @throws ContainerException
      */
     public function build()
     {
@@ -145,7 +148,8 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     /**
      * Returns a set of resolved constructor parameters.
      *
-     * @param string $className The fully-qualified class name to get the resolved constructor parameters yet.
+     * @param  class-string  $className  The fully-qualified class name to get the resolved constructor parameters yet.
+     *
      * @return array<Parameter> A set of resolved constructor parameters.
      *
      * @throws ContainerException If the resolution of any constructor parameters is problematic.
@@ -158,7 +162,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
 
         try {
             $constructorReflection = new ReflectionMethod($className, '__construct');
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             static::$constructorParametersCache[$className] = [];
             // No constructor method, no args.
             return [];
@@ -185,6 +189,8 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
      * @param mixed $arg The argument id or value to resolve.
      *
      * @return mixed The resolved build argument.
+     *
+     * @throws NotFoundException
      */
     protected function resolveBuildArg($arg)
     {
