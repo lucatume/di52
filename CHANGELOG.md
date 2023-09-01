@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.3.5] 2023-09-01;
+
 ### Changed
 
 - Added [PHPStan generics](https://phpstan.org/blog/generics-in-php-using-phpdocs) to multiple classes. IDEs that support them will get autocompletion (.phpstorm.meta.php not required) if a fully-qualified class name is used, e.g. `$instance = $container->get( Test::class );`. 
@@ -523,4 +525,5 @@ org/psr/psr-11/)
 [3.3.2]: https://github.com/lucatume/di52/compare/3.3.1...3.3.2
 [3.3.3]: https://github.com/lucatume/di52/compare/3.3.2...3.3.3
 [3.3.4]: https://github.com/lucatume/di52/compare/3.3.3...3.3.4
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.4...HEAD
+[3.3.5]: https://github.com/lucatume/di52/compare/3.3.4...3.3.5
+[unreleased]: https://github.com/lucatume/di52/compare/3.3.5...HEAD
