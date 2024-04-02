@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.3.6] 2024-04-02;
+
 ### Added
 
 - The `afterBuildAll` parameter to the `bindDecorators` and `singletonDecorators` method, fixes #61.
@@ -530,4 +532,5 @@ org/psr/psr-11/)
 [3.3.3]: https://github.com/lucatume/di52/compare/3.3.2...3.3.3
 [3.3.4]: https://github.com/lucatume/di52/compare/3.3.3...3.3.4
 [3.3.5]: https://github.com/lucatume/di52/compare/3.3.4...3.3.5
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.5...HEAD
+[3.3.6]: https://github.com/lucatume/di52/compare/3.3.5...3.3.6
+[unreleased]: https://github.com/lucatume/di52/compare/3.3.6...HEAD
