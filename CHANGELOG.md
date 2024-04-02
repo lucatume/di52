@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Added
+
+- The `afterBuildAll` parameter to the `bindDecorators` and `singletonDecorators` method, fixes #61.
+
 ## [3.3.5] 2023-09-01;
 
 ### Changed

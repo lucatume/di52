@@ -19,7 +19,7 @@ define xdebug_src
 	fi
 endef
 
-php_versions :=5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2
+php_versions :=5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2 8.3
 build: $(build_php_versions) ## Builds the project PHP images.
 	mkdir -p var/cache/composer
 	mkdir -p var/log
