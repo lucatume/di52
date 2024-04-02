@@ -599,6 +599,54 @@ $container->bindDecorators(PostEndpoint::class, [
     BaseEndpoint::class
 ]);
 ```
+
+Similarly to a `bind` or `singleton` call, you can specify a set of methods to call after the decorator chain is built
+with the `afterBuildMethods` parameter:
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+$container->bind(RepositoryInterface::class, PostRepository::class);
+$container->bind(CacheInterface::class, ArrayCache::class);
+$container->bind(LoggerInterface::class, FileLogger::class);
+// Decorators are built left to right, outer decorators are listed first.
+$container->bindDecorators(PostEndpoint::class, [
+    LoggingEndpoint::class,
+    CachingEndpoint::class,
+    BaseEndpoint::class
+], ['register']);
+```
+
+By default, the `register` method will be called **only on the base instance**, the one on the right of the decorator chain.  
+In the example above only `BaseEndpoint::register` would be called.  
+
+If you need to call the same set of after-build methods on all instances after each is build, you can set the value of 
+the `afterBuildAll` parameter to `true`:
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+$container->bind(RepositoryInterface::class, PostRepository::class);
+$container->bind(CacheInterface::class, ArrayCache::class);
+$container->bind(LoggerInterface::class, FileLogger::class);
+// Decorators are built left to right, outer decorators are listed first.
+$container->bindDecorators(PostEndpoint::class, [
+    LoggingEndpoint::class,
+    CachingEndpoint::class,
+    BaseEndpoint::class
+], ['register'], true);
+```
+
+In this example the `register` method will be called on the `BaseEndpoint` after it's built, then on the
+`CachingEndpoint` instance after it's built, and finally on the `LoggingEndpoint` instance after it's built.  
+
+Different  and more complex combinations of decorators and after-build methods should be handled binding, with a
+`bind` or `singleton` call, a Closure to build the decorator chain.
+
 ## Tagging
 
 Tagging allows grouping similar implementations for the purpose of referencing them by group.
