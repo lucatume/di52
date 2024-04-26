@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Correctly bind the container to the builders and resolvers when cloning the container.
+
 ## [3.3.6] 2024-04-02;
 
 ### Added
