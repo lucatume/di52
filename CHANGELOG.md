@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [3.3.7] 2024-04-26;
+
 ### Fixed
 
 - Correctly bind the container to the builders and resolvers when cloning the container.
@@ -537,4 +539,5 @@ org/psr/psr-11/)
 [3.3.4]: https://github.com/lucatume/di52/compare/3.3.3...3.3.4
 [3.3.5]: https://github.com/lucatume/di52/compare/3.3.4...3.3.5
 [3.3.6]: https://github.com/lucatume/di52/compare/3.3.5...3.3.6
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.6...HEAD
+[3.3.7]: https://github.com/lucatume/di52/compare/3.3.6...3.3.7
+[unreleased]: https://github.com/lucatume/di52/compare/3.3.7...HEAD
