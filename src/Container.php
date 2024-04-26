@@ -916,6 +916,8 @@ class Container implements ArrayAccess, ContainerInterface
     {
         $this->resolver = clone $this->resolver;
         $this->builders = clone $this->builders;
+        $this->builders->setContainer($this);
+        $this->builders->setResolver($this->resolver);
         $this->bindThis();
     }
 }

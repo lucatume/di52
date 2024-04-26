@@ -10,6 +10,34 @@ class ContainerExtension extends Container
 {
 }
 
+class CloneTestFoo
+{
+    private $baz;
+
+    public function __construct(CloneTestBazInterface $baz)
+    {
+        $this->baz = $baz;
+    }
+
+    public function getBaz()
+    {
+        return $this->baz;
+    }
+}
+
+interface CloneTestBazInterface
+{
+}
+
+class CloneTestBazOne implements CloneTestBazInterface
+{
+
+}
+
+class CloneTestBazTwo implements CloneTestBazInterface
+{
+}
+
 class CloneTest extends TestCase
 {
     /**
@@ -97,5 +125,38 @@ class CloneTest extends TestCase
         $this->assertSame($clone, $clone->get(Container::class));
         $this->assertSame($clone, $clone->get(ContainerExtension::class));
         $this->assertSame($clone, $clone->get(ContainerInterface::class));
+    }
+
+    /**
+     * It should use the cloned container to build
+     *
+     * @test
+     */
+    public function should_use_the_cloned_container_to_build()
+    {
+        $original = new Container();
+        $clone    = clone $original;
+
+        $this->assertNotSame($original, $clone);
+
+        $original->singleton(CloneTestFoo::class);
+        $original->singleton(CloneTestBazInterface::class, CloneTestBazOne::class);
+
+        $clone->singleton(CloneTestFoo::class);
+        $clone->singleton(CloneTestBazInterface::class, CloneTestBazTwo::class);
+
+        $this->assertNotSame($original->get(CloneTestFoo::class), $clone->get(CloneTestFoo::class));
+        $this->assertNotSame(
+            $original->get(CloneTestBazInterface::class),
+            $clone->get(CloneTestBazInterface::class)
+        );
+        $this->assertInstanceOf(CloneTestBazOne::class, $original->get(CloneTestBazInterface::class));
+        $this->assertInstanceOf(CloneTestBazTwo::class, $clone->get(CloneTestBazInterface::class));
+        $this->assertInstanceOf(CloneTestBazOne::class, $original->get(CloneTestFoo::class)->getBaz());
+        $this->assertInstanceOf(CloneTestBazTwo::class, $clone->get(CloneTestFoo::class)->getBaz());
+        $this->assertNotSame(
+            $original->get(CloneTestFoo::class)->getBaz(),
+            $clone->get(CloneTestFoo::class)->getBaz()
+        );
     }
 }

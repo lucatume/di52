@@ -82,4 +82,32 @@ class Factory
 
         return new ValueBuilder($implementation);
     }
+
+    /**
+     * Sets the container the builder should use.
+     *
+     * @since TBD
+     *
+     * @param Container $container The container to bind.
+     *
+     * @return void
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * Sets the resolver the container should use.
+     *
+     * @since TBD
+     *
+     * @param Resolver $resolver The resolver the container should use.
+     *
+     * @return void
+     */
+    public function setResolver(Resolver $resolver)
+    {
+        $this->resolver = $resolver;
+    }
 }
