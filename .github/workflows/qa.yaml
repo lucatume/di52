@@ -7,38 +7,38 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup PHP 5.6
+      - name: Setup PHP 7.1
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 5.6
+          php-version: 7.1
       - name: Install dependencies
         uses: "ramsey/composer-install@v2"
       - name: Run phpcs
         run: make phpcs
   phpstan:
-    name: phpstan on PHP 5.6
+    name: phpstan on PHP 7.1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup PHP 5.6
+      - name: Setup PHP 7.1
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 5.6
+          php-version: 7.1
       - name: Install dependencies
         uses: "ramsey/composer-install@v2"
       - name: Run phpstan
         run: make phpstan
   phan:
-    name: phan on PHP 5.6
+    name: phan on PHP 7.1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Setup PHP 5.6
+      - name: Setup PHP 7.1
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 5.6
+          php-version: 7.1
       - name: Install dependencies
         uses: "ramsey/composer-install@v2"
       - name: Run phan
