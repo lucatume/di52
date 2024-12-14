@@ -459,6 +459,7 @@ class Container implements ArrayAccess, ContainerInterface
             $provider->register();
         } else {
             $provided = $provider->provides();
+            // @phpstan-ignore-next-line
             if (!is_array($provided) || count($provided) === 0) {
                 throw new ContainerException(
                     "Service provider '{$serviceProviderClass}' is marked as deferred" .
@@ -748,6 +749,7 @@ class Container implements ArrayAccess, ContainerInterface
     {
         $callbackIdPrefix = is_object($id) ? spl_object_hash($id) : $id;
 
+        // @phpstan-ignore-next-line
         if (!is_string($callbackIdPrefix)) {
             $typeOfId = gettype($id);
             throw new ContainerException(
@@ -755,6 +757,7 @@ class Container implements ArrayAccess, ContainerInterface
             );
         }
 
+        // @phpstan-ignore-next-line
         if (!is_string($method)) {
             throw new ContainerException("Callbacks second argument must be a string method name.");
         }
@@ -878,6 +881,7 @@ class Container implements ArrayAccess, ContainerInterface
      */
     public function isBound($id)
     {
+        // @phpstan-ignore-next-line
         return is_string($id) && $this->resolver->isBound($id);
     }
 

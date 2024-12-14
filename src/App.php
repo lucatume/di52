@@ -482,7 +482,7 @@ class App
      */
     public static function instance($id, ?array $buildArgs = [], ?array $afterBuildMethods = null)
     {
-        return static::container()->instance($id, $buildArgs, $afterBuildMethods);
+        return static::container()->instance($id, $buildArgs ?? [], $afterBuildMethods);
     }
 
     /**
