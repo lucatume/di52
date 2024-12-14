@@ -471,7 +471,7 @@ class App
      * The callable will be a closure on PHP 5.3+ or a lambda function on PHP 5.2.
      *
      * @param  string|class-string|mixed  $id                 The fully qualified name of a class or an interface.
-     * @param  array<mixed>               $buildArgs          An array of arguments that should be used to build the
+     * @param  array<mixed>|null               $buildArgs     An array of arguments that should be used to build the
      *                                                        instance; note that any argument will be resolved using
      *                                                        the container itself and bindings will apply.
      * @param  string[]|null              $afterBuildMethods  An array of methods that should be called on the built
