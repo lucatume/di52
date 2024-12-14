@@ -5,6 +5,11 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Changed
+
+- Bumped minimum supported version to PHP 7.1.
+- Fixed PHP 8.4 deprecation warnings.
+
 ## [3.3.7] 2024-04-26;
 
 ### Fixed

@@ -75,7 +75,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
      *
      * @throws NotFoundException If the class does not exist.
      */
-    public function __construct($id, Resolver $resolver, $className, array $afterBuildMethods = null, ...$buildArgs)
+    public function __construct($id, Resolver $resolver, $className, ?array $afterBuildMethods = null, ...$buildArgs)
     {
         if (!class_exists($className)) {
             throw new NotFoundException(
@@ -236,7 +236,7 @@ class ClassBuilder implements BuilderInterface, ReinitializableBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function reinit(array $afterBuildMethods = null, ...$buildArgs)
+    public function reinit(?array $afterBuildMethods = null, ...$buildArgs)
     {
         $this->afterBuildMethods = $afterBuildMethods;
         $this->buildArgs = $buildArgs;

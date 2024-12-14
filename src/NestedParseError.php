@@ -40,7 +40,7 @@ class NestedParseError extends \Exception
      * @param string $type The type of the entity being loaded.
      * @param string $name The name of the entity being loaded.
      */
-    public function __construct($message = "", $code = 0, Throwable $previous = null, $type = '', $name = '')
+    public function __construct($message = "", $code = 0, ?Throwable $previous = null, $type = '', $name = '')
     {
         parent::__construct($message, $code, $previous);
         $this->type = $type;
