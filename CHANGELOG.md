@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.0.0] 2024-12-14;
+
 ### Changed
 
 - Bumped minimum supported version to PHP 7.1.
@@ -545,4 +547,5 @@ org/psr/psr-11/)
 [3.3.5]: https://github.com/lucatume/di52/compare/3.3.4...3.3.5
 [3.3.6]: https://github.com/lucatume/di52/compare/3.3.5...3.3.6
 [3.3.7]: https://github.com/lucatume/di52/compare/3.3.6...3.3.7
-[unreleased]: https://github.com/lucatume/di52/compare/3.3.7...HEAD
+[4.0.0]: https://github.com/lucatume/di52/compare/3.3.7...4.0.0
+[unreleased]: https://github.com/lucatume/di52/compare/4.0.0...HEAD
