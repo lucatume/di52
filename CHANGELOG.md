@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Fixed `Container::unsetOffset` method behavior to ensure singletons and when-needs-gives bindings are correctly removed.
+
 ## [4.0.0] 2024-12-14;
 
 ### Changed
