@@ -111,7 +111,7 @@ class Resolver
      */
     public function unbind($id)
     {
-        unset($this->bindings[$id]);
+        unset($this->bindings[$id], $this->whenNeedsGive[$id], $this->singletons[$id]);
     }
 
     /**
