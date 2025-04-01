@@ -730,7 +730,8 @@ class Container implements ArrayAccess, ContainerInterface
         $id = "{$this->whenClass}::{$this->needsClass}";
         $builder = $this->builders->getBuilder($id, $implementation);
         $this->resolver->setWhenNeedsGive($this->whenClass, $this->needsClass, $builder);
-        unset($this->whenClass, $this->needsClass);
+        // @phpstan-ignore unset.possiblyHookedProperty
+        unset($this->whenClass, $this->needsClass); // @phpstan-ignore unset.possiblyHookedProperty
     }
 
     /**
