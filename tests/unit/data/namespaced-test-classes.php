@@ -179,7 +179,7 @@ class DependingOnOneInterfaceWithoutDefault
 
 class DependingOnOneInterfaceWithDefault
 {
-    public function __construct(One $one = null)
+    public function __construct(?One $one = null)
     {
     }
 }

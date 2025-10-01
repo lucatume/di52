@@ -8,7 +8,7 @@ if [ "$1" = 'run_tests' ]; then
   echo -n "Running Composer update ..."
   composer update -W -qn
   echo -e " done"
-  vendor/bin/phpunit --stop-on-failure "$@"
+  php -d error_reporting=E_ALL vendor/bin/phpunit --stop-on-failure "$@"
   exit $?
 fi
 

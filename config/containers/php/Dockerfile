@@ -1,6 +1,6 @@
 ARG PHP_VERSION=5.6
 
-FROM composer:2.2 as composer
+FROM composer:2.2 AS composer
 
 FROM php:${PHP_VERSION}-cli-alpine
 

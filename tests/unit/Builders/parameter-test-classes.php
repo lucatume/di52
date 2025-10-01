@@ -37,21 +37,21 @@ class ParameterTestClassFive
 
 class ParameterTestClassSix
 {
-    public function __construct($one, callable $two, $three = null, callable $four = null)
+    public function __construct($one, callable $two, $three = null, ?callable $four = null)
     {
     }
 }
 
 class ParameterTestClassSeven
 {
-    public function __construct($one, iterable $two, $three = null, iterable $four = null)
+    public function __construct($one, iterable $two, $three = null, ?iterable $four = null)
     {
     }
 }
 
 class ParameterTestClassEight
 {
-    public function __construct(ParameterTestClassOne $one, ParameterTestClassTwo $two = null)
+    public function __construct(ParameterTestClassOne $one, ?ParameterTestClassTwo $two = null)
     {
     }
 }

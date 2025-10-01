@@ -6,47 +6,25 @@ PWD ?= pwd_unknown
 PROJECT_NAME = $(notdir $(PWD))
 # Suppress `make` own output.
 #.SILENT:
-PHP_VERSION ?= 5.6
+PHP_VERSION ?= 7.1
 
-# Create a function that will return the xdebug source depending on the PHP version.
-define xdebug_src
-	@if [ "$(1)" = 5.6 ]; \
-		then echo "https://pecl.php.net/get/xdebug-2.5.5.tgz"; \
-	elif [ "$(1)" = 7.0 ]; \
-		then echo "https://pecl.php.net/get/xdebug-2.7.2.tgz"; \
-	else \
-		echo "xdebug"; \
-	fi
-endef
-
-php_versions :=5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2 8.3
+php_versions :=7.1 7.2 7.3 7.4 8.0 8.1 8.2 8.3 8.4
 build: $(build_php_versions) ## Builds the project PHP images.
 	mkdir -p var/cache/composer
 	mkdir -p var/log
 	# Foreach PHP version build a Docker image.
 	for version in $(php_versions); do \
-		if [ "$${version}" = 5.6 ]; \
-			then export XDEBUG_SRC="https://pecl.php.net/get/xdebug-2.5.5.tgz"; \
-		elif [ "$${version}" = 7.0 ]; \
-			then export XDEBUG_SRC="https://pecl.php.net/get/xdebug-2.7.2.tgz"; \
-		else \
-			export XDEBUG_SRC="xdebug"; \
-		fi; \
 		docker build \
 			--build-arg PHP_VERSION=$${version} \
 			--build-arg XDEBUG_REMOTE_HOST=$${XDEBUG_REMOTE_HOST:-host.docker.internal} \
 			--build-arg XDEBUG_REMOTE_PORT=$${XDEBUG_REMOTE_PORT:-9009} \
 			--build-arg WORKDIR=${PWD} \
-			--build-arg XDEBUG_SRC=$${XDEBUG_SRC} \
+			--build-arg XDEBUG_SRC=xdebug \
 			--progress plain \
 			config/containers/php \
 			--tag lucatume/di52-dev:php-v$${version}; \
 	done
 .PHONY: build
-
-lint: ## Lint the project source files to make sure they are PHP 5.6 compatible.
-	docker run --rm -v ${PWD}:/${PWD} lucatume/parallel-lint-56 --colors ${PWD}/src
-.PHONY: lint
 
 phpcs: ## Run PHP Code Sniffer on the project source files.
 	docker run --rm \
@@ -71,7 +49,7 @@ phpcbf: ## Run PHP Code Sniffer Beautifier on the project source files.
 .PHONY: phpcbf
 
 PHPSTAN_LEVEL?=max
-phpstan: ## Run phpstan on the project source files, PHP 5.6 version.
+phpstan: ## Run phpstan on the project source files, PHP 7.1 version.
 	docker run --rm \
 		-v ${PWD}:${PWD} \
 		-u "$$(id -u):$$(id -g)" \
@@ -80,7 +58,7 @@ phpstan: ## Run phpstan on the project source files, PHP 5.6 version.
 		-l ${PHPSTAN_LEVEL} ${PWD}/src
 .PHONY: phpstan
 
-phan: ## Run phan on the project source files, PHP 5.6 version.
+phan: ## Run phan on the project source files, PHP 7.1 version.
 	docker run --rm \
 		-v ${PWD}:/mnt/src \
 		-u "$$(id -u):$$(id -g)" \
@@ -96,14 +74,86 @@ composer_update:
 		lucatume/di52-dev:php-v${PHP_VERSION} update -W
 .PHONY: composer_update
 
-composer_update_56:
+composer_update_71:
 	docker run --rm \
 		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
 		-v "${PWD}:${PWD}" \
 		-w ${PWD} \
   		--entrypoint composer \
-		lucatume/di52-dev:php-v5.6 update -W
-.PHONY: composer_update_56
+		lucatume/di52-dev:php-v7.1 update -W
+.PHONY: composer_update_71
+
+composer_update_72:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v7.2 update -W
+.PHONY: composer_update_72
+
+composer_update_73:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v7.3 update -W
+.PHONY: composer_update_73
+
+composer_update_74:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v7.4 update -W
+.PHONY: composer_update_74
+
+composer_update_80:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v8.0 update -W
+.PHONY: composer_update_80
+
+composer_update_81:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v8.1 update -W
+.PHONY: composer_update_81
+
+composer_update_82:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v8.2 update -W
+.PHONY: composer_update_82
+
+composer_update_83:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v8.3 update -W
+.PHONY: composer_update_83
+
+composer_update_84:
+	docker run --rm \
+		-e COMPOSER_CACHE_DIR=${PWD}/var/cache/composer \
+		-v "${PWD}:${PWD}" \
+		-w ${PWD} \
+  		--entrypoint composer \
+		lucatume/di52-dev:php-v8.4 update -W
+.PHONY: composer_update_84
 
 test_run: ## Run the test on the specified PHP version with XDebug support. Example `PHP_VERSION=7.2 make test_run`.
 	docker run --rm \
@@ -113,7 +163,7 @@ test_run: ## Run the test on the specified PHP version with XDebug support. Exam
 	  "lucatume/di52-dev:php-v${PHP_VERSION}" run_tests --no-coverage
 .PHONY: test_run
 
-test: composer_update_56 lint phpcs phpstan phan ## Runs the project PHPUnit tests on all PHP versions.
+test: composer_update_71 phpcs phpstan phan ## Runs the project PHPUnit tests on all PHP versions.
 	for version in $(php_versions); do \
 		docker run --rm \
         	  -e COMPOSER_CACHE_DIR="${PWD}/var/cache/composer" \
