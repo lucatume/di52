@@ -63,7 +63,7 @@ class ArrayBuilder implements BuilderInterface
     /**
      * Returns the value wrapped by the builder.
      *
-     * @return array The value wrapped by the builder.
+     * @return mixed[] The value wrapped by the builder.
      *
      * @throws ContainerException When one of the builders does not resolve to array.
      */
