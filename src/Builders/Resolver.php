@@ -8,6 +8,7 @@
 namespace lucatume\DI52\Builders;
 
 use lucatume\DI52\NotFoundException;
+use lucatume\DI52\Builders\ArrayBuilder;
 
 /**
  * Class Resolver
@@ -73,6 +74,24 @@ class Resolver
     {
         unset($this->singletons[$id]);
         $this->bindings[$id] = $implementation;
+    }
+
+    /**
+     * Adds an implementation to an id. The implementation should resolve to array.
+     *
+     * @param string|class-string $id
+     * @param BuilderInterface    $implementation
+     *
+     * @return void This method does not return any value.
+     */
+    public function add($id, BuilderInterface $implementation)
+    {
+        if (!isset($this->bindings[$id])) {
+            $this->bind($id, $implementation);
+            return;
+        }
+
+        $this->bindings[$id] = ArrayBuilder::of($this->bindings[$id], $implementation);
     }
 
     /**
