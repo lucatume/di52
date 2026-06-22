@@ -7,6 +7,7 @@
 
 namespace lucatume\DI52\Builders;
 
+use lucatume\DI52\ContainerException;
 use lucatume\DI52\NotFoundException;
 use lucatume\DI52\Builders\ArrayBuilder;
 use RuntimeException;
@@ -84,9 +85,15 @@ class Resolver
      * @param BuilderInterface    $implementation
      *
      * @return void This method does not return any value.
+     *
+     * @throws ContainerException When trying to add to a singleton.
      */
     public function add($id, BuilderInterface $implementation)
     {
+        if(isset($this->singletons[$id])) {
+            throw new ContainerException( "You can't add bindings to {$id} because it's a singleton!");
+        }
+
         if (!isset($this->bindings[$id])) {
             $this->bind($id, $implementation);
             return;
@@ -98,7 +105,7 @@ class Resolver
             throw new RuntimeException('Existing bind is not of type ' . BuilderInterface::class);
         }
 
-        $this->bindings[$id] = ArrayBuilder::of($this->bindings[$id], $implementation);
+        $this->bindings[$id] = ArrayBuilder::of($binding, $implementation);
     }
 
     /**
