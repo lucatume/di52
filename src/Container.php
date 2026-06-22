@@ -539,6 +539,35 @@ class Container implements ArrayAccess, ContainerInterface
     }
 
     /**
+     * Adds a list of implementations to a binding, preserving previous bindings
+     * for the same $id.
+     *
+     * @param string|class-string $id   A class or interface fully qualified name or a string slug.
+     * @param array               $list The implementations to be added to the alias. An array of anything.
+     *
+     * @return void The method does not return any value.
+     *
+     * @throws ContainerException If there's an issue while trying to bind the implementation.
+     */
+    public function add($id, array $list)
+    {
+        if (!$this->isBound($id)) {
+            $this->bind($id, $list);
+            return;
+        }
+
+        $current = $this->get($id);
+        if (!is_array($current)){
+            throw new ContainerException(
+                "We can't add a list of implementations to the {$id} binding, because it's current value" .
+                " is not an array."
+            );
+        }
+
+        $this->bind($id, array_merge($current,$list));
+    }
+
+    /**
      * Boots up the application calling the `boot` method of each registered service provider.
      *
      * If there are bootable providers (providers overloading the `boot` method) then the `boot` method will be
