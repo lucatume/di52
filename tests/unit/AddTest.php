@@ -268,6 +268,22 @@ class AddTest extends TestCase
     }
 
     /**
+     * Should allow adding to unresolved singleton.
+     *
+     * @test
+     */
+    public function should_add_to_unresolved_singleton_array_binding()
+    {
+        $container = new Container();
+
+        $container->singleton('items', ['start']);
+
+        $container->add('items', ['end']);
+
+        $this->assertSame(['start', 'end'], $container->get('items'));
+    }
+
+    /**
      * It should not allow adding to a resolved singleton.
      *
      * @test
