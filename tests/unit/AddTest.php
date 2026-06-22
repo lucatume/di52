@@ -266,4 +266,24 @@ class AddTest extends TestCase
         $this->assertSame('end', $value[1]);
         $this->assertInstanceOf(WhateverService::class, $value[0]);
     }
+
+    /**
+     * It should not allow adding to a resolved singleton.
+     *
+     * @test
+     */
+    public function should_throw_when_adding_to_resolved_singleton_array_binding()
+    {
+        $container = new Container();
+
+        $container->singleton('items', ['start']);
+
+        $resolved = $container->get('items');
+
+        $this->assertSame(['start'], $resolved);
+
+        $this->expectException(ContainerException::class);
+
+        $container->add('items', ['end']);
+    }
 }
