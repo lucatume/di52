@@ -232,4 +232,32 @@ class AddTest extends TestCase
 
         $this->assertSame(['start', 'end'], $container->get('items'));
     }
+
+    /**
+     * @test
+     */
+    public function should_not_initiate_lazy_resolved_instances()
+    {
+        // Dont allow other tests to leak here.
+        WhateverService::$spy = 0;
+        $container = new Container();
+
+        // Factory binding - so every new get should result in a new instance
+        $container->bind(WhateverService::class);
+        $container->when(WhateverService::class)->needs('$providers')->give( [] );
+
+        $container->add('whatever', static fn($c) => [$c->get(WhateverService::class)] );
+
+        $container->add('whatever', ['end']);
+
+        $this->assertSame(0, WhateverService::$spy);
+
+        $value = $container->get('whatever');
+
+        $this->assertSame(1, WhateverService::$spy);
+        $this->assertIsArray($value);
+        $this->assertCount(2, $value);
+        $this->assertSame('end', $value[1]);
+        $this->assertInstanceOf(WhateverService::class, $value[0]);
+    }
 }
