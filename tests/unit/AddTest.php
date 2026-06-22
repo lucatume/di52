@@ -118,7 +118,9 @@ class AddTest extends TestCase
 
         $container->singleton(WhateverService::class);
         $container->when(WhateverService::class)->needs('$providers')->give(
-            static fn( $c ) => $c->get('providers')
+            static function( $c ) {
+                return $c->get('providers');
+            }
         );
 
         $whatever = $container->get(WhateverService::class);
@@ -248,7 +250,9 @@ class AddTest extends TestCase
         $container->bind(WhateverService::class);
         $container->when(WhateverService::class)->needs('$providers')->give( [] );
 
-        $container->add('whatever', static fn($c) => [$c->get(WhateverService::class)] );
+        $container->add('whatever', static function($c) {
+            return [$c->get(WhateverService::class)];
+        });
 
         $container->add('whatever', ['end']);
 

@@ -94,8 +94,8 @@ class Resolver
 
         $binding = $this->bindings[$id];
 
-        if (!$binding instanceof BuilderInterface){
-            throw new RuntimeException( 'Existing bind is not of type ' . BuilderInterface::class);
+        if (!$binding instanceof BuilderInterface) {
+            throw new RuntimeException('Existing bind is not of type ' . BuilderInterface::class);
         }
 
         $this->bindings[$id] = ArrayBuilder::of($this->bindings[$id], $implementation);

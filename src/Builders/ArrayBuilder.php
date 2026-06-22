@@ -70,7 +70,7 @@ class ArrayBuilder implements BuilderInterface
     public function build()
     {
         $final = [];
-        foreach ($this->values as $value){
+        foreach ($this->values as $value) {
             $result = $value->build();
             if (!is_array($result)) {
                 throw new ContainerException('An additive binding did not resolve to array!');
