@@ -90,8 +90,8 @@ class Resolver
      */
     public function add($id, BuilderInterface $implementation)
     {
-        if(isset($this->singletons[$id])) {
-            throw new ContainerException( "You can't add bindings to {$id} because it's a singleton!");
+        if (isset($this->singletons[$id])) {
+            throw new ContainerException("You can't add bindings to {$id} because it's a singleton!");
         }
 
         if (!isset($this->bindings[$id])) {
