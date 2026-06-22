@@ -21,7 +21,7 @@ class ArrayBuilder implements BuilderInterface
      *
      * @var list<BuilderInterface>
      */
-    private array $values;
+    private $values;
 
     /**
      * ArrayBuilder constructor.

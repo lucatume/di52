@@ -8,7 +8,7 @@ class WhateverService {
     /** @var array */
     public $providers;
 
-    public static int $spy = 0;
+    public static $spy = 0;
 
     public function __construct($providers){
         $this->providers = $providers;
@@ -234,6 +234,8 @@ class AddTest extends TestCase
     }
 
     /**
+     * It should not initiate lazy resolved instances.
+     *
      * @test
      */
     public function should_not_initiate_lazy_resolved_instances()
