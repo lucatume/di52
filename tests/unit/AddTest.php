@@ -302,4 +302,28 @@ class AddTest extends TestCase
 
         $container->add('items', ['end']);
     }
+
+    /**
+     * It should not resolve unresolved singleton when adding to it.
+     *
+     * @test
+     */
+    public function should_not_resolve_unresolved_singleton_when_adding_values()
+    {
+        $resolved = 0;
+
+        $container = new Container();
+
+        $container->singleton('items', static function () use (&$resolved): array {
+            $resolved++;
+
+            return ['start'];
+        });
+
+        $container->add('items', ['end']);
+
+        $this->assertSame(0, $resolved);
+        $this->assertSame(['start', 'end'], $container->get('items'));
+        $this->assertSame(1, $resolved);
+    }
 }
