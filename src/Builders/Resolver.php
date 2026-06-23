@@ -78,7 +78,7 @@ class Resolver
     }
 
     /**
-     * Adds an implementation to an id. The implementation should resolve to array.
+     * Extends a binding by adding implementations to it. The implementation should resolve to array.
      *
      * @param string|class-string $id
      * @param BuilderInterface    $implementation
@@ -87,7 +87,7 @@ class Resolver
      *
      * @throws ContainerException When trying to add to a singleton.
      */
-    public function add($id, BuilderInterface $implementation)
+    public function extend($id, BuilderInterface $implementation)
     {
         if (! empty($this->singletons[$id])
             && isset($this->bindings[$id])

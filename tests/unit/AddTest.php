@@ -27,7 +27,7 @@ class AddTest extends TestCase
     {
         $container = new Container();
 
-        $container->add('whatever', []);
+        $container->extendArrayVar('whatever', []);
 
         $this->assertTrue($container->isBound('whatever'));
         $this->assertSame([], $container->get('whatever'));
@@ -42,16 +42,16 @@ class AddTest extends TestCase
     {
         $container = new Container();
 
-        $container->add('whatever', ['start']);
+        $container->extendArrayVar('whatever', ['start']);
         $this->assertSame(['start'], $container->get('whatever'));
 
-        $container->add('whatever', ['middle']);
+        $container->extendArrayVar('whatever', ['middle']);
         $this->assertSame(['start', 'middle'], $container->get('whatever'));
 
-        $container->add('whatever', ['before', 'the']);
+        $container->extendArrayVar('whatever', ['before', 'the']);
         $this->assertSame(['start', 'middle', 'before', 'the'], $container->get('whatever'));
 
-        $container->add('whatever', ['end', 1]);
+        $container->extendArrayVar('whatever', ['end', 1]);
         $this->assertSame(['start', 'middle', 'before', 'the', 'end', 1], $container->get('whatever'));
     }
 
@@ -63,7 +63,7 @@ class AddTest extends TestCase
     {
         $container = new Container();
 
-        $container->add('whatever', ['test']);
+        $container->extendArrayVar('whatever', ['test']);
 
         $this->assertTrue($container->isBound('whatever'));
         $this->assertSame(['test'], $container->get('whatever'));
@@ -71,7 +71,7 @@ class AddTest extends TestCase
         $container->bind('whatever', 'test');
 
         $this->assertSame('test', $container->get('whatever'));
-        $container->add( 'whatever', ['test2', 'test3']);
+        $container->extendArrayVar( 'whatever', ['test2', 'test3']);
 
         $this->expectException(ContainerException::class);
         $container->get('whatever');
@@ -89,13 +89,13 @@ class AddTest extends TestCase
         $container->bind('whatever', ['start']);
         $this->assertSame(['start'], $container->get('whatever'));
 
-        $container->add('whatever', ['middle']);
+        $container->extendArrayVar('whatever', ['middle']);
         $this->assertSame(['start', 'middle'], $container->get('whatever'));
 
-        $container->add('whatever', ['before', 'the']);
+        $container->extendArrayVar('whatever', ['before', 'the']);
         $this->assertSame(['start', 'middle', 'before', 'the'], $container->get('whatever'));
 
-        $container->add('whatever', ['end', 1]);
+        $container->extendArrayVar('whatever', ['end', 1]);
         $this->assertSame(['start', 'middle', 'before', 'the', 'end', 1], $container->get('whatever'));
     }
 
@@ -109,11 +109,11 @@ class AddTest extends TestCase
     {
         $container = new Container();
 
-        $container->add( 'providers', [] );
+        $container->extendArrayVar( 'providers', [] );
         $this->assertTrue($container->isBound('providers'));
         $this->assertSame([], $container->get('providers'));
 
-        $container->add('providers', ['test', 1, [3, 'test2']]);
+        $container->extendArrayVar('providers', ['test', 1, [3, 'test2']]);
         $this->assertSame(['test', 1, [3, 'test2']], $container->get('providers'));
 
         $container->singleton(WhateverService::class);
@@ -142,7 +142,7 @@ class AddTest extends TestCase
 
         $container = new Container();
 
-        $container->add('whatever', [$test]);
+        $container->extendArrayVar('whatever', [$test]);
 
         $this->assertTrue($container->isBound('whatever'));
         $value = $container->get('whatever');
@@ -171,7 +171,7 @@ class AddTest extends TestCase
 
         $this->assertTrue($container->isBound('whatever'));
 
-        $container->add('whatever', [$test,$test]);
+        $container->extendArrayVar('whatever', [$test,$test]);
 
         $value = $container->get('whatever');
         $this->assertSame(1, $spy);
@@ -194,9 +194,9 @@ class AddTest extends TestCase
         // Factory binding - so every new get should result in a new instance
         $container->bind(WhateverService::class);
 
-        $container->add('items', [WhateverService::class]);
+        $container->extendArrayVar('items', [WhateverService::class]);
 
-        $container->add('items', ['end']);
+        $container->extendArrayVar('items', ['end']);
 
         $value = $container->get('items');
 
@@ -228,7 +228,7 @@ class AddTest extends TestCase
         });
 
         // This should only register the additional value.
-        $container->add('items', ['end']);
+        $container->extendArrayVar('items', ['end']);
 
         $container->bind('late.value', 'start');
 
@@ -250,11 +250,11 @@ class AddTest extends TestCase
         $container->bind(WhateverService::class);
         $container->when(WhateverService::class)->needs('$providers')->give( [] );
 
-        $container->add('whatever', static function($c) {
+        $container->extendArrayVar('whatever', static function($c) {
             return [$c->get(WhateverService::class)];
         });
 
-        $container->add('whatever', ['end']);
+        $container->extendArrayVar('whatever', ['end']);
 
         $this->assertSame(0, WhateverService::$spy);
 
@@ -278,7 +278,7 @@ class AddTest extends TestCase
 
         $container->singleton('items', ['start']);
 
-        $container->add('items', ['end']);
+        $container->extendArrayVar('items', ['end']);
 
         $this->assertSame(['start', 'end'], $container->get('items'));
     }
@@ -300,7 +300,7 @@ class AddTest extends TestCase
 
         $this->expectException(ContainerException::class);
 
-        $container->add('items', ['end']);
+        $container->extendArrayVar('items', ['end']);
     }
 
     /**
@@ -320,7 +320,7 @@ class AddTest extends TestCase
             return ['start'];
         });
 
-        $container->add('items', ['end']);
+        $container->extendArrayVar('items', ['end']);
 
         $this->assertSame(0, $resolved);
         $this->assertSame(['start', 'end'], $container->get('items'));
