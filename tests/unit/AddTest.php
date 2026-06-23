@@ -326,4 +326,28 @@ class AddTest extends TestCase
         $this->assertSame(['start', 'end'], $container->get('items'));
         $this->assertSame(1, $resolved);
     }
+
+    /**
+     * It should be the same calling get vs offsetGet.
+     *
+     * @test
+     */
+    public function should_be_the_same_result_when_calling_offset_get()
+    {
+        $resolved = 0;
+
+        $container = new Container();
+
+        $container->singleton('items', static function () use (&$resolved): array {
+            $resolved++;
+
+            return ['start'];
+        });
+
+        $container->extendArrayVar('items', ['end']);
+
+        $this->assertSame(0, $resolved);
+        $this->assertSame(['start', 'end'], $container->offsetGet('items'));
+        $this->assertSame(1, $resolved);
+    }
 }
