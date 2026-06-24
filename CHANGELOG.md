@@ -9,6 +9,8 @@ to [Semantic Versioning](http://semver.org/).
 
 - The `Container::mergeArrayVar` method to the Container, enabling developers to add a list of implementations to a binding.
 
+## [4.0.1] 2025-04-01;
+
 ### Fixed
 
 - Fixed `Container::unsetOffset` method behavior to ensure singletons and when-needs-gives bindings are correctly removed.
