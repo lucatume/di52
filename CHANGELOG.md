@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.1.0] 2026-06-24;
+
 ### Added
 
 - The `Container::mergeArrayVar` method to the Container, enabling developers to add a list of implementations to a binding.
@@ -559,4 +561,5 @@ org/psr/psr-11/)
 [3.3.7]: https://github.com/lucatume/di52/compare/3.3.6...3.3.7
 [4.0.0]: https://github.com/lucatume/di52/compare/3.3.7...4.0.0
 [4.0.1]: https://github.com/lucatume/di52/compare/4.0.0...4.0.1
-[unreleased]: https://github.com/lucatume/di52/compare/4.0.1...HEAD
+[4.1.0]: https://github.com/lucatume/di52/compare/4.0.1...4.1.0
+[unreleased]: https://github.com/lucatume/di52/compare/4.1.0...HEAD
