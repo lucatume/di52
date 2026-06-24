@@ -350,4 +350,190 @@ class AddTest extends TestCase
         $this->assertSame(['start', 'end'], $container->offsetGet('items'));
         $this->assertSame(1, $resolved);
     }
+
+    /**
+     * It should merge numeric indexed arrays by appending.
+     *
+     * @test
+     */
+    public function should_resolve_indexed_numeric_arrays_by_appending()
+    {
+        $resolved = 0;
+        $container = new Container();
+
+        $container->extendArrayVar('items', static function () use (&$resolved): array {
+            $resolved++;
+
+            return [1 => 'test1', 0 => 'test0', 4 => 'test4', 2 => 'test2'];
+        });
+
+        $this->assertSame(0, $resolved);
+
+        $container->extendArrayVar('items', [4 => 'test40', 0 => 'test10', 3 => 'test3']);
+
+        $this->assertSame(0, $resolved);
+
+        $values = $container->get('items');
+
+        $this->assertSame(1, $resolved);
+
+        $this->assertSame(
+            [0 => 'test1', 1 => 'test0', 2 => 'test4', 3 => 'test2', 4 => 'test40', 5 => 'test10', 6 => 'test3'],
+            $values
+        );
+
+        $container->extendArrayVar('items', static function() use (&$resolved): array {
+            $resolved++;
+
+            return [
+                7 => 'test7',
+                1 => 'test100',
+            ];
+        });
+
+        $this->assertSame(1, $resolved);
+
+        $new_values = $container->get('items');
+
+        // Resolves twice inside 2 callbacks now.
+        $this->assertSame(3, $resolved);
+
+        $this->assertSame(
+            [
+                0 => 'test1',
+                1 => 'test0',
+                2 => 'test4',
+                3 => 'test2',
+                4 => 'test40',
+                5 => 'test10',
+                6 => 'test3',
+                7 => 'test7',
+                8 => 'test100',
+            ],
+            $new_values
+        );
+    }
+
+    /**
+     * It should merge string indexed arrays by overwriting.
+     *
+     * @test
+     */
+    public function should_resolve_indexed_string_arrays_by_overwriting()
+    {
+        $resolved = 0;
+        $container = new Container();
+
+        $container->extendArrayVar('items', static function () use (&$resolved): array {
+            $resolved++;
+
+            return ['test1' => 'test1', 'test0' => 'test0', 'test4' => 'test4', 'test2' => 'test2'];
+        });
+
+        $this->assertSame(0, $resolved);
+
+        $container->extendArrayVar('items', ['test4' => 'test40', 'test0' => 'test10', 'test3' => 'test3']);
+
+        $this->assertSame(0, $resolved);
+
+        $values = $container->get('items');
+
+        $this->assertSame(1, $resolved);
+
+        $this->assertSame(
+            ['test1' => 'test1', 'test0' => 'test10', 'test4' => 'test40', 'test2' => 'test2', 'test3' => 'test3'],
+            $values
+        );
+
+        $container->extendArrayVar('items', static function() use (&$resolved): array {
+            $resolved++;
+
+            return [
+                'test7' => 'test7',
+                'test1' => 'test100',
+            ];
+        });
+
+        $this->assertSame(1, $resolved);
+
+        $new_values = $container->get('items');
+
+        // Resolves twice inside 2 callbacks now.
+        $this->assertSame(3, $resolved);
+
+        $this->assertSame(
+            [
+                'test1' => 'test100',
+                'test0' => 'test10',
+                'test4' => 'test40',
+                'test2' => 'test2',
+                'test3' => 'test3',
+                'test7' => 'test7',
+            ],
+            $new_values
+        );
+    }
+
+    /**
+     * It should merge arrays of numeric and string keys in a deterministic way.
+     *
+     * @test
+     */
+    public function should_resolve_indexed_numeric_and_string_arrays()
+    {
+        $resolved = 0;
+        $container = new Container();
+
+        $container->extendArrayVar('items', static function () use (&$resolved): array {
+            $resolved++;
+
+            return [1 => 'test1', 'test0' => 'test0', 'test4' => 'test4', 2 => 'test2'];
+        });
+
+        $this->assertSame(0, $resolved);
+
+        $container->extendArrayVar('items', [4 => 'test40', 'test0' => 'test10', 3 => 'test3']);
+
+        $this->assertSame(0, $resolved);
+
+        $values = $container->get('items');
+
+        $this->assertSame(1, $resolved);
+
+        $this->assertSame(
+            [0 => 'test1', 'test0' => 'test10', 'test4' => 'test4', 1 => 'test2', 2 => 'test40', 3 => 'test3'],
+            $values
+        );
+
+        $container->extendArrayVar('items', static function() use (&$resolved): array {
+            $resolved++;
+
+            return [
+                7 => 'test7',
+                'test1' => 'test100',
+                'test4' => 'test40',
+            ];
+        });
+
+        $this->assertSame(1, $resolved);
+
+        $new_values = $container->get('items');
+
+        // Resolves twice inside 2 callbacks now.
+        $this->assertSame(3, $resolved);
+
+        $this->assertSame(
+            [
+                0 => 'test1',
+                'test0' => 'test10',
+                'test4' => 'test40',
+                1 => 'test2',
+                2 => 'test40',
+                3 => 'test3',
+                4 => 'test7',
+                'test1' => 'test100',
+            ],
+            $new_values
+        );
+    }
 }
