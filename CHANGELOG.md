@@ -558,4 +558,5 @@ org/psr/psr-11/)
 [3.3.6]: https://github.com/lucatume/di52/compare/3.3.5...3.3.6
 [3.3.7]: https://github.com/lucatume/di52/compare/3.3.6...3.3.7
 [4.0.0]: https://github.com/lucatume/di52/compare/3.3.7...4.0.0
-[unreleased]: https://github.com/lucatume/di52/compare/4.0.0...HEAD
+[4.0.1]: https://github.com/lucatume/di52/compare/4.0.0...4.0.1
+[unreleased]: https://github.com/lucatume/di52/compare/4.0.1...HEAD
