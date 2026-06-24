@@ -100,7 +100,12 @@ class Resolver
             return;
         }
 
-        $this->bindings[$id] = ArrayBuilder::of($this->bindings[$id], $implementation);
+        // At this point the binding is always a builder: a non-builder value only sits in
+        // $bindings together with a set singleton flag, already handled above.
+        $binding = $this->bindings[$id];
+        assert($binding instanceof BuilderInterface);
+
+        $this->bindings[$id] = ArrayBuilder::of($binding, $implementation);
     }
 
     /**
