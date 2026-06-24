@@ -16,7 +16,7 @@ class WhateverService {
     }
 }
 
-class AddTest extends TestCase
+class ExtendArrayVarTest extends TestCase
 {
     /**
      * It should allow creating callbacks for instance methods
