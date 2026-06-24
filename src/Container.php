@@ -553,7 +553,12 @@ class Container implements ArrayAccess, ContainerInterface
      */
     public function mergeArrayVar($id, $implementation)
     {
-        $this->resolver->merge($id, $this->builders->getBuilder($id, $implementation));
+        // An array contribution is always data: wrap it as-is so a `[Class, 'method']`
+        // pair is not mistaken for a callable by the builder factory.
+        $builder = is_array($implementation)
+            ? new ValueBuilder($implementation)
+            : $this->builders->getBuilder($id, $implementation);
+        $this->resolver->merge($id, $builder);
     }
 
     /**

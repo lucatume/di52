@@ -16,6 +16,15 @@ class WhateverService {
     }
 }
 
+class CallablePairFixture {
+    public static $spy = 0;
+
+    public static function providers() {
+        self::$spy++;
+        return ['invoked'];
+    }
+}
+
 class MergeArrayVarTest extends TestCase
 {
     /**
@@ -550,5 +559,24 @@ class MergeArrayVarTest extends TestCase
         $container->mergeArrayVar('items', []);
 
         $this->assertTrue($container->has('items'));
+    }
+
+    /**
+     * A two-element [Class, 'method'] contribution is a callable, but as an array var
+     * it must be stored as data, not invoked.
+     *
+     * @test
+     */
+    public function should_treat_a_callable_pair_array_as_data_not_invoke_it()
+    {
+        CallablePairFixture::$spy = 0;
+        $container = new Container();
+
+        $container->mergeArrayVar('list', [CallablePairFixture::class, 'providers']);
+
+        $value = $container->get('list');
+
+        $this->assertSame(0, CallablePairFixture::$spy);
+        $this->assertSame([CallablePairFixture::class, 'providers'], $value);
     }
 }
