@@ -9,7 +9,6 @@ namespace lucatume\DI52\Builders;
 
 use lucatume\DI52\ContainerException;
 use lucatume\DI52\NotFoundException;
-use lucatume\DI52\Builders\ArrayBuilder;
 
 /**
  * Class Resolver
@@ -101,13 +100,7 @@ class Resolver
             return;
         }
 
-        $binding = $this->bindings[$id];
-
-        if (!$binding instanceof BuilderInterface) {
-            throw new ContainerException('Existing bind is not of type ' . BuilderInterface::class);
-        }
-
-        $this->bindings[$id] = ArrayBuilder::of($binding, $implementation);
+        $this->bindings[$id] = ArrayBuilder::of($this->bindings[$id], $implementation);
     }
 
     /**
