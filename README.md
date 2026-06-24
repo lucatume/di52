@@ -29,18 +29,20 @@ A quick overview of the Container features:
 - [Upgrading from version 2 to version 3](#upgrading-from-version-2-to-version-3)
 - [Upgrading from version 3.2 to version 3.3](#upgrading-from-version-32-to-version-33)
 - [Quick and dirty introduction to dependency injection](#quick-and-dirty-introduction-to-dependency-injection)
-  * [What is dependency injection?](#what-is-dependency-injection-)
-  * [What is a DI container?](#what-is-a-di-container-)
-  * [What is a Service Locator?](#what-is-a-service-locator-)
+  * [What is dependency injection?](#what-is-dependency-injection)
+  * [What is a DI container?](#what-is-a-di-container)
+  * [What is a Service Locator?](#what-is-a-service-locator)
   * [Construction templates](#construction-templates)
-- [The power of `get`](#the-power-of--get-)
+- [The power of `get`](#the-power-of-get)
 - [Storing variables](#storing-variables)
 - [Binding implementations](#binding-implementations)
 - [Binding implementations to slugs](#binding-implementations-to-slugs)
 - [Contextual binding](#contextual-binding)
+- [Merging implementations](#merging-implementations)
 - [Binding decorator chains](#binding-decorator-chains)
 - [Tagging](#tagging)
 - [The callback method](#the-callback-method)
+- [The instance method](#the-instance-method)
 - [Service providers](#service-providers)
   * [Booting service providers](#booting-service-providers)
   * [Deferred service providers](#deferred-service-providers)
@@ -166,20 +168,20 @@ version of PHP 5.6. The library is tested up to PHP 8.1.
 
 If you're using version 2 of DI52 in your project, then there _should_ be nothing you need to do.
 The new, namespaced, classes of version 3 are aliased to their version 2 correspondent, e.g. `tad_DI52_Container` is
-aliased to `lucatume\di52\Container` and `tad_DI52_ServiceProvider` is aliased to `lucatume\di52\ServiceProvider`.
+aliased to `lucatume\DI52\Container` and `tad_DI52_ServiceProvider` is aliased to `lucatume\DI52\ServiceProvider`.
 
 I suggest an update for **a small performance gain**, though, to use the new, namespaced, class names in place of the
 PHP 5.2
 compatible ones:
 
-* replace uses of `tad_DI52_Container` with `lucatume\di52\Container`
+* replace uses of `tad_DI52_Container` with `lucatume\DI52\Container`
 * replace uses of `tad_DI52_ServiceProvider` with `lucatume\DI52\ServiceProvider`
 
 The new version implemented [PSR-11](https://www.php-fig.org/psr/psr-11/) compatibility and the main method to get hold
 of an object instance from the container changed from `make` to `get`.
-Do not worry, the `lucatume\di52\Container::make` method is still there: it's just an alias of
-the `lucatume\di52\Container::get` one.
-For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\di52\Container::get`.
+Do not worry, the `lucatume\DI52\Container::make` method is still there: it's just an alias of
+the `lucatume\DI52\Container::get` one.
+For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\DI52\Container::get`.
 
 That should be all of it.
 
@@ -369,7 +371,7 @@ new instance of `A` but loosely coupled code leveraging the use of a DI containe
 in place of concrete `class`es.
 Telling the container what concrete `class` to instance when a certain `interface` is requested by an
 object `__construct` method is called "binding and implementation to an interface".
-While dependency injection can be made in other methods too beyond the `__construct` one that's what di52 supports at
+While dependency injection can be made in other methods too beyond the `__construct` one that's what DI52 supports at
 the moment; if you want to read more the web is full of good reference
 material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very
 good start.
@@ -576,6 +578,84 @@ $container->bind(ORMInterface::class, MysqlOrm::class);
 $orm = $container->get(ORMInterface::class);
 ```
 
+## Merging Implementations
+
+There can be occasions when you will need independent modules to contribute to a shared binding. This becomes possible
+by using the `mergeArrayVar` method.
+
+Let's assume we are building an application where multiple independent modules can contribute to our application's
+authentication providers.
+
+```php
+# Somewhere in our application's bootstrap logic. e.g. bootstrap.php
+
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// No providers by default.
+$container->mergeArrayVar('auth.providers', []);
+```
+
+Then each individual module can contribute to that list like this:
+
+```php
+# src/Auth/Facebook/Provider.php
+
+# in a boot or register method where the property `$this->container` is our Application's container.
+
+$this->container->mergeArrayVar(
+    'auth.providers',
+    [
+        FacebookAuthProvider::class,
+        InstagramAuthProvider::class,
+    ]
+);
+```
+
+```php
+# src/Auth/Github/Provider.php
+
+# in a boot or register method where the property `$this->container` is our Application's container.
+
+$this->container->mergeArrayVar(
+    'auth.providers',
+    [
+        GithubAuthProvider::class,
+    ]
+);
+```
+
+Now when we try to resolve the binding `auth.providers` using `$container->get('auth.providers');` we will receive the
+merged list of each individual's module contribution.
+
+```php
+[
+    FacebookAuthProvider::class,
+    InstagramAuthProvider::class,
+    GithubAuthProvider::class,
+]
+```
+
+Modules can contribute to an array var with anything that will resolve to an **array**!
+
+Some good and bad examples below.
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// A direct array contribution is fine.
+$container->mergeArrayVar('auth.providers', ['foo', 3, new stdClass(), 5.6, ['internal', 'array']]);
+
+// String contributions or anything else that won't resolve to array will result in an Exception during binding resolution.
+$container->mergeArrayVar('auth.providers', 'test');
+
+// This callback is fine, because it resolves to array.
+$container->mergeArrayVar('auth.providers', static fn(): array => ['resolves', 'to', 'array', '!']);
+```
+
 ## Binding decorator chains
 
 The [Decorator pattern](https://en.wikipedia.org/wiki/Decorator_pattern "Decorator pattern - Wikipedia") allows
@@ -716,6 +796,34 @@ arguments when the called class is a singleton:
 // Some code later we need to remove the filter: we'll get the same callback.
 remove_filter('some_filter', App::callback(SomeFilteringClass::class, 'filter'));
 ```
+
+## The instance method
+
+Where `callback` returns a callable to a method on a resolved object, `Container::instance` returns a callable that
+builds a fresh instance of a class when invoked. The instance is built lazily: it's only resolved the first time the
+returned callable is called, not when `instance` is called.
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// Nothing is built yet.
+$factory = $container->instance(SomeService::class);
+
+// SomeService is built here, on first call.
+$service = $factory();
+```
+
+Build arguments and after-build methods can be passed too; arguments are resolved through the container, so bindings
+apply:
+
+```php
+$factory = $container->instance(SomeService::class, [$container->get(LoggerInterface::class)], ['init']);
+```
+
+This is useful with event-driven frameworks like WordPress when a hook expects a callable that returns the instance on
+demand rather than the instance itself.
 
 ## Service providers
 

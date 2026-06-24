@@ -7,6 +7,7 @@
 
 namespace lucatume\DI52\Builders;
 
+use lucatume\DI52\ContainerException;
 use lucatume\DI52\NotFoundException;
 
 /**
@@ -73,6 +74,38 @@ class Resolver
     {
         unset($this->singletons[$id]);
         $this->bindings[$id] = $implementation;
+    }
+
+    /**
+     * Merges a binding by adding implementations to it. The implementation should resolve to array.
+     *
+     * @param string|class-string $id
+     * @param BuilderInterface    $implementation
+     *
+     * @return void This method does not return any value.
+     *
+     * @throws ContainerException When trying to add to a singleton.
+     */
+    public function merge($id, BuilderInterface $implementation)
+    {
+        if (! empty($this->singletons[$id])
+            && isset($this->bindings[$id])
+            && ! $this->bindings[$id] instanceof BuilderInterface
+        ) {
+            throw new ContainerException("You can't add to {$id} because it's an already resolved singleton!");
+        }
+
+        if (!isset($this->bindings[$id])) {
+            $this->bind($id, $implementation);
+            return;
+        }
+
+        // At this point the binding is always a builder: a non-builder value only sits in
+        // $bindings together with a set singleton flag, already handled above.
+        $binding = $this->bindings[$id];
+        assert($binding instanceof BuilderInterface);
+
+        $this->bindings[$id] = ArrayBuilder::of($binding, $implementation);
     }
 
     /**

@@ -539,6 +539,29 @@ class Container implements ArrayAccess, ContainerInterface
     }
 
     /**
+     * Adds a list of implementations to a binding, preserving previous bindings
+     * for the same $id.
+     *
+     * @param string|class-string $id             A class or interface fully qualified name or a string slug.
+     * @param mixed               $implementation The implementations to be added to the alias; can
+     *                                            be a class name, an object or a closure, but should resolve to an
+     *                                            array!
+     *
+     * @return void The method does not return any value.
+     *
+     * @throws ContainerException If there's an issue while trying to bind the implementation.
+     */
+    public function mergeArrayVar($id, $implementation)
+    {
+        // An array contribution is always data: wrap it as-is so a `[Class, 'method']`
+        // pair is not mistaken for a callable by the builder factory.
+        $builder = is_array($implementation)
+            ? new ValueBuilder($implementation)
+            : $this->builders->getBuilder($id, $implementation);
+        $this->resolver->merge($id, $builder);
+    }
+
+    /**
      * Boots up the application calling the `boot` method of each registered service provider.
      *
      * If there are bootable providers (providers overloading the `boot` method) then the `boot` method will be
