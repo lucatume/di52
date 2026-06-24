@@ -38,6 +38,7 @@ A quick overview of the Container features:
 - [Binding implementations](#binding-implementations)
 - [Binding implementations to slugs](#binding-implementations-to-slugs)
 - [Contextual binding](#contextual-binding)
+- [Merging implementations](#merging-implementations)
 - [Binding decorator chains](#binding-decorator-chains)
 - [Tagging](#tagging)
 - [The callback method](#the-callback-method)
@@ -574,6 +575,84 @@ $container->bind(ORMInterface::class, MysqlOrm::class);
 
 // The `ORMInterface` will be resolved an instance of the `MysqlOrm` class, with the `$dbUrl` argument set correctly.
 $orm = $container->get(ORMInterface::class);
+```
+
+## Merging Implementations
+
+There can be occasions when you will need independent modules to contribute to a shared binding. This becomes possible
+by using the `mergeArrayVar` method.
+
+Let's assume we are building an application where multiple independent modules can contribute to our application's
+authentication providers.
+
+```php
+# Somewhere in our application's bootstrap logic. e.g. bootstrap.php
+
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// No providers by default.
+$container->mergeArrayVar('auth.providers', []);
+```
+
+Then each individual module can contribute to that list like this:
+
+```php
+# src/Auth/Facebook/Provider.php
+
+# in a boot or register method where the property `$this->container` is our Application's container.
+
+$this->container->mergeArrayVar(
+    'auth.providers',
+    [
+        FacebookAuthProvider::class,
+        InstagramAuthProvider::class,
+    ]
+);
+```
+
+```php
+# src/Auth/Github/Provider.php
+
+# in a boot or register method where the property `$this->container` is our Application's container.
+
+$this->container->mergeArrayVar(
+    'auth.providers',
+    [
+        GithubAuthProvider::class,
+    ]
+);
+```
+
+Now when we try to resolve the binding `auth.providers` using `$container->get('auth.providers');` we will receive the
+merged list of each individual's module contribution.
+
+```php
+[
+    FacebookAuthProvider::class,
+    InstagramAuthProvider::class,
+    GithubAuthProvider::class,
+]
+```
+
+Modules can contribute to an array var with anything that will resolve to an **array**!
+
+Some good and bad examples below.
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// A direct array contribution is fine.
+$container->mergeArrayVar('auth.providers', ['foo', 3, new stdClass(), 5.6, ['internal', 'array']]);
+
+// String contributions or anything else that won't resolve to array will result in an Exception during binding resolution.
+$container->mergeArrayVar('auth.providers', 'test');
+
+// This callback is fine, because it resolves to array.
+$container->mergeArrayVar('auth.providers', static fn(): array => ['resolves', 'to', 'array', '!']);
 ```
 
 ## Binding decorator chains
