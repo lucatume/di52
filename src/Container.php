@@ -551,9 +551,9 @@ class Container implements ArrayAccess, ContainerInterface
      *
      * @throws ContainerException If there's an issue while trying to bind the implementation.
      */
-    public function extendArrayVar($id, $implementation)
+    public function mergeArrayVar($id, $implementation)
     {
-        $this->resolver->extend($id, $this->builders->getBuilder($id, $implementation));
+        $this->resolver->merge($id, $this->builders->getBuilder($id, $implementation));
     }
 
     /**
