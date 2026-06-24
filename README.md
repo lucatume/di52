@@ -166,20 +166,20 @@ version of PHP 5.6. The library is tested up to PHP 8.1.
 
 If you're using version 2 of DI52 in your project, then there _should_ be nothing you need to do.
 The new, namespaced, classes of version 3 are aliased to their version 2 correspondent, e.g. `tad_DI52_Container` is
-aliased to `lucatume\di52\Container` and `tad_DI52_ServiceProvider` is aliased to `lucatume\di52\ServiceProvider`.
+aliased to `lucatume\DI52\Container` and `tad_DI52_ServiceProvider` is aliased to `lucatume\DI52\ServiceProvider`.
 
 I suggest an update for **a small performance gain**, though, to use the new, namespaced, class names in place of the
 PHP 5.2
 compatible ones:
 
-* replace uses of `tad_DI52_Container` with `lucatume\di52\Container`
+* replace uses of `tad_DI52_Container` with `lucatume\DI52\Container`
 * replace uses of `tad_DI52_ServiceProvider` with `lucatume\DI52\ServiceProvider`
 
 The new version implemented [PSR-11](https://www.php-fig.org/psr/psr-11/) compatibility and the main method to get hold
 of an object instance from the container changed from `make` to `get`.
-Do not worry, the `lucatume\di52\Container::make` method is still there: it's just an alias of
-the `lucatume\di52\Container::get` one.
-For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\di52\Container::get`.
+Do not worry, the `lucatume\DI52\Container::make` method is still there: it's just an alias of
+the `lucatume\DI52\Container::get` one.
+For another small performance gain replace uses of `tad_DI52_Container::make` with `lucatume\DI52\Container::get`.
 
 That should be all of it.
 
@@ -369,7 +369,7 @@ new instance of `A` but loosely coupled code leveraging the use of a DI containe
 in place of concrete `class`es.
 Telling the container what concrete `class` to instance when a certain `interface` is requested by an
 object `__construct` method is called "binding and implementation to an interface".
-While dependency injection can be made in other methods too beyond the `__construct` one that's what di52 supports at
+While dependency injection can be made in other methods too beyond the `__construct` one that's what DI52 supports at
 the moment; if you want to read more the web is full of good reference
 material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very
 good start.
