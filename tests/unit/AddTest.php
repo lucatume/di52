@@ -536,4 +536,19 @@ class AddTest extends TestCase
             $new_values
         );
     }
+
+    /**
+     * Should evaluate that the pointer has the binding even when empty array.
+     *
+     * @test
+     */
+    public function should_return_it_has_even_when_empty() {
+        $container = new Container();
+
+        $this->assertFalse($container->has('items'));
+
+        $container->extendArrayVar('items', []);
+
+        $this->assertTrue($container->has('items'));
+    }
 }
