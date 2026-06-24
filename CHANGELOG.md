@@ -9,7 +9,7 @@ to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- The `Container::mergeArrayVar` method to the Container, enabling developers to add a list of implementations to a binding.
+- The `Container::mergeArrayVar` method to the Container, enabling developers to add a list of implementations to a binding (thanks @dpanta94).
 
 ## [4.0.1] 2025-04-01;
 
