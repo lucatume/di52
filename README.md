@@ -42,6 +42,7 @@ A quick overview of the Container features:
 - [Binding decorator chains](#binding-decorator-chains)
 - [Tagging](#tagging)
 - [The callback method](#the-callback-method)
+- [The instance method](#the-instance-method)
 - [Service providers](#service-providers)
   * [Booting service providers](#booting-service-providers)
   * [Deferred service providers](#deferred-service-providers)
@@ -795,6 +796,34 @@ arguments when the called class is a singleton:
 // Some code later we need to remove the filter: we'll get the same callback.
 remove_filter('some_filter', App::callback(SomeFilteringClass::class, 'filter'));
 ```
+
+## The instance method
+
+Where `callback` returns a callable to a method on a resolved object, `Container::instance` returns a callable that
+builds a fresh instance of a class when invoked. The instance is built lazily: it's only resolved the first time the
+returned callable is called, not when `instance` is called.
+
+```php
+use lucatume\DI52\Container;
+
+$container = new Container();
+
+// Nothing is built yet.
+$factory = $container->instance(SomeService::class);
+
+// SomeService is built here, on first call.
+$service = $factory();
+```
+
+Build arguments and after-build methods can be passed too; arguments are resolved through the container, so bindings
+apply:
+
+```php
+$factory = $container->instance(SomeService::class, [$container->get(LoggerInterface::class)], ['init']);
+```
+
+This is useful with event-driven frameworks like WordPress when a hook expects a callable that returns the instance on
+demand rather than the instance itself.
 
 ## Service providers
 
