@@ -1,7 +1,8 @@
 A PHP 5.6+ compatible dependency injection container inspired
 by [Laravel IOC](https://laravel.com/docs/5.0/container "Service Container - Laravel - The PHP Framework For Web Artisans")
-and [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") that works even
+and [Pimple](http://github.com/silexphp/pimple/ "Pimple - A simple PHP Dependency Injection Container") that works even
 better on newer version of PHP.
+
 
 A quick overview of the Container features:
 
@@ -11,7 +12,7 @@ A quick overview of the Container features:
 * **Fatal error handling** - On PHP 7.0+ the Container will take care of handling fatal errors that might happen at
   class file load time and handle them.
 * **Fast** - The Container is optimized for speed as much as it can be squeezed out of the required PHP compatibility.
-* **Flexible default mode** - Singleton (build at most once) an prototype (build new each time) default modes available.
+* **Flexible default mode** - Singleton (build at most once) and prototype (build new each time) default modes available.
 * **Global Application** - Like using `App::get($service)->doStuff()`? The `App` facade allows using the DI Container as
   a globally available Service Locator.
 * **PSR-11 compatible** - The container is fully compatible
@@ -270,9 +271,9 @@ $a = new a(new B(), new C());
 
 ### What is a DI container?
 
-The `B` and `C` classes are concrete (as in "you can instance them") implementations of interfaces and while the
-interfaces might never change the implementations might and should change in the lifecycle of code: that's
-the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) or "depend upon
+The `B` and `C` classes are concrete (i.e. instantiable) implementations of interfaces. The interfaces may 
+never change, but the implementations can and should change over the life of the code.
+That's the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle): "depend upon
 abstractions, non concretions".
 If the implementation of `BInterface` changes from `B` to `BetterB` then I'd have to update all the code where I'm
 building instances of `A` to use `BetterB` in place of `B`:
@@ -315,7 +316,11 @@ A **dependency injection container**  will take care of building only objects th
 
 ### What is a Service Locator?
 
-A "Service Locator" is an object, or function, that will answer to this question made by your code:
+The **Service Locator** is a design pattern: a central place your code can ask for the services it needs, 
+instead of building or importing them directly. New to it? The [Wikipedia article](https://en.wikipedia.org/wiki/Service_locator_pattern)
+is a good primer.
+
+A "Service Locator" is an object (or function) that answers a question your code asks:
 
 ```php
 $database = $serviceLocator->get('database');
@@ -324,10 +329,9 @@ $database = $serviceLocator->get('database');
 In Plain English "I do not care how it's built or where it comes from, give me the current implementation of the
 database service.".
 
-Service Locators are, usually, globally-available DI Containers for obvious reasons: the DI Container knows how to build
-the services the Service Locator will provide when required.
-The concept of Service Locators and DI Containers are often conflated as a DI Container, when globally available,
-makes a good implementation of a Service Locator.
+Service Locators are usually just globally-available DI Containers, and for good reason: a DI Container already knows 
+how to build the services a Service Locator needs to hand out. The two concepts are often conflated, because 
+a globally-available DI Container makes a good Service Locator.
 
 An example of this is the `lucatume\DI52\App` class: it will expose, by means of static methods, a globally-available
 instance of the `lucatume\DI52\Container` class.
@@ -365,14 +369,14 @@ $db = App::get('database');
 
 ### Construction templates
 
-The container will need to be told, just once, how objects should be built.
-For the container it's easy to understand that a class type-hinting an instance of the concrete class `A` will require a
-new instance of `A` but loosely coupled code leveraging the use of a DI container will probably type-hint an `interface`
-in place of concrete `class`es.
-Telling the container what concrete `class` to instance when a certain `interface` is requested by an
-object `__construct` method is called "binding and implementation to an interface".
-While dependency injection can be made in other methods too beyond the `__construct` one that's what DI52 supports at
-the moment; if you want to read more the web is full of good reference
+The container needs to be told, just once, how objects should be built.
+It's easy for the container to understand that a class type-hinting an instance of the concrete class `A` will require a
+new instance of `A`, but loosely coupled code leveraging a DI container will probably type-hint an `interface` in place
+of concrete `class`es.
+Telling the container which concrete `class` to instantiate when a certain `interface` is requested by an object's
+`__construct` method is called "binding an implementation to an interface".
+Dependency injection can be performed through other methods beyond `__construct`, but `__construct` injection is what
+DI52 supports at the moment; if you want to read more the web is full of good reference
 material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very
 good start.
 
@@ -486,7 +490,7 @@ You can customize how unbound classes are resolved by the container, check the [
 ## Binding implementations to slugs
 
 The container was heavily inspired
-by [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") and offers some
+by [Pimple](http://github.com/silexphp/pimple/ "Pimple - A simple PHP Dependency Injection Container") and offers some
 features of the PHP 5.3+ DI container as well:
 
 ```php
@@ -724,6 +728,20 @@ $container->bindDecorators(PostEndpoint::class, [
 In this example the `register` method will be called on the `BaseEndpoint` after it's built, then on the
 `CachingEndpoint` instance after it's built, and finally on the `LoggingEndpoint` instance after it's built.  
 
+When you later call $container->get(PostEndpoint::class), the container constructs this single nested object:
+
+```php
+new LoggingEndpoint(
+    new CachingEndpoint(
+        new BaseEndpoint( $postRepository ),
+        $arrayCache
+    ),
+    $fileLogger
+);
+```
+
+Note the Endpoint `$next` and the other typed dependencies (`CacheInterface`, `LoggerInterface`, `RepositoryInterface`) are all autowired from your earlier `bind()` calls. That's the whole point of doing it through the container, you don't hand-write that nesting, and you don't manually pass each inner instance.
+
 Different  and more complex combinations of decorators and after-build methods should be handled binding, with a
 `bind` or `singleton` call, a Closure to build the decorator chain.
 
@@ -764,9 +782,8 @@ chains and after-build methods.
 
 Some applications require callbacks (or some form of callable) to be returned in specific pieces of code.
 This is especially the case with WordPress and
-its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex")
-.
-Using the container does not removes that possibility:
+its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex").
+Using the container does not remove that possibility:
 
 ```php
 use lucatume\DI52\Container;
