@@ -724,6 +724,20 @@ $container->bindDecorators(PostEndpoint::class, [
 In this example the `register` method will be called on the `BaseEndpoint` after it's built, then on the
 `CachingEndpoint` instance after it's built, and finally on the `LoggingEndpoint` instance after it's built.  
 
+When you later call $container->get(PostEndpoint::class), the container constructs this single nested object:
+
+```php
+new LoggingEndpoint(
+    new CachingEndpoint(
+        new BaseEndpoint( $postRepository ),
+        $arrayCache
+    ),
+    $fileLogger
+);
+```
+
+Note the Endpoint `$next` and the other typed dependencies (`CacheInterface`, `LoggerInterface`, `RepositoryInterface`) are all autowired from your earlier `bind()` calls. That's the whole point of doing it through the container, you don't hand-write that nesting, and you don't manually pass each inner instance.
+
 Different  and more complex combinations of decorators and after-build methods should be handled binding, with a
 `bind` or `singleton` call, a Closure to build the decorator chain.
 
