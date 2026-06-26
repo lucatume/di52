@@ -1,7 +1,8 @@
 A PHP 5.6+ compatible dependency injection container inspired
 by [Laravel IOC](https://laravel.com/docs/5.0/container "Service Container - Laravel - The PHP Framework For Web Artisans")
-and [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") that works even
+and [Pimple](http://github.com/silexphp/pimple/ "Pimple - A simple PHP Dependency Injection Container") that works even
 better on newer version of PHP.
+
 
 A quick overview of the Container features:
 
@@ -486,7 +487,7 @@ You can customize how unbound classes are resolved by the container, check the [
 ## Binding implementations to slugs
 
 The container was heavily inspired
-by [Pimple](http://pimple.sensiolabs.org/ "Pimple - A simple PHP Dependency Injection Container") and offers some
+by [Pimple](http://github.com/silexphp/pimple/ "Pimple - A simple PHP Dependency Injection Container") and offers some
 features of the PHP 5.3+ DI container as well:
 
 ```php
