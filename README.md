@@ -315,7 +315,11 @@ A **dependency injection container**  will take care of building only objects th
 
 ### What is a Service Locator?
 
-A "Service Locator" is an object, or function, that will answer to this question made by your code:
+The **Service Locator** is a design pattern: a central place your code can ask for the services it needs, 
+instead of building or importing them directly. New to it? The [Wikipedia article](https://en.wikipedia.org/wiki/Service_locator_pattern)
+is a good primer.
+
+A "Service Locator" is an object (or function) that answers a question your code asks:
 
 ```php
 $database = $serviceLocator->get('database');
@@ -324,10 +328,9 @@ $database = $serviceLocator->get('database');
 In Plain English "I do not care how it's built or where it comes from, give me the current implementation of the
 database service.".
 
-Service Locators are, usually, globally-available DI Containers for obvious reasons: the DI Container knows how to build
-the services the Service Locator will provide when required.
-The concept of Service Locators and DI Containers are often conflated as a DI Container, when globally available,
-makes a good implementation of a Service Locator.
+Service Locators are usually just globally-available DI Containers, and for good reason: a DI Container already knows 
+how to build the services a Service Locator needs to hand out. The two concepts are often conflated, because 
+a globally-available DI Container makes a good Service Locator.
 
 An example of this is the `lucatume\DI52\App` class: it will expose, by means of static methods, a globally-available
 instance of the `lucatume\DI52\Container` class.
