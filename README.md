@@ -365,14 +365,14 @@ $db = App::get('database');
 
 ### Construction templates
 
-The container will need to be told, just once, how objects should be built.
-For the container it's easy to understand that a class type-hinting an instance of the concrete class `A` will require a
-new instance of `A` but loosely coupled code leveraging the use of a DI container will probably type-hint an `interface`
-in place of concrete `class`es.
-Telling the container what concrete `class` to instance when a certain `interface` is requested by an
-object `__construct` method is called "binding and implementation to an interface".
-While dependency injection can be made in other methods too beyond the `__construct` one that's what DI52 supports at
-the moment; if you want to read more the web is full of good reference
+The container needs to be told, just once, how objects should be built.
+It's easy for the container to understand that a class type-hinting an instance of the concrete class `A` will require a
+new instance of `A`, but loosely coupled code leveraging a DI container will probably type-hint an `interface` in place
+of concrete `class`es.
+Telling the container which concrete `class` to instantiate when a certain `interface` is requested by an object's
+`__construct` method is called "binding an implementation to an interface".
+Dependency injection can be performed through other methods beyond `__construct`, but `__construct` injection is what
+DI52 supports at the moment; if you want to read more the web is full of good reference
 material, [this article by Fabien Potencier](http://fabien.potencier.org/what-is-dependency-injection.html) is a very
 good start.
 
