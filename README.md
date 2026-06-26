@@ -782,9 +782,8 @@ chains and after-build methods.
 
 Some applications require callbacks (or some form of callable) to be returned in specific pieces of code.
 This is especially the case with WordPress and
-its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex")
-.
-Using the container does not removes that possibility:
+its [event-based architecture](https://codex.wordpress.org/Plugin_API/Filter_Reference "Plugin API/Filter Reference « WordPress Codex").
+Using the container does not remove that possibility:
 
 ```php
 use lucatume\DI52\Container;
