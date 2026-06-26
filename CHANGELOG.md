@@ -5,6 +5,10 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+### Fixed
+
+- Several typo, wording and link fixes in the README (thanks @nikolaystrikhar).
+
 ## [4.1.0] 2026-06-24;
 
 ### Added
