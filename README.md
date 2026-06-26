@@ -11,7 +11,7 @@ A quick overview of the Container features:
 * **Fatal error handling** - On PHP 7.0+ the Container will take care of handling fatal errors that might happen at
   class file load time and handle them.
 * **Fast** - The Container is optimized for speed as much as it can be squeezed out of the required PHP compatibility.
-* **Flexible default mode** - Singleton (build at most once) an prototype (build new each time) default modes available.
+* **Flexible default mode** - Singleton (build at most once) and prototype (build new each time) default modes available.
 * **Global Application** - Like using `App::get($service)->doStuff()`? The `App` facade allows using the DI Container as
   a globally available Service Locator.
 * **PSR-11 compatible** - The container is fully compatible
