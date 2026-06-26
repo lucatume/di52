@@ -270,9 +270,9 @@ $a = new a(new B(), new C());
 
 ### What is a DI container?
 
-The `B` and `C` classes are concrete (as in "you can instance them") implementations of interfaces and while the
-interfaces might never change the implementations might and should change in the lifecycle of code: that's
-the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle) or "depend upon
+The `B` and `C` classes are concrete (i.e. instantiable) implementations of interfaces. The interfaces may 
+never change, but the implementations can and should change over the life of the code.
+That's the [Dependency Inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle): "depend upon
 abstractions, non concretions".
 If the implementation of `BInterface` changes from `B` to `BetterB` then I'd have to update all the code where I'm
 building instances of `A` to use `BetterB` in place of `B`:
