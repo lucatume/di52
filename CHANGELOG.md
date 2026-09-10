@@ -8,6 +8,7 @@ to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Several typo, wording and link fixes in the README (thanks @nikolaystrikhar).
+- Conditional return types now bind the template parameter, so static analysers resolve `get(Foo::class)` to `Foo` instead of `mixed`.
 
 ## [4.1.0] 2026-06-24;
 

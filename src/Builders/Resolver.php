@@ -226,7 +226,7 @@ class Resolver
      *                                                   use the current one.
      *
      * @return T|mixed The resolved value or instance.
-     * @phpstan-return ($id is class-string ? T : mixed)
+     * @phpstan-return ($id is class-string<T> ? T : mixed)
      *
      * @throws NotFoundException If the id is a string that is not bound and is not an existing, concrete, class.
      */
