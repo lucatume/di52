@@ -5,6 +5,8 @@ to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased] Unreleased
 
+## [4.1.1] 2026-09-15;
+
 ### Fixed
 
 - Several typo, wording and link fixes in the README (thanks @nikolaystrikhar).
@@ -567,4 +569,5 @@ org/psr/psr-11/)
 [4.0.0]: https://github.com/lucatume/di52/compare/3.3.7...4.0.0
 [4.0.1]: https://github.com/lucatume/di52/compare/4.0.0...4.0.1
 [4.1.0]: https://github.com/lucatume/di52/compare/4.0.1...4.1.0
-[unreleased]: https://github.com/lucatume/di52/compare/4.1.0...HEAD
+[4.1.1]: https://github.com/lucatume/di52/compare/4.1.0...4.1.1
+[unreleased]: https://github.com/lucatume/di52/compare/4.1.1...HEAD
