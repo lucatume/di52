@@ -1,5 +1,7 @@
 name: Tests
-on: push
+on:
+  push:
+  pull_request:
 jobs:
   phpunit:
     name: PHPUnit on PHP ${{ matrix.php }}
